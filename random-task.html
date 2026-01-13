@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>할 일 랜덤 뽑기</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      min-height: 100vh;
+      margin: 0;
+      padding-top: 40px;
+      background: #f4f4f4;
+      transition: background 0.3s ease;
+    }
+    .card {
+      background: #ffffff;
+      padding: 24px 32px;
+      border-radius: 16px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+      text-align: center;
+      max-width: 380px;
+      width: 90%;
+      transition: background 0.3s ease;
+    }
+    h1 {
+      font-size: 20px;
+      margin-bottom: 8px;
+    }
+    .theme-label {
+      font-size: 18px;
+      margin-bottom: 20px;
+    }
+    #result {
+      font-size: 22px;
+      font-weight: 700;
+      margin: 20px 0 8px;
+      min-height: 32px;
+    }
+    #hint {
+      font-size: 12px;
+      color: #666;
+      margin-bottom: 16px;
+      min-height: 16px;
+    }
+    button.main {
+      padding: 12px 20px;
+      font-size: 16px;
+      border: none;
+      border-radius: 999px;
+      cursor: pointer;
+      background: #4b8cff;
+      color: white;
+      font-weight: 600;
+      width: 100%;
+      transition: transform 0.05s ease, opacity 0.1s ease, background 0.2s ease;
+    }
+    button.main:active {
+      transform: scale(0.97);
+      opacity: 0.9;
+    }
+    button.main:disabled {
+      opacity: 0.6;
+      cursor: default;
+      background: #8faefc;
+    }
+    .action-buttons {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      margin-top: 8px;
+      margin-bottom: 12px;
+    }
+    .action-buttons button {
+      flex: 1;
+      padding: 10px 0;
+      border-radius: 8px;
+      border: none;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .complete-btn {
+      background: #2ecc71;
+      color: white;
+    }
+    .pending-btn {
+      background: #e0e0e0;
+      color: #333;
+    }
+    .progress-box {
+      margin-top: 20px;
+      text-align: left;
+      font-size: 14px;
+    }
+    .status-summary {
+      font-size: 13px;
+      margin-bottom: 6px;
+      text-align: right;
+      color: #444;
+    }
+    .progress-bar {
+      margin-top: 4px;
+      font-size: 18px;
+      letter-spacing: 2px;
+      text-align: center;
+    }
+    .checkbox-list {
+      margin-top: 12px;
+      font-size: 14px;
+    }
+    .checkbox-list div {
+      margin-bottom: 6px;
+    }
+    .streak-box {
+      margin-top: 16px;
+      font-size: 13px;
+    }
+    .streak-bar {
+      margin-top: 4px;
+      width: 100%;
+      height: 10px;
+      border-radius: 999px;
+      background: #e0e0e0;
+      overflow: hidden;
+    }
+    .streak-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #4b8cff, #2ecc71);
+      transition: width 0.3s ease;
+    }
+    #eventText {
+      margin-top: 10px;
+      font-size: 12px;
+      color: #555;
+    }
+    .s-glow {
+      color: #e67e22;
+      text-shadow: 0 0 6px rgba(255, 215, 0, 0.9);
+      animation: sPulse 0.8s ease-in-out 2;
+    }
+    @keyframes sPulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.06); }
+      100% { transform: scale(1); }
+    }
+    .tier-label {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 600;
+      color: #999;
+      border: 1px solid #ddd;
+      padding: 2px 6px;
+      border-radius: 999px;
+      margin-right: 6px;
+      vertical-align: middle;
+    }
+  </style>
+</head>
+<body>
+  <div class="card" id="card">
+    <h1>할 일 랜덤 뽑기</h1>
+    <div class="theme-label" id="themeLabel"></div>
+
+    <button class="main" id="pickButton" onclick="pickRandom()">지금 당장 이거!</button>
+
+    <div id="result">버튼을 눌러 시작!</div>
+    <div id="hint"></div>
+
+    <div class="action-buttons" style="display:none;" id="actionButtons">
+      <button class="complete-btn" onclick="markComplete()">완료</button>
+      <button class="pending-btn" onclick="hideButtons()">보류</button>
+    </div>
+
+    <!-- 진행도 + 체크리스트 + 연간 퍼센트 (첫 화면에서는 안 보임) -->
+    <div class="progress-box" id="progressContainer" style="display:none;">
+      <div class="status-summary" id="statusSummary">코인: 0개 · LV 1</div>
+
+      <div id="progressText">오늘 완료: 0 / 7</div>
+      <div class="progress-bar" id="progressBar">○○○○○○○○○○</div>
+      <div class="checkbox-list" id="checkboxList"></div>
+
+      <div class="streak-box">
+        <div id="streakText">올해 전부 다 한 날: 0일 / 365일 (0.0%)</div>
+        <div class="streak-bar">
+          <div class="streak-fill" id="streakFill"></div>
+        </div>
+      </div>
+
+      <div id="eventText"></div>
+    </div>
+  </div>
+
+  <script>
+    const tasks = [
+      "듀오링고",
+      "Brilliant",
+      "책 읽기",
+      "플랭크 1분+간단 스트레칭",
+      "부기스/블로그",
+      "달리기",
+      "CBT 문제 풀기"
+    ];
+
+    const hints = {
+      "듀오링고": "→ 영어 레슨 완주를 향해",
+      "Brilliant": "→ 3개 이상 푸십쇼",
+      "책 읽기": "→ 한 페이지라도...",
+      "플랭크 1분+간단 스트레칭": "→ 몸을 움직여라!",
+      "부기스/블로그": "→ 책 등록/블로그 업로드/인스타 업로드/리뷰 답글 뭐든 제발!",
+      "달리기": "→ 5분이라도! 꾸준히가 중요한 거 알지",
+      "CBT 문제 풀기": "→ 자격증 따야제.."
+    };
+
+    // 등급 설정
+    const taskTier = {
+      "달리기": "S",
+      "부기스/블로그": "S",
+      "책 읽기": "A",
+      "CBT 문제 풀기": "A",
+      "Brilliant": "B",
+      "플랭크 1분+간단 스트레칭": "B",
+      "듀오링고": "B"
+    };
+
+    const tierLabel = {
+      "S": "S급",
+      "A": "A급",
+      "B": "B급"
+    };
+
+    // 코인 기본 보상
+    const baseReward = {
+      "S": 3,
+      "A": 2,
+      "B": 1,
+      "BONUS": 0
+    };
+
+    const today = new Date().toISOString().slice(0, 10);
+
+    // 랜덤 버프/디버프 목록
+    const dailyEvents = [
+      {
+        id: "buff_all_plus1",
+        label: "오늘의 버프: 모든 미션 코인 +1!",
+        type: "buff"
+      },
+      {
+        id: "buff_s_plus1",
+        label: "오늘의 버프: S급 미션 코인 +1!",
+        type: "buff"
+      },
+      {
+        id: "nerf_s_minus1",
+        label: "오늘의 디버프: S급 미션 코인 -1…",
+        type: "debuff"
+      },
+      {
+        id: "half_day_full",
+        label: "오늘의 특수: 4개만 완료해도 '완료한 날'로 인정!",
+        type: "special"
+      }
+    ];
+
+    function loadTaskStatus() {
+      const stored = JSON.parse(localStorage.getItem("taskStatus"));
+      const storedDate = localStorage.getItem("taskDate");
+
+      if (!stored || storedDate !== today) {
+        const reset = {};
+        tasks.forEach(t => reset[t] = false);
+        localStorage.setItem("taskStatus", JSON.stringify(reset));
+        localStorage.setItem("taskDate", today);
+        return reset;
+      }
+      return stored;
+    }
+
+    function loadFullDays() {
+      const count = parseInt(localStorage.getItem("fullCompleteCount") || "0", 10);
+      const lastDate = localStorage.getItem("fullCompleteDate") || "";
+      return { count, lastDate };
+    }
+
+    function loadCoins() {
+      return parseInt(localStorage.getItem("coinCount") || "0", 10);
+    }
+
+    function loadDailyEvent() {
+      const storedId = localStorage.getItem("dailyEventId");
+      const storedDate = localStorage.getItem("dailyEventDate");
+
+      if (!storedId || storedDate !== today) {
+        const event = dailyEvents[Math.floor(Math.random() * dailyEvents.length)];
+        localStorage.setItem("dailyEventId", event.id);
+        localStorage.setItem("dailyEventDate", today);
+        return event;
+      } else {
+        const found = dailyEvents.find(e => e.id === storedId);
+        return found || dailyEvents[0];
+      }
+    }
+
+    let taskStatus = loadTaskStatus();
+    let { count: fullCompleteCount, lastDate: fullCompleteDate } = loadFullDays();
+    let coinCount = loadCoins();
+    let dailyEvent = loadDailyEvent();
+    let isPicking = false;
+    let hasShownProgress = false;
+    let currentTask = null;
+    let currentTier = null;
+
+    function getLevel(percent) {
+      // 0% -> LV 1, 100% -> LV 10
+      const lvl = Math.floor(percent / 10) + 1;
+      return Math.min(10, Math.max(1, lvl));
+    }
+
+    function getRewardForTask(taskName) {
+      const tier = taskTier[taskName] || "B";
+      let reward = baseReward[tier];
+
+      // 보너스는 기본 0, 이벤트 영향도 받지 않게 유지
+      if (tier === "BONUS") return 0;
+
+      if (dailyEvent.id === "buff_all_plus1" && reward > 0) {
+        reward += 1;
+      }
+      if (dailyEvent.id === "buff_s_plus1" && tier === "S") {
+        reward += 1;
+      }
+      if (dailyEvent.id === "nerf_s_minus1" && tier === "S") {
+        reward = Math.max(0, reward - 1);
+      }
+
+      return reward;
+    }
+
+    function updateUI() {
+      const completed = Object.values(taskStatus).filter(v => v).length;
+
+      // 오늘을 "완료한 날"로 인정하는 기준
+      let fullNeeded = tasks.length;
+      if (dailyEvent.id === "half_day_full") {
+        fullNeeded = Math.ceil(tasks.length / 2); // 4개 이상이면 하루 인정
+      }
+
+      if (completed >= fullNeeded && fullCompleteDate !== today) {
+        fullCompleteCount += 1;
+        fullCompleteDate = today;
+        localStorage.setItem("fullCompleteCount", String(fullCompleteCount));
+        localStorage.setItem("fullCompleteDate", fullCompleteDate);
+      }
+
+      // 오늘 진행도
+      document.getElementById("progressText").textContent =
+        `오늘 완료: ${completed} / ${tasks.length}`;
+
+      const circle = "●".repeat(completed) + "○".repeat(tasks.length - completed);
+      document.getElementById("progressBar").textContent = circle;
+
+      const listEl = document.getElementById("checkboxList");
+      listEl.innerHTML = "";
+      tasks.forEach(t => {
+        const div = document.createElement("div");
+        div.textContent = (taskStatus[t] ? "✔ " : "□ ") + t;
+        listEl.appendChild(div);
+      });
+
+      // 연간 퍼센트 + 레벨
+      const percent = Math.min(100, (fullCompleteCount / 365) * 100);
+      const level = getLevel(percent);
+
+      document.getElementById("streakText").textContent =
+        `올해 전부 다 한 날: ${fullCompleteCount}일 / 365일 (${percent.toFixed(1)}%)`;
+      document.getElementById("streakFill").style.width = `${percent}%`;
+
+      // 코인 + 레벨 표시
+      document.getElementById("statusSummary").textContent =
+        `코인: ${coinCount}개 · LV ${level}`;
+
+      // 오늘의 버프/디버프 표시
+      document.getElementById("eventText").textContent = dailyEvent.label;
+    }
+
+    function showProgressIfNeeded() {
+      if (!hasShownProgress) {
+        document.getElementById("progressContainer").style.display = "block";
+        hasShownProgress = true;
+      }
+    }
+
+    // 주간 테마 적용 (텍스트는 이모지 아이콘만)
+    function applyTheme() {
+      const date = new Date();
+      const yearStart = new Date(date.getFullYear(), 0, 1);
+      const diffDays = Math.floor((date - yearStart) / 86400000);
+      const weekNumber = Math.floor(diffDays / 7);
+      const themes = [
+        { emoji: "🐱", bodyBg: "#fdf6f0" },
+        { emoji: "🌲", bodyBg: "#f0f7f4" },
+        { emoji: "🌌", bodyBg: "#050816" }
+      ];
+      const theme = themes[weekNumber % themes.length];
+
+      document.getElementById("themeLabel").textContent = theme.emoji;
+      document.body.style.background = theme.bodyBg;
+    }
+
+    applyTheme();
+    updateUI(); // 데이터는 미리 준비해두고, 화면은 첫 결과 이후에만 표시됨
+
+    function pickRandom() {
+      if (isPicking) return;
+      isPicking = true;
+
+      const pickBtn = document.getElementById("pickButton");
+      const resultEl = document.getElementById("result");
+      const hintEl = document.getElementById("hint");
+
+      pickBtn.disabled = true;
+      pickBtn.textContent = "고르는 중...";
+
+      document.getElementById("actionButtons").style.display = "none";
+      resultEl.classList.remove("s-glow");
+
+      const available = tasks.filter(t => !taskStatus[t]);
+
+      if (available.length === 0) {
+        resultEl.textContent = "오늘 할 일 완료!";
+        hintEl.textContent = "";
+        pickBtn.disabled = false;
+        pickBtn.textContent = "지금 당장 이거!";
+        isPicking = false;
+        showProgressIfNeeded();
+        return;
+      }
+
+      // 고민 중... 애니메이션
+      let dots = 0;
+      resultEl.textContent = "고민 중";
+      hintEl.textContent = "2초만 기다려줘…";
+      const loading = setInterval(() => {
+        dots = (dots + 1) % 4;
+        resultEl.textContent = "고민 중" + ".".repeat(dots);
+      }, 400);
+
+      setTimeout(() => {
+        clearInterval(loading);
+
+        const finalChoice = available[Math.floor(Math.random() * available.length)];
+        const finalTier = taskTier[finalChoice] || "B";
+
+        currentTask = finalChoice;
+        currentTier = finalTier;
+
+        const label = tierLabel[finalTier] || "B급";
+        const badge = `<span class="tier-label">${label}</span>`;
+        const safeText = finalChoice.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        resultEl.innerHTML = `${badge}${safeText}`;
+
+        const baseHint = hints[finalChoice] || "";
+        if (finalTier === "S") {
+          resultEl.classList.add("s-glow");
+          hintEl.textContent = `✨ S급 미션 등장! ✨ ${baseHint}`;
+        } else {
+          hintEl.textContent = baseHint;
+        }
+
+        document.getElementById("actionButtons").style.display = "flex";
+
+        pickBtn.disabled = false;
+        pickBtn.textContent = "지금 당장 이거!";
+        isPicking = false;
+
+        showProgressIfNeeded();
+      }, 2000);
+    }
+
+    function markComplete() {
+      if (!currentTask || !tasks.includes(currentTask)) return;
+
+      if (taskStatus[currentTask]) {
+        document.getElementById("hint").textContent = "이미 완료한 미션이에요!";
+        hideButtons();
+        return;
+      }
+
+      taskStatus[currentTask] = true;
+      localStorage.setItem("taskStatus", JSON.stringify(taskStatus));
+
+      const reward = getRewardForTask(currentTask);
+      if (reward > 0) {
+        coinCount += reward;
+        localStorage.setItem("coinCount", String(coinCount));
+        document.getElementById("hint").textContent =
+          `완료 기록되었습니다! (+${reward}코인)`;
+      } else {
+        document.getElementById("hint").textContent =
+          "완료 기록되었습니다!";
+      }
+
+      hideButtons();
+      updateUI();
+    }
+
+    function hideButtons() {
+      document.getElementById("actionButtons").style.display = "none";
+    }
+  </script>
+</body>
+</html>
