@@ -608,16 +608,19 @@
       const diffDays = Math.floor((date - yearStart) / 86400000);
 
       const themes = [
-        { emoji: "🌅", bodyBg: "#fff5e6", cardBg: "#ffffff", accent: "#ff7b54", accentSoft: "#ffb199" },
-        { emoji: "🌊", bodyBg: "#e6f5ff", cardBg: "#ffffff", accent: "#3f8cff", accentSoft: "#9ac3ff" },
-        { emoji: "🌿", bodyBg: "#eef8f2", cardBg: "#ffffff", accent: "#2ecc71", accentSoft: "#8be3aa" },
-        { emoji: "🌌", bodyBg: "#050816", cardBg: "#111827", accent: "#6366f1", accentSoft: "#a5b4fc" },
-        { emoji: "☕️", bodyBg: "#f7f0ea", cardBg: "#ffffff", accent: "#b85c38", accentSoft: "#d19d85" },
-        { emoji: "📚", bodyBg: "#f6f4ff", cardBg: "#ffffff", accent: "#7c3aed", accentSoft: "#c4b5fd" },
-        { emoji: "🔥", bodyBg: "#fff1f2", cardBg: "#ffffff", accent: "#f97373", accentSoft: "#fecaca" },
-        { emoji: "🌈", bodyBg: "linear-gradient(135deg,#fdf2ff,#e0f2fe)", cardBg: "#ffffff", accent: "#ec4899", accentSoft: "#f9a8d4" },
-        { emoji: "🧊", bodyBg: "#edf5ff", cardBg: "#ffffff", accent: "#0ea5e9", accentSoft: "#7dd3fc" },
-        { emoji: "🍀", bodyBg: "#f1fdf3", cardBg: "#ffffff", accent: "#16a34a", accentSoft: "#6ee7b7" }
+        { emoji: "🌅", bodyBg: "#fff5e6", cardBg: "#ffffff", accent: "#ff7b54", accentSoft: "#ffb199", isDark: false },
+        { emoji: "🌊", bodyBg: "#e6f5ff", cardBg: "#ffffff", accent: "#3f8cff", accentSoft: "#9ac3ff", isDark: false },
+        { emoji: "🌿", bodyBg: "#eef8f2", cardBg: "#ffffff", accent: "#2ecc71", accentSoft: "#8be3aa", isDark: false },
+
+        /* 🔥 우주(다크) 테마 → isDark: true */
+        { emoji: "🌌", bodyBg: "#050816", cardBg: "#111827", accent: "#6366f1", accentSoft: "#a5b4fc", isDark: true },
+
+        { emoji: "☕️", bodyBg: "#f7f0ea", cardBg: "#ffffff", accent: "#b85c38", accentSoft: "#d19d85", isDark: false },
+        { emoji: "📚", bodyBg: "#f6f4ff", cardBg: "#ffffff", accent: "#7c3aed", accentSoft: "#c4b5fd", isDark: false },
+        { emoji: "🔥", bodyBg: "#fff1f2", cardBg: "#ffffff", accent: "#f97373", accentSoft: "#fecaca", isDark: false },
+        { emoji: "🌈", bodyBg: "linear-gradient(135deg,#fdf2ff,#e0f2fe)", cardBg: "#ffffff", accent: "#ec4899", accentSoft: "#f9a8d4", isDark: false },
+        { emoji: "🧊", bodyBg: "#edf5ff", cardBg: "#ffffff", accent: "#0ea5e9", accentSoft: "#7dd3fc", isDark: false },
+        { emoji: "🍀", bodyBg: "#f1fdf3", cardBg: "#ffffff", accent: "#16a34a", accentSoft: "#6ee7b7", isDark: false }
       ];
 
       const theme = themes[diffDays % themes.length];
@@ -632,6 +635,50 @@
       const card = document.getElementById("card");
       if (card) {
         card.style.background = theme.cardBg;
+      }
+
+      if (theme.isDark) {
+      document.body.style.color = "#f5f5f5";
+      document.getElementById("card").style.color = "#f5f5f5";
+      document.querySelectorAll(".status-summary, #progressText, #progressBar, .checkbox-list div, #streakText, #eventText, .calendar-title").forEach(el => {
+        el.style.color = "#e6e6e6";
+      });
+
+      document.querySelectorAll(".cal-day-number, .cal-day-tasks").forEach(el => {
+        el.style.color = "#ffffff";
+      });
+
+      // 달력 테두리 살짝 밝게
+      document.querySelectorAll(".calendar-table th, .calendar-table td").forEach(el => {
+        el.style.borderColor = "rgba(255,255,255,0.2)";
+      });
+
+      // 버튼 텍스트 잘 보이게
+      document.querySelectorAll("button.main").forEach(el => {
+        el.style.color = "#ffffff";
+      });
+
+      } else {
+      // 기본 라이트 테마 색으로 돌리기
+      document.body.style.color = "#000000";
+      document.getElementById("card").style.color = "#000000";
+
+      document.querySelectorAll(".status-summary, #progressText, #progressBar, .checkbox-list div, #streakText, #eventText, .calendar-title").forEach(el => {
+        el.style.color = "";
+      });
+
+      document.querySelectorAll(".cal-day-number, .cal-day-tasks").forEach(el => {
+        el.style.color = "";
+      });
+
+      document.querySelectorAll(".calendar-table th, .calendar-table td").forEach(el => {
+        el.style.borderColor = "";
+      });
+
+      document.querySelectorAll("button.main").forEach(el => {
+        el.style.color = "#ffffff";
+      });
+
       }
     }
 
