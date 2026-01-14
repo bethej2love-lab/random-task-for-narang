@@ -84,7 +84,7 @@
       gap: 10px;
       justify-content: center;
       margin-top: 8px;
-      margin-bottom: 12px;
+      margin-bottom: 6px;
     }
     .action-buttons button {
       flex: 1;
@@ -103,8 +103,28 @@
       background: #e0e0e0;
       color: #333;
     }
+
+    /* 퉁치기 버튼 */
+    .tung-container {
+      display: none;
+      justify-content: flex-end;
+      margin-bottom: 8px;
+    }
+    .tung-btn {
+      border: none;
+      border-radius: 999px;
+      padding: 4px 10px;
+      font-size: 11px;
+      background: #f1f1f1;
+      color: #555;
+      cursor: pointer;
+    }
+    .tung-btn:active {
+      transform: scale(0.97);
+    }
+
     .progress-box {
-      margin-top: 20px;
+      margin-top: 12px;
       text-align: left;
       font-size: 14px;
     }
@@ -172,7 +192,7 @@
       vertical-align: middle;
     }
 
-    /* 주간 통계 모달 */
+    /* 공통 모달 오버레이 */
     .modal-overlay {
       position: fixed;
       inset: 0;
@@ -192,6 +212,8 @@
       font-size: 13px;
       box-sizing: border-box;
     }
+
+    /* 주간 통계 모달 전용 */
     .modal-title {
       font-size: 15px;
       font-weight: 700;
@@ -222,6 +244,53 @@
       cursor: pointer;
       background: var(--accent, #4b8cff);
       color: #fff;
+    }
+
+    /* 퉁치기 모달 전용 */
+    .tung-modal-content {
+      padding-top: 16px;
+    }
+    .tung-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+    .tung-title {
+      font-size: 14px;
+      font-weight: 700;
+    }
+    .tung-close {
+      border: none;
+      background: transparent;
+      font-size: 18px;
+      line-height: 1;
+      cursor: pointer;
+    }
+    .tung-options {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 4px;
+    }
+    .tung-option-btn {
+      flex: 1 1 calc(50% - 6px);
+      padding: 8px 6px;
+      font-size: 12px;
+      border-radius: 10px;
+      border: 1px solid #eee;
+      background: #f9fafb;
+      cursor: pointer;
+    }
+    .tung-option-btn:active {
+      transform: scale(0.97);
+      background: #e5e7eb;
+    }
+    .tung-subtext {
+      margin-top: 8px;
+      font-size: 11px;
+      color: #666;
+      text-align: right;
     }
 
     /* 달력 스타일 */
@@ -324,6 +393,11 @@
       <button class="pending-btn" onclick="hideButtons()">보류</button>
     </div>
 
+    <!-- 퉁치기 버튼 -->
+    <div class="tung-container" id="tungContainer">
+      <button class="tung-btn" onclick="openTungModal()">퉁치기</button>
+    </div>
+
     <!-- 진행도 + 체크리스트 + 연간 퍼센트 (첫 화면에서는 안 보임) -->
     <div class="progress-box" id="progressContainer" style="display:none;">
       <div class="status-summary" id="statusSummary">코인: 0개 · LV 1</div>
@@ -353,6 +427,26 @@
       <div class="modal-title">최근 7일 완료 현황</div>
       <div id="weeklyStatsBody"></div>
       <button class="modal-close-btn" onclick="closeWeeklyStats()">확인</button>
+    </div>
+  </div>
+
+  <!-- 퉁치기 모달 -->
+  <div class="modal-overlay" id="tungModal">
+    <div class="modal-content tung-modal-content">
+      <div class="tung-header">
+        <div class="tung-title">오늘은 퉁치기…?</div>
+        <button class="tung-close" onclick="closeTungModal()">×</button>
+      </div>
+      <div class="tung-options">
+        <button class="tung-option-btn" onclick="pickTungOption('영화')">영화</button>
+        <button class="tung-option-btn" onclick="pickTungOption('전시')">전시</button>
+        <button class="tung-option-btn" onclick="pickTungOption('임상심리사 2급 실기 공부')">임상심리사 2급 실기 공부</button>
+        <button class="tung-option-btn" onclick="pickTungOption('우쿨렐레')">우쿨렐레</button>
+        <button class="tung-option-btn" onclick="pickTungOption('뜨개질')">뜨개질</button>
+        <button class="tung-option-btn" onclick="pickTungOption('요리')">요리</button>
+        <button class="tung-option-btn" onclick="pickTungOption('청소')">청소</button>
+      </div>
+      <div class="tung-subtext">하루에 한 번만 선택할 수 있어요.</div>
     </div>
   </div>
 
@@ -505,6 +599,9 @@
       localStorage.setItem("weeklyPopupStatus", JSON.stringify(status));
     }
 
+    // 오늘 퉁치기 사용 여부
+    let tungUsedToday = (localStorage.getItem("tungDate") === today);
+
     let taskStatus = loadTaskStatus();
     let { count: fullCompleteCount, lastDate: fullCompleteDate } = loadFullDays();
     let coinCount = loadCoins();
@@ -540,8 +637,16 @@
       return reward;
     }
 
+    // 퉁 포함 오늘 완료 개수
+    function getCompletedCount() {
+      const base = Object.values(taskStatus).filter(v => v).length;
+      const bonus = tungUsedToday ? 1 : 0;
+      return Math.min(tasks.length, base + bonus);
+    }
+
     function updateUI() {
-      const completed = Object.values(taskStatus).filter(v => v).length;
+      const baseCompleted = Object.values(taskStatus).filter(v => v).length;
+      const completed = getCompletedCount();
 
       // 오늘을 "완료한 날"로 인정하는 기준
       let fullNeeded = tasks.length;
@@ -590,12 +695,35 @@
 
       // 오늘의 버프/디버프 표시
       document.getElementById("eventText").textContent = dailyEvent.label;
+
+      updateTungButtonVisibility();
     }
 
     function showProgressIfNeeded() {
       if (!hasShownProgress) {
         document.getElementById("progressContainer").style.display = "block";
         hasShownProgress = true;
+      }
+    }
+
+    // 퉁치기 버튼 노출 조건
+    function updateTungButtonVisibility() {
+      const container = document.getElementById("tungContainer");
+      if (!container) return;
+
+      const completed = getCompletedCount();
+
+      // 아직 아무 미션도 뽑지 않았으면 숨김
+      if (!currentTask) {
+        container.style.display = "none";
+        return;
+      }
+
+      // 오늘 퉁치기를 이미 썼거나, 이미 7개 다 채운 상태면 숨김
+      if (tungUsedToday || completed >= tasks.length) {
+        container.style.display = "none";
+      } else {
+        container.style.display = "flex";
       }
     }
 
@@ -612,7 +740,7 @@
         { emoji: "🌊", bodyBg: "#e6f5ff", cardBg: "#ffffff", accent: "#3f8cff", accentSoft: "#9ac3ff", isDark: false },
         { emoji: "🌿", bodyBg: "#eef8f2", cardBg: "#ffffff", accent: "#2ecc71", accentSoft: "#8be3aa", isDark: false },
 
-        /* 🔥 우주(다크) 테마 → isDark: true */
+        // 우주(다크) 테마
         { emoji: "🌌", bodyBg: "#050816", cardBg: "#111827", accent: "#6366f1", accentSoft: "#a5b4fc", isDark: true },
 
         { emoji: "☕️", bodyBg: "#f7f0ea", cardBg: "#ffffff", accent: "#b85c38", accentSoft: "#d19d85", isDark: false },
@@ -638,47 +766,42 @@
       }
 
       if (theme.isDark) {
-      document.body.style.color = "#f5f5f5";
-      document.getElementById("card").style.color = "#f5f5f5";
-      document.querySelectorAll(".status-summary, #progressText, #progressBar, .checkbox-list div, #streakText, #eventText, .calendar-title").forEach(el => {
-        el.style.color = "#e6e6e6";
-      });
+        document.body.style.color = "#f5f5f5";
+        document.getElementById("card").style.color = "#f5f5f5";
+        document.querySelectorAll(".status-summary, #progressText, #progressBar, .checkbox-list div, #streakText, #eventText, .calendar-title").forEach(el => {
+          el.style.color = "#e6e6e6";
+        });
 
-      document.querySelectorAll(".cal-day-number, .cal-day-tasks").forEach(el => {
-        el.style.color = "#ffffff";
-      });
+        document.querySelectorAll(".cal-day-number, .cal-day-tasks").forEach(el => {
+          el.style.color = "#ffffff";
+        });
 
-      // 달력 테두리 살짝 밝게
-      document.querySelectorAll(".calendar-table th, .calendar-table td").forEach(el => {
-        el.style.borderColor = "rgba(255,255,255,0.2)";
-      });
+        document.querySelectorAll(".calendar-table th, .calendar-table td").forEach(el => {
+          el.style.borderColor = "rgba(255,255,255,0.2)";
+        });
 
-      // 버튼 텍스트 잘 보이게
-      document.querySelectorAll("button.main").forEach(el => {
-        el.style.color = "#ffffff";
-      });
-
+        document.querySelectorAll("button.main").forEach(el => {
+          el.style.color = "#ffffff";
+        });
       } else {
-      // 기본 라이트 테마 색으로 돌리기
-      document.body.style.color = "#000000";
-      document.getElementById("card").style.color = "#000000";
+        document.body.style.color = "#000000";
+        document.getElementById("card").style.color = "#000000";
 
-      document.querySelectorAll(".status-summary, #progressText, #progressBar, .checkbox-list div, #streakText, #eventText, .calendar-title").forEach(el => {
-        el.style.color = "";
-      });
+        document.querySelectorAll(".status-summary, #progressText, #progressBar, .checkbox-list div, #streakText, #eventText, .calendar-title").forEach(el => {
+          el.style.color = "";
+        });
 
-      document.querySelectorAll(".cal-day-number, .cal-day-tasks").forEach(el => {
-        el.style.color = "";
-      });
+        document.querySelectorAll(".cal-day-number, .cal-day-tasks").forEach(el => {
+          el.style.color = "";
+        });
 
-      document.querySelectorAll(".calendar-table th, .calendar-table td").forEach(el => {
-        el.style.borderColor = "";
-      });
+        document.querySelectorAll(".calendar-table th, .calendar-table td").forEach(el => {
+          el.style.borderColor = "";
+        });
 
-      document.querySelectorAll("button.main").forEach(el => {
-        el.style.color = "#ffffff";
-      });
-
+        document.querySelectorAll("button.main").forEach(el => {
+          el.style.color = "#ffffff";
+        });
       }
     }
 
@@ -744,7 +867,7 @@
 
     // 2/4/6개 완료 시 주간 그래프 자동 팝업
     function checkAndShowWeeklyStats() {
-      const completed = Object.values(taskStatus).filter(v => v).length;
+      const completed = getCompletedCount();
       const thresholds = [2, 4, 6];
 
       if (!thresholds.includes(completed)) return;
@@ -891,6 +1014,7 @@
         pickBtn.textContent = "지금 당장 이거!";
         isPicking = false;
         showProgressIfNeeded();
+        updateTungButtonVisibility();
         return;
       }
 
@@ -932,6 +1056,7 @@
         isPicking = false;
 
         showProgressIfNeeded();
+        updateTungButtonVisibility();
       }, 2000);
     }
 
@@ -965,6 +1090,34 @@
 
     function hideButtons() {
       document.getElementById("actionButtons").style.display = "none";
+    }
+
+    // 퉁치기 모달 열기/닫기/선택
+    function openTungModal() {
+      if (tungUsedToday) {
+        document.getElementById("hint").textContent = "오늘은 이미 퉁치기를 썼어요.";
+        return;
+      }
+      document.getElementById("tungModal").style.display = "flex";
+    }
+
+    function closeTungModal() {
+      document.getElementById("tungModal").style.display = "none";
+    }
+
+    function pickTungOption(name) {
+      if (tungUsedToday) return;
+
+      tungUsedToday = true;
+      localStorage.setItem("tungDate", today);
+      localStorage.setItem("tungChoice", name);
+
+      document.getElementById("hint").textContent =
+        `'${name}'(으)로 오늘은 퉁! (완료 +1 처리되었습니다)`;
+
+      closeTungModal();
+      updateUI();
+      checkAndShowWeeklyStats();
     }
   </script>
 </body>
