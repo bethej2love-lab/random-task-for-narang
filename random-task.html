@@ -496,23 +496,47 @@
       "BONUS": 0
     };
 
-// 한국 기준 날짜 문자열 (YYYY-MM-DD)
-function getKSTDate() {
-  const now = new Date();
+    // 🔄 데이터 구조 버전 (버그 있던 예전 데이터 한 번 정리용)
+    const APP_VERSION = "2";
 
-  // 1) 현재 로컬 시간을 UTC 기준 밀리초로 변환
-  const utcTime = now.getTime() + now.getTimezoneOffset() * 60 * 1000;
+    function ensureAppVersion() {
+      const v = localStorage.getItem("taskAppVersion");
+      if (v !== APP_VERSION) {
+        // 이 앱에서 쓰는 key만 골라서 삭제
+        const keys = [
+          "taskStatus", "taskDate",
+          "fullCompleteCount", "fullCompleteDate",
+          "coinCount",
+          "dailyEventId", "dailyEventDate",
+          "dailyStats",
+          "weeklyPopupStatus",
+          "tungDate", "tungChoice"
+        ];
+        keys.forEach(k => localStorage.removeItem(k));
+        localStorage.setItem("taskAppVersion", APP_VERSION);
+      }
+    }
 
-  // 2) UTC 기준에서 +9시간 해서 KST 만들기
-  const kstTime = utcTime + 9 * 60 * 60 * 1000;
-  const kst = new Date(kstTime);
+    // 📌 스토리지 버전 먼저 맞추기 (PC/폰 모두 한 번만 초기화됨)
+    ensureAppVersion();
 
-  const year = kst.getFullYear();
-  const month = String(kst.getMonth() + 1).padStart(2, "0");
-  const day = String(kst.getDate()).padStart(2, "0");
+    // 한국 기준 날짜 문자열 (YYYY-MM-DD)
+    function getKSTDate() {
+      const now = new Date();
 
-  return `${year}-${month}-${day}`;
-}
+      // 1) 현재 로컬 시간을 UTC 기준으로 변환
+      const utcTime = now.getTime() + now.getTimezoneOffset() * 60 * 1000;
+
+      // 2) UTC 기준에서 +9시간 → KST
+      const kstTime = utcTime + 9 * 60 * 60 * 1000;
+      const kst = new Date(kstTime);
+
+      const year = kst.getFullYear();
+      const month = String(kst.getMonth() + 1).padStart(2, "0");
+      const day = String(kst.getDate()).padStart(2, "0");
+
+      return `${year}-${month}-${day}`;
+    }
 
     const today = getKSTDate();
 
@@ -1132,4 +1156,5 @@ function getKSTDate() {
   </script>
 </body>
 </html>
+
 
