@@ -496,13 +496,23 @@
       "BONUS": 0
     };
 
-    // 한국 기준 날짜 문자열 (YYYY-MM-DD)
-    function getKSTDate() {
-      const now = new Date();
-      const offsetKST = 9 * 60 * 60 * 1000; // 한국 UTC+9
-      const kst = new Date(now.getTime() + offsetKST - (now.getTimezoneOffset() * 60 * 1000));
-      return kst.toISOString().slice(0, 10);
-    }
+// 한국 기준 날짜 문자열 (YYYY-MM-DD)
+function getKSTDate() {
+  const now = new Date();
+
+  // 1) 현재 로컬 시간을 UTC 기준 밀리초로 변환
+  const utcTime = now.getTime() + now.getTimezoneOffset() * 60 * 1000;
+
+  // 2) UTC 기준에서 +9시간 해서 KST 만들기
+  const kstTime = utcTime + 9 * 60 * 60 * 1000;
+  const kst = new Date(kstTime);
+
+  const year = kst.getFullYear();
+  const month = String(kst.getMonth() + 1).padStart(2, "0");
+  const day = String(kst.getDate()).padStart(2, "0");
+
+  return `${year}-${month}-${day}`;
+}
 
     const today = getKSTDate();
 
@@ -1122,3 +1132,4 @@
   </script>
 </body>
 </html>
+
