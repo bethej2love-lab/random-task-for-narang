@@ -292,6 +292,25 @@
       color: #666;
       text-align: right;
     }
+    .tung-coin-actions {
+      margin-top: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .tung-coin-btn {
+      width: 100%;
+      padding: 8px 6px;
+      font-size: 12px;
+      border-radius: 999px;
+      border: 1px solid #e5e7eb;
+      background: #f9fafb;
+      cursor: pointer;
+    }
+    .tung-coin-btn:active {
+      transform: scale(0.97);
+      background: #e5e7eb;
+    }
 
     /* 달력 스타일 */
     #toggleCalendarButton {
@@ -390,7 +409,7 @@
 
     <div class="action-buttons" style="display:none;" id="actionButtons">
       <button class="complete-btn" onclick="markComplete()">완료</button>
-      <button class="pending-btn" onclick="hideButtons()">보류</button>
+      <button class="pending-btn" onclick="markPending()">보류</button>
     </div>
 
     <!-- 퉁치기 버튼 -->
@@ -445,10 +464,18 @@
         <button class="tung-option-btn" onclick="pickTungOption('뜨개질')">뜨개질</button>
         <button class="tung-option-btn" onclick="pickTungOption('요리')">요리</button>
         <button class="tung-option-btn" onclick="pickTungOption('청소')">청소</button>
+        <button class="tung-option-btn" onclick="pickTungOption('벌떡 기상')">벌떡 기상</button>
       </div>
-      <div class="tung-subtext">하루에 한 번만 선택할 수 있어요.</div>
-    </div>
-  </div>
+      <div class="tung-subtext">
+        기본 1회는 무료, 그 이후에는 코인으로 추가 퉁치기를 할 수 있어요.
+      </div>
+
+      <div class="tung-coin-actions">
+        <button class="tung-coin-btn" onclick="useTungCoins(1, 20)">코인 20개로 오늘 완료 +1</button>
+        <button class="tung-coin-btn" onclick="useTungCoins(2, 30)">코인 30개로 오늘 완료 +2</button>
+        <button class="tung-coin-btn" onclick="useTungCoins(3, 50)">코인 50개로 오늘 완료 +3</button>
+      </div>
+
 
   <script>
     const tasks = [
@@ -496,46 +523,12 @@
       "BONUS": 0
     };
 
-    // 🔄 데이터 구조 버전 (버그 있던 예전 데이터 한 번 정리용)
-    const APP_VERSION = "2";
-
-    function ensureAppVersion() {
-      const v = localStorage.getItem("taskAppVersion");
-      if (v !== APP_VERSION) {
-        // 이 앱에서 쓰는 key만 골라서 삭제
-        const keys = [
-          "taskStatus", "taskDate",
-          "fullCompleteCount", "fullCompleteDate",
-          "coinCount",
-          "dailyEventId", "dailyEventDate",
-          "dailyStats",
-          "weeklyPopupStatus",
-          "tungDate", "tungChoice"
-        ];
-        keys.forEach(k => localStorage.removeItem(k));
-        localStorage.setItem("taskAppVersion", APP_VERSION);
-      }
-    }
-
-    // 📌 스토리지 버전 먼저 맞추기 (PC/폰 모두 한 번만 초기화됨)
-    ensureAppVersion();
-
     // 한국 기준 날짜 문자열 (YYYY-MM-DD)
     function getKSTDate() {
       const now = new Date();
-
-      // 1) 현재 로컬 시간을 UTC 기준으로 변환
-      const utcTime = now.getTime() + now.getTimezoneOffset() * 60 * 1000;
-
-      // 2) UTC 기준에서 +9시간 → KST
-      const kstTime = utcTime + 9 * 60 * 60 * 1000;
-      const kst = new Date(kstTime);
-
-      const year = kst.getFullYear();
-      const month = String(kst.getMonth() + 1).padStart(2, "0");
-      const day = String(kst.getDate()).padStart(2, "0");
-
-      return `${year}-${month}-${day}`;
+      const offsetKST = 9 * 60 * 60 * 1000; // 한국 UTC+9
+      const kst = new Date(now.getTime() + offsetKST - (now.getTimezoneOffset() * 60 * 1000));
+      return kst.toISOString().slice(0, 10);
     }
 
     const today = getKSTDate();
@@ -633,8 +626,8 @@
       localStorage.setItem("weeklyPopupStatus", JSON.stringify(status));
     }
 
-    // 오늘 퉁치기 사용 여부
-    let tungUsedToday = (localStorage.getItem("tungDate") === today);
+    // 오늘 퉁치기 상태 (완료로 인정된 개수, 무료 퉁 사용 여부)
+    let { count: tungCount, freeUsed: tungFreeUsed } = loadTungState();
 
     let taskStatus = loadTaskStatus();
     let { count: fullCompleteCount, lastDate: fullCompleteDate } = loadFullDays();
@@ -644,6 +637,7 @@
     let hasShownProgress = false;
     let currentTask = null;
     let currentTier = null;
+    let skippedTasks = {};
 
     function getLevel(percent) {
       // 0% -> LV 1, 100% -> LV 10
@@ -674,7 +668,7 @@
     // 퉁 포함 오늘 완료 개수
     function getCompletedCount() {
       const base = Object.values(taskStatus).filter(v => v).length;
-      const bonus = tungUsedToday ? 1 : 0;
+      const bonus = tungCount; // 퉁으로 채운 완료 개수
       return Math.min(tasks.length, base + bonus);
     }
 
@@ -740,7 +734,6 @@
       }
     }
 
-    // 퉁치기 버튼 노출 조건
     function updateTungButtonVisibility() {
       const container = document.getElementById("tungContainer");
       if (!container) return;
@@ -753,8 +746,8 @@
         return;
       }
 
-      // 오늘 퉁치기를 이미 썼거나, 이미 7개 다 채운 상태면 숨김
-      if (tungUsedToday || completed >= tasks.length) {
+      // 오늘 할 일을 전부 다 채웠으면 숨김
+      if (completed >= tasks.length) {
         container.style.display = "none";
       } else {
         container.style.display = "flex";
@@ -919,6 +912,22 @@
 
       openWeeklyStatsModal();
     }
+    function loadTungState() {
+      const storedDate = localStorage.getItem("tungDate");
+
+      // 날짜가 바뀌었으면 퉁 관련 상태 리셋
+      if (storedDate !== today) {
+        localStorage.setItem("tungDate", today);
+        localStorage.setItem("tungCount", "0");
+        localStorage.setItem("tungFreeUsed", "0");
+        localStorage.removeItem("tungChoice");
+        return { count: 0, freeUsed: false };
+      } else {
+        const count = parseInt(localStorage.getItem("tungCount") || "0", 10);
+        const freeUsed = localStorage.getItem("tungFreeUsed") === "1";
+        return { count, freeUsed };
+      }
+    }
 
     // 달력 생성
     function buildMonthlyCalendar() {
@@ -1039,18 +1048,29 @@
       document.getElementById("actionButtons").style.display = "none";
       resultEl.classList.remove("s-glow");
 
-      const available = tasks.filter(t => !taskStatus[t]);
+// ✅ 완료도 안 했고, 보류도 안 된 미션만 후보에 포함
+const available = tasks.filter(t => !taskStatus[t] && !skippedTasks[t]);
 
-      if (available.length === 0) {
-        resultEl.textContent = "오늘 할 일 완료!";
-        hintEl.textContent = "";
-        pickBtn.disabled = false;
-        pickBtn.textContent = "지금 당장 이거!";
-        isPicking = false;
-        showProgressIfNeeded();
-        updateTungButtonVisibility();
-        return;
-      }
+if (available.length === 0) {
+  const remaining = tasks.filter(t => !taskStatus[t]);
+
+  if (remaining.length === 0) {
+    // 진짜로 오늘 다 한 경우
+    resultEl.textContent = "오늘 할 일 완료!";
+    hintEl.textContent = "";
+  } else {
+    // 아직 남은 미션은 있지만 전부 보류한 경우
+    resultEl.textContent = "보류한 미션만 남았어요. 오늘은 여기까지!";
+    hintEl.textContent = "보류를 초기화하려면 새로고침하면 돼요.";
+  }
+
+  pickBtn.disabled = false;
+  pickBtn.textContent = "지금 당장 이거!";
+  isPicking = false;
+  showProgressIfNeeded();
+  updateTungButtonVisibility();
+  return;
+}
 
       // 고민 중... 애니메이션
       let dots = 0;
@@ -1126,10 +1146,27 @@
       document.getElementById("actionButtons").style.display = "none";
     }
 
-    // 퉁치기 모달 열기/닫기/선택
+function markPending() {
+  // 현재 뽑힌 미션이 없다면 그냥 버튼만 숨기기
+  if (!currentTask || !tasks.includes(currentTask)) {
+    hideButtons();
+    return;
+  }
+
+  // 이 미션은 오늘 세션에서 제외!
+  skippedTasks[currentTask] = true;
+
+  document.getElementById("hint").textContent =
+    "잠깐 패스!";
+
+  hideButtons();
+}
+
     function openTungModal() {
-      if (tungUsedToday) {
-        document.getElementById("hint").textContent = "오늘은 이미 퉁치기를 썼어요.";
+      const completed = getCompletedCount();
+      if (completed >= tasks.length) {
+        document.getElementById("hint").textContent =
+          "이미 미션 클리어 ⚡";
         return;
       }
       document.getElementById("tungModal").style.display = "flex";
@@ -1140,21 +1177,87 @@
     }
 
     function pickTungOption(name) {
-      if (tungUsedToday) return;
+      const completed = getCompletedCount();
+      if (completed >= tasks.length) {
+        document.getElementById("hint").textContent =
+          "오늘 할 일 다 채움!";
+        closeTungModal();
+        return;
+      }
 
-      tungUsedToday = true;
-      localStorage.setItem("tungDate", today);
-      localStorage.setItem("tungChoice", name);
+      // 아직 무료 퉁을 안 쓴 경우 → 무료 1회
+      if (!tungFreeUsed) {
+        tungFreeUsed = true;
+        tungCount += 1;
 
-      document.getElementById("hint").textContent =
-        `'${name}'(으)로 오늘은 퉁! (완료 +1 처리되었습니다)`;
+        localStorage.setItem("tungFreeUsed", "1");
+        localStorage.setItem("tungCount", String(tungCount));
+        localStorage.setItem("tungDate", today);
+        localStorage.setItem("tungChoice", name);
+
+        document.getElementById("hint").textContent =
+          `'${name}'(으)로 오늘은 퉁! (무료 퉁치기, 완료 +1 처리되었습니다)`;
+      } else {
+        // 무료 퉁은 이미 사용 → 코인 5개로 추가 퉁치기
+        if (coinCount < 5) {
+          document.getElementById("hint").textContent =
+            "코인이 부족해서 추가 퉁치기를 사용할 수 없어요. (필요: 5코인)";
+          closeTungModal();
+          return;
+        }
+
+        coinCount -= 5;
+        tungCount += 1;
+
+        localStorage.setItem("coinCount", String(coinCount));
+        localStorage.setItem("tungCount", String(tungCount));
+        localStorage.setItem("tungDate", today);
+        localStorage.setItem("tungChoice", name);
+
+        document.getElementById("hint").textContent =
+          `'${name}'(으)로 퉁치기! (코인 5개 사용, 완료 +1 처리되었습니다)`;
+      }
 
       closeTungModal();
       updateUI();
       checkAndShowWeeklyStats();
     }
+
+    function useTungCoins(addCount, cost) {
+      if (coinCount < cost) {
+        document.getElementById("hint").textContent =
+          `코인이 부족해요. (필요: ${cost}코인)`;
+        return;
+      }
+
+      const completed = getCompletedCount();
+      const remaining = tasks.length - completed;
+
+      if (remaining <= 0) {
+        document.getElementById("hint").textContent =
+          "오늘 할 일은 이미 모두 완료했어요!";
+        closeTungModal();
+        return;
+      }
+
+      // 남은 칸보다 더 많이 퉁치지 않도록 조정
+      const actualAdd = Math.min(addCount, remaining);
+
+      coinCount -= cost;
+      tungCount += actualAdd;
+
+      localStorage.setItem("coinCount", String(coinCount));
+      localStorage.setItem("tungCount", String(tungCount));
+      localStorage.setItem("tungDate", today);
+
+      document.getElementById("hint").textContent =
+        `코인 ${cost}개를 사용해 오늘 완료 ${actualAdd}개를 퉁쳤어요!`;
+
+      closeTungModal();
+      updateUI();
+      checkAndShowWeeklyStats();
+    }
+
   </script>
 </body>
 </html>
-
-
