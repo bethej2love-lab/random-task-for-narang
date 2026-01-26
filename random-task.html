@@ -394,7 +394,13 @@
       .calendar-table td {
         padding: 3px 1px;
       }
+
+#forceNextDay {
+  display: none;
+}
     }
+
+
   </style>
 </head>
 <body>
@@ -434,9 +440,11 @@
 
       <div id="eventText"></div>
 
+
       <!-- 이번 달 달력 토글 버튼 + 컨테이너 -->
       <button id="toggleCalendarButton" onclick="toggleCalendar()">이번 달 달력 보기</button>
       <div id="calendarContainer" style="display:none;"></div>
+<button id="forceNextDay" style="display:none;">날짜 수동 전환</button>
     </div>
   </div>
 
@@ -524,11 +532,13 @@
     };
 
     // 한국 기준 날짜 문자열 (YYYY-MM-DD)
+// 한국 기준 날짜 (로컬 시간 기준, YYYY-MM-DD)
 function getKSTDate() {
-  const now = new Date();
-  const utc = now.getTime() + (now.getTimezoneOffset() * 60 * 1000);
-  const kst = new Date(utc + (9 * 60 * 60 * 1000)); // UTC+9
-  return kst.toISOString().slice(0, 10);
+  const now = new Date(); // 이미 시스템이 KST면 이게 곧 한국 시간
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, "0");
+  const day = String(now.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
 }
 
     const today = getKSTDate();
@@ -693,6 +703,7 @@ function getKSTDate() {
       const stats = loadDailyStats();
       stats[today] = completed;
       saveDailyStats(stats);
+
 
       // 오늘 진행도
       document.getElementById("progressText").textContent =
@@ -1020,19 +1031,30 @@ function getKSTDate() {
       container.appendChild(table);
     }
 
-    function toggleCalendar() {
-      const container = document.getElementById("calendarContainer");
-      const btn = document.getElementById("toggleCalendarButton");
+function toggleCalendar() {
+  const container = document.getElementById("calendarContainer");
+  const btn = document.getElementById("toggleCalendarButton");
+  const forceBtn = document.getElementById("forceNextDay");
 
-      if (container.style.display === "none" || !container.style.display) {
-        buildMonthlyCalendar();
-        container.style.display = "block";
-        btn.textContent = "달력 닫기";
-      } else {
-        container.style.display = "none";
-        btn.textContent = "이번 달 달력 보기";
-      }
+  if (container.style.display === "none" || !container.style.display) {
+    buildMonthlyCalendar();
+    container.style.display = "block";
+    btn.textContent = "달력 닫기";
+
+    // ✅ 달력 켜질 때만 날짜 수동 전환 버튼 보이기
+    if (forceBtn) {
+      forceBtn.style.display = "inline-block"; // 또는 "block"
     }
+  } else {
+    container.style.display = "none";
+    btn.textContent = "이번 달 달력 보기";
+
+    // ✅ 달력 닫히면 다시 숨기기
+    if (forceBtn) {
+      forceBtn.style.display = "none";
+    }
+  }
+}
 
     function pickRandom() {
       if (isPicking) return;
@@ -1257,6 +1279,29 @@ function markPending() {
       updateUI();
       checkAndShowWeeklyStats();
     }
+
+document.getElementById("forceNextDay").addEventListener("click", () => {
+  const stats = loadDailyStats();
+  const newToday = getKSTDate(); // 최신 날짜 다시 계산
+
+  // 오늘 날짜로 리셋
+  localStorage.setItem("taskDate", newToday);
+  localStorage.setItem("dailyEventDate", newToday);
+  localStorage.setItem("tungDate", newToday);
+
+  // 퉁 관련 초기화
+  localStorage.setItem("tungCount", "0");
+  localStorage.setItem("tungFreeUsed", "0");
+  localStorage.removeItem("tungChoice");
+
+  // 미션 상태 리셋
+  const reset = {};
+  tasks.forEach(t => reset[t] = false);
+  localStorage.setItem("taskStatus", JSON.stringify(reset));
+
+  alert("날짜를 수동으로 오늘 날짜로 전환했습니다!");
+  location.reload();
+});
 
   </script>
 </body>
