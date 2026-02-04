@@ -441,9 +441,16 @@
       <div id="eventText"></div>
 
 
-      <!-- 이번 달 달력 토글 버튼 + 컨테이너 -->
-      <button id="toggleCalendarButton" onclick="toggleCalendar()">이번 달 달력 보기</button>
-      <div id="calendarContainer" style="display:none;"></div>
+      <!-- 달력 토글 버튼 + 컨테이너 -->
+      <button id="toggleCalendarButton" onclick="toggleCalendar()">달력 보기</button>
+      <div id="calendarContainer" style="display:none;">
+        <div id="calendarNav" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+          <button onclick="changeMonth(-1)" style="border:none; background:transparent; font-size:20px; cursor:pointer; padding:4px 8px;">◀</button>
+          <span id="calendarMonthTitle" style="font-size:15px; font-weight:700;"></span>
+          <button onclick="changeMonth(1)" style="border:none; background:transparent; font-size:20px; cursor:pointer; padding:4px 8px;">▶</button>
+        </div>
+        <div id="calendarTableContainer"></div>
+      </div>
 <button id="forceNextDay" style="display:none;">날짜 수동 전환</button>
     </div>
   </div>
@@ -564,6 +571,21 @@ function getKSTDate() {
         id: "half_day_full",
         label: "오늘의 특수: 4개만 완료해도 '완료한 날'로 인정!",
         type: "special"
+      },
+      {
+        id: "buff_b_plus2",
+        label: "오늘의 버프: B급 미션 코인 +2!",
+        type: "buff"
+      },
+      {
+        id: "nerf_all_minus1",
+        label: "오늘의 디버프: 모든 미션 코인 -1…",
+        type: "debuff"
+      },
+      {
+        id: "lucky_day",
+        label: "오늘의 특수: 첫 미션 완료 시 보너스 코인 +3!",
+        type: "special"
       }
     ];
 
@@ -669,6 +691,14 @@ function getKSTDate() {
         reward += 1;
       }
       if (dailyEvent.id === "nerf_s_minus1" && tier === "S") {
+        reward = Math.max(0, reward - 1);
+      }
+      // 새 이벤트 1: B급 미션 코인 +2
+      if (dailyEvent.id === "buff_b_plus2" && tier === "B") {
+        reward += 2;
+      }
+      // 새 이벤트 2: 모든 미션 코인 -1
+      if (dailyEvent.id === "nerf_all_minus1" && reward > 0) {
         reward = Math.max(0, reward - 1);
       }
 
@@ -938,23 +968,21 @@ function getKSTDate() {
       }
     }
 
-    // 달력 생성
-    function buildMonthlyCalendar() {
+    // 현재 보고 있는 달 (초기값: 오늘 기준)
+    let currentViewYear = 2026;
+    let currentViewMonth = 2; // 1~12
+
+    // 달력 생성 (특정 월)
+    function buildMonthlyCalendar(year, month) {
       const stats = loadDailyStats();
-      const [y, m, _d] = today.split("-").map(Number);
-      const year = y;
-      const month = m; // 1~12
-
-      const firstDay = new Date(year, month - 1, 1).getDay(); // 0(일)~6(토)
-      const lastDate = new Date(year, month, 0).getDate();
-
-      const container = document.getElementById("calendarContainer");
+      const container = document.getElementById("calendarTableContainer");
       container.innerHTML = "";
 
-      const title = document.createElement("div");
-      title.className = "calendar-title";
-      title.textContent = `${year}년 ${month}월`;
-      container.appendChild(title);
+      const firstDay = new Date(year, month - 1, 1).getDay();
+      const lastDate = new Date(year, month, 0).getDate();
+
+      // 월 제목 업데이트
+      document.getElementById("calendarMonthTitle").textContent = `${year}년 ${month}월`;
 
       const table = document.createElement("table");
       table.className = "calendar-table";
@@ -1029,13 +1057,33 @@ function getKSTDate() {
       container.appendChild(table);
     }
 
+    // 월 변경 함수
+    function changeMonth(delta) {
+      currentViewMonth += delta;
+      
+      if (currentViewMonth > 12) {
+        currentViewMonth = 1;
+        currentViewYear++;
+      } else if (currentViewMonth < 1) {
+        currentViewMonth = 12;
+        currentViewYear--;
+      }
+
+      buildMonthlyCalendar(currentViewYear, currentViewMonth);
+    }
+
 function toggleCalendar() {
   const container = document.getElementById("calendarContainer");
   const btn = document.getElementById("toggleCalendarButton");
   const forceBtn = document.getElementById("forceNextDay");
 
   if (container.style.display === "none" || !container.style.display) {
-    buildMonthlyCalendar();
+    // 달력 열 때 현재 날짜 기준으로 초기화
+    const [y, m] = today.split("-").map(Number);
+    currentViewYear = y;
+    currentViewMonth = m;
+    
+    buildMonthlyCalendar(currentViewYear, currentViewMonth);
     container.style.display = "block";
     btn.textContent = "달력 닫기";
 
@@ -1045,7 +1093,7 @@ function toggleCalendar() {
     }
   } else {
     container.style.display = "none";
-    btn.textContent = "이번 달 달력 보기";
+    btn.textContent = "달력 보기";
 
     // ✅ 달력 닫히면 다시 숨기기
     if (forceBtn) {
@@ -1146,15 +1194,25 @@ if (available.length === 0) {
       taskStatus[currentTask] = true;
       localStorage.setItem("taskStatus", JSON.stringify(taskStatus));
 
-      const reward = getRewardForTask(currentTask);
-      if (reward > 0) {
-        coinCount += reward;
-        localStorage.setItem("coinCount", String(coinCount));
+      let reward = getRewardForTask(currentTask);
+      
+      // 새 이벤트 3: 첫 미션 완료 시 보너스 코인 +3
+      const completedCount = Object.values(taskStatus).filter(v => v).length;
+      if (dailyEvent.id === "lucky_day" && completedCount === 1) {
+        reward += 3;
+        document.getElementById("hint").textContent =
+          `완료 기록되었습니다! (+${reward}코인, 첫 미션 보너스 +3 포함!)`;
+      } else if (reward > 0) {
         document.getElementById("hint").textContent =
           `완료 기록되었습니다! (+${reward}코인)`;
       } else {
         document.getElementById("hint").textContent =
           "완료 기록되었습니다!";
+      }
+
+      if (reward > 0) {
+        coinCount += reward;
+        localStorage.setItem("coinCount", String(coinCount));
       }
 
       hideButtons();
@@ -1304,4 +1362,3 @@ document.getElementById("forceNextDay").addEventListener("click", () => {
   </script>
 </body>
 </html>
-
