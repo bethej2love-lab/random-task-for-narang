@@ -451,7 +451,10 @@
         </div>
         <div id="calendarTableContainer"></div>
       </div>
-<button id="forceNextDay" style="display:none;">날짜 수동 전환</button>
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px;">
+        <button id="forceNextDay" style="display:none;">날짜 수동 전환</button>
+        <span id="perfectDaysCount" style="font-size:13px; font-weight:600; color:#e74c3c;"></span>
+      </div>
     </div>
   </div>
 
@@ -983,6 +986,20 @@ function getKSTDate() {
 
       // 월 제목 업데이트
       document.getElementById("calendarMonthTitle").textContent = `${year}년 ${month}월`;
+
+      // 7/7 완료일 수 계산 (올해 전체)
+      let perfectDaysCount = 0;
+      for (const dateKey in stats) {
+        if (stats[dateKey] === tasks.length) {
+          perfectDaysCount++;
+        }
+      }
+      
+      // 7/7 완료일 수 표시
+      const perfectDaysEl = document.getElementById("perfectDaysCount");
+      if (perfectDaysEl) {
+        perfectDaysEl.textContent = `♥ ${perfectDaysCount} ♥`;
+      }
 
       const table = document.createElement("table");
       table.className = "calendar-table";
