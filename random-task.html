@@ -394,13 +394,7 @@
       .calendar-table td {
         padding: 3px 1px;
       }
-
-#forceNextDay {
-  display: none;
-}
     }
-
-
   </style>
 </head>
 <body>
@@ -432,14 +426,13 @@
       <div class="checkbox-list" id="checkboxList"></div>
 
       <div class="streak-box">
-        <div id="streakText">올해 전부 다 한 날: 0일 / 365일 (0.0%)</div>
+        <div id="streakText">올해 전부 다 한 날: 0일 / 351일 (0.0%)</div>
         <div class="streak-bar">
           <div class="streak-fill" id="streakFill"></div>
         </div>
       </div>
 
       <div id="eventText"></div>
-
 
       <!-- 달력 토글 버튼 + 컨테이너 -->
       <button id="toggleCalendarButton" onclick="toggleCalendar()">달력 보기</button>
@@ -451,8 +444,7 @@
         </div>
         <div id="calendarTableContainer"></div>
       </div>
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px;">
-        <button id="forceNextDay" style="display:none;">날짜 수동 전환</button>
+      <div style="display:flex; justify-content:flex-end; align-items:center; margin-top:8px;">
         <span id="perfectDaysCount" style="font-size:13px; font-weight:600; color:#e74c3c;"></span>
       </div>
     </div>
@@ -477,7 +469,6 @@
       <div class="tung-options">
         <button class="tung-option-btn" onclick="pickTungOption('영화')">영화</button>
         <button class="tung-option-btn" onclick="pickTungOption('전시')">전시</button>
-        <button class="tung-option-btn" onclick="pickTungOption('임상심리사 2급 실기 공부')">임상심리사 2급 실기 공부</button>
         <button class="tung-option-btn" onclick="pickTungOption('우쿨렐레')">우쿨렐레</button>
         <button class="tung-option-btn" onclick="pickTungOption('뜨개질')">뜨개질</button>
         <button class="tung-option-btn" onclick="pickTungOption('요리')">요리</button>
@@ -493,7 +484,8 @@
         <button class="tung-coin-btn" onclick="useTungCoins(2, 30)">코인 30개로 오늘 완료 +2</button>
         <button class="tung-coin-btn" onclick="useTungCoins(3, 50)">코인 50개로 오늘 완료 +3</button>
       </div>
-
+    </div>
+  </div>
 
   <script>
     const tasks = [
@@ -509,11 +501,11 @@
     const hints = {
       "듀오링고": "→ 딱 2개만 !",
       "Brilliant": "→ 3개 이상 푸십쇼",
-      "책 읽기": "→ 한 페이지라도...",
+      "책 읽기": "→ 3페이지는 읽자..",
       "플랭크 1분+간단 스트레칭": "→ 몸을 움직여라!",
       "부기스/블로그": "→ 책 등록/블로그 업로드/인스타 업로드/리뷰 답글 뭐든 제발!",
       "달리기": "→ 5분이라도! (만보 대체 가능ㅎ)",
-      "자격증 공부": "→ 컴활 2급 GO"
+      "자격증 공부": "→ 컴활 2급 / 임상심리사 2급 / 청소년상담사 3급 / 투자자산운용사 / 정보처리기사 / 공인중개사 / 사회조사분석사"
     };
 
     // 등급 설정
@@ -541,55 +533,34 @@
       "BONUS": 0
     };
 
-    // 한국 기준 날짜 문자열 (YYYY-MM-DD)
-// 한국 기준 날짜 (로컬 시간 기준, YYYY-MM-DD)
-function getKSTDate() {
-  const now = new Date(); // 이미 시스템이 KST면 이게 곧 한국 시간
-  const year = now.getFullYear();
-  const month = String(now.getMonth() + 1).padStart(2, "0");
-  const day = String(now.getDate()).padStart(2, "0");
-  return `${year}-${month}-${day}`;
-}
+    // 연간 기준일: 1월 15일 시작 → 351일 기준
+    const YEAR_TOTAL_DAYS = 351;
+
+    // 한국 기준 날짜 (로컬 시간 기준, YYYY-MM-DD)
+    function getKSTDate() {
+      const now = new Date();
+      const year = now.getFullYear();
+      const month = String(now.getMonth() + 1).padStart(2, "0");
+      const day = String(now.getDate()).padStart(2, "0");
+      return `${year}-${month}-${day}`;
+    }
 
     const today = getKSTDate();
 
     // 랜덤 버프/디버프 목록
     const dailyEvents = [
-      {
-        id: "buff_all_plus1",
-        label: "오늘의 버프: 모든 미션 코인 +1!",
-        type: "buff"
-      },
-      {
-        id: "buff_s_plus1",
-        label: "오늘의 버프: S급 미션 코인 +1!",
-        type: "buff"
-      },
-      {
-        id: "nerf_s_minus1",
-        label: "오늘의 디버프: S급 미션 코인 -1…",
-        type: "debuff"
-      },
-      {
-        id: "half_day_full",
-        label: "오늘의 특수: 4개만 완료해도 '완료한 날'로 인정!",
-        type: "special"
-      },
-      {
-        id: "buff_b_plus2",
-        label: "오늘의 버프: B급 미션 코인 +2!",
-        type: "buff"
-      },
-      {
-        id: "nerf_all_minus1",
-        label: "오늘의 디버프: 모든 미션 코인 -1…",
-        type: "debuff"
-      },
-      {
-        id: "lucky_day",
-        label: "오늘의 특수: 첫 미션 완료 시 보너스 코인 +3!",
-        type: "special"
-      }
+      { id: "buff_all_plus1",  label: "오늘의 버프: 모든 미션 코인 +1!", type: "buff" },
+      { id: "buff_s_plus1",    label: "오늘의 버프: S급 미션 코인 +1!", type: "buff" },
+      { id: "nerf_s_minus1",   label: "오늘의 디버프: S급 미션 코인 -1…", type: "debuff" },
+      { id: "half_day_full",   label: "오늘의 특수: 4개만 완료해도 '완료한 날'로 인정!", type: "special" },
+      { id: "buff_b_plus2",    label: "오늘의 버프: B급 미션 코인 +2!", type: "buff" },
+      { id: "nerf_all_minus1", label: "오늘의 디버프: 모든 미션 코인 -1…", type: "debuff" },
+      { id: "lucky_day",       label: "오늘의 특수: 첫 미션 완료 시 보너스 코인 +3!", type: "special" },
+      { id: "buff_a_plus2",    label: "오늘의 버프: A급 미션 코인 +2!", type: "buff" },
+      { id: "double_first",    label: "오늘의 버프: 첫 번째로 완료한 미션 코인 2배!", type: "buff" },
+      { id: "nerf_b_zero",     label: "오늘의 디버프: B급 미션 코인이 없어요… 어쩔 수 없지 뭐", type: "debuff" },
+      { id: "special_5done",   label: "오늘의 특수: 5개 완료 시 보너스 코인 +5!", type: "special" },
+      { id: "buff_last_plus3", label: "오늘의 버프: 마지막 미션 완료 시 코인 +3 추가!", type: "buff" }
     ];
 
     function loadTaskStatus() {
@@ -631,37 +602,26 @@ function getKSTDate() {
       }
     }
 
-    // 날짜별 완료 개수 저장용
     function loadDailyStats() {
       const raw = localStorage.getItem("dailyStats");
       if (!raw) return {};
-      try {
-        return JSON.parse(raw);
-      } catch (e) {
-        return {};
-      }
+      try { return JSON.parse(raw); } catch (e) { return {}; }
     }
 
     function saveDailyStats(stats) {
       localStorage.setItem("dailyStats", JSON.stringify(stats));
     }
 
-    // 2/4/6개 달성 시 팝업 여부 저장
     function loadWeeklyPopupStatus() {
       const raw = localStorage.getItem("weeklyPopupStatus");
       if (!raw) return {};
-      try {
-        return JSON.parse(raw);
-      } catch (e) {
-        return {};
-      }
+      try { return JSON.parse(raw); } catch (e) { return {}; }
     }
 
     function saveWeeklyPopupStatus(status) {
       localStorage.setItem("weeklyPopupStatus", JSON.stringify(status));
     }
 
-    // 오늘 퉁치기 상태 (완료로 인정된 개수, 무료 퉁 사용 여부)
     let { count: tungCount, freeUsed: tungFreeUsed } = loadTungState();
 
     let taskStatus = loadTaskStatus();
@@ -675,7 +635,6 @@ function getKSTDate() {
     let skippedTasks = {};
 
     function getLevel(percent) {
-      // 0% -> LV 1, 100% -> LV 10
       const lvl = Math.floor(percent / 10) + 1;
       return Math.min(10, Math.max(1, lvl));
     }
@@ -684,45 +643,32 @@ function getKSTDate() {
       const tier = taskTier[taskName] || "B";
       let reward = baseReward[tier];
 
-      // 보너스는 기본 0, 이벤트 영향도 받지 않게 유지
       if (tier === "BONUS") return 0;
 
-      if (dailyEvent.id === "buff_all_plus1" && reward > 0) {
-        reward += 1;
-      }
-      if (dailyEvent.id === "buff_s_plus1" && tier === "S") {
-        reward += 1;
-      }
-      if (dailyEvent.id === "nerf_s_minus1" && tier === "S") {
-        reward = Math.max(0, reward - 1);
-      }
-      // 새 이벤트 1: B급 미션 코인 +2
-      if (dailyEvent.id === "buff_b_plus2" && tier === "B") {
-        reward += 2;
-      }
-      // 새 이벤트 2: 모든 미션 코인 -1
-      if (dailyEvent.id === "nerf_all_minus1" && reward > 0) {
-        reward = Math.max(0, reward - 1);
-      }
+      if (dailyEvent.id === "buff_all_plus1" && reward > 0) reward += 1;
+      if (dailyEvent.id === "buff_s_plus1" && tier === "S") reward += 1;
+      if (dailyEvent.id === "nerf_s_minus1" && tier === "S") reward = Math.max(0, reward - 1);
+      if (dailyEvent.id === "buff_b_plus2" && tier === "B") reward += 2;
+      if (dailyEvent.id === "nerf_all_minus1" && reward > 0) reward = Math.max(0, reward - 1);
+      if (dailyEvent.id === "buff_a_plus2" && tier === "A") reward += 2;
+      if (dailyEvent.id === "nerf_b_zero" && tier === "B") reward = 0;
 
       return reward;
     }
 
-    // 퉁 포함 오늘 완료 개수
     function getCompletedCount() {
       const base = Object.values(taskStatus).filter(v => v).length;
-      const bonus = tungCount; // 퉁으로 채운 완료 개수
+      const bonus = tungCount;
       return Math.min(tasks.length, base + bonus);
     }
 
     function updateUI() {
-      const baseCompleted = Object.values(taskStatus).filter(v => v).length;
       const completed = getCompletedCount();
 
       // 오늘을 "완료한 날"로 인정하는 기준
       let fullNeeded = tasks.length;
       if (dailyEvent.id === "half_day_full") {
-        fullNeeded = Math.ceil(tasks.length / 2); // 4개 이상이면 하루 인정
+        fullNeeded = Math.ceil(tasks.length / 2);
       }
 
       if (completed >= fullNeeded && fullCompleteDate !== today) {
@@ -732,11 +678,10 @@ function getKSTDate() {
         localStorage.setItem("fullCompleteDate", fullCompleteDate);
       }
 
-      // 오늘 완료 개수 -> 일별 통계에 저장
+      // 오늘 완료 개수 → 일별 통계에 저장
       const stats = loadDailyStats();
       stats[today] = completed;
       saveDailyStats(stats);
-
 
       // 오늘 진행도
       document.getElementById("progressText").textContent =
@@ -753,12 +698,12 @@ function getKSTDate() {
         listEl.appendChild(div);
       });
 
-      // 연간 퍼센트 + 레벨
-      const percent = Math.min(100, (fullCompleteCount / 365) * 100);
+      // 351일 기준으로 연간 퍼센트 계산
+      const percent = Math.min(100, (fullCompleteCount / YEAR_TOTAL_DAYS) * 100);
       const level = getLevel(percent);
 
       document.getElementById("streakText").textContent =
-        `올해 전부 다 한 날: ${fullCompleteCount}일 / 365일 (${percent.toFixed(1)}%)`;
+        `올해 전부 다 한 날: ${fullCompleteCount}일 / ${YEAR_TOTAL_DAYS}일 (${percent.toFixed(1)}%)`;
       document.getElementById("streakFill").style.width = `${percent}%`;
 
       // 코인 + 레벨 표시
@@ -784,13 +729,11 @@ function getKSTDate() {
 
       const completed = getCompletedCount();
 
-      // 아직 아무 미션도 뽑지 않았으면 숨김
       if (!currentTask) {
         container.style.display = "none";
         return;
       }
 
-      // 오늘 할 일을 전부 다 채웠으면 숨김
       if (completed >= tasks.length) {
         container.style.display = "none";
       } else {
@@ -798,7 +741,6 @@ function getKSTDate() {
       }
     }
 
-    // 10가지 일일 테마 (KST 기준 날짜로 매일 변경)
     function applyTheme() {
       const kstStr = getKSTDate();
       const [y, m, d] = kstStr.split("-").map(Number);
@@ -810,7 +752,6 @@ function getKSTDate() {
         { emoji: "🌅", bodyBg: "#fff5e6", cardBg: "#ffffff", accent: "#ff7b54", accentSoft: "#ffb199", isDark: false },
         { emoji: "🌊", bodyBg: "#e6f5ff", cardBg: "#ffffff", accent: "#3f8cff", accentSoft: "#9ac3ff", isDark: false },
         { emoji: "🌿", bodyBg: "#eef8f2", cardBg: "#ffffff", accent: "#2ecc71", accentSoft: "#8be3aa", isDark: false },
-        // 우주(다크) 테마
         { emoji: "🌌", bodyBg: "#050816", cardBg: "#111827", accent: "#6366f1", accentSoft: "#a5b4fc", isDark: true },
         { emoji: "☕️", bodyBg: "#f7f0ea", cardBg: "#ffffff", accent: "#b85c38", accentSoft: "#d19d85", isDark: false },
         { emoji: "📚", bodyBg: "#f6f4ff", cardBg: "#ffffff", accent: "#7c3aed", accentSoft: "#c4b5fd", isDark: false },
@@ -821,63 +762,35 @@ function getKSTDate() {
       ];
 
       const theme = themes[diffDays % themes.length];
-
       document.getElementById("themeLabel").textContent = theme.emoji;
-
       document.body.style.setProperty("--accent-bg", theme.bodyBg);
       document.documentElement.style.setProperty("--accent", theme.accent);
       document.documentElement.style.setProperty("--accent-soft", theme.accentSoft);
-
       document.body.style.background = theme.bodyBg;
+
       const card = document.getElementById("card");
-      if (card) {
-        card.style.background = theme.cardBg;
-      }
+      if (card) card.style.background = theme.cardBg;
 
       if (theme.isDark) {
         document.body.style.color = "#f5f5f5";
         document.getElementById("card").style.color = "#f5f5f5";
-        document.querySelectorAll(".status-summary, #progressText, #progressBar, .checkbox-list div, #streakText, #eventText, .calendar-title").forEach(el => {
-          el.style.color = "#e6e6e6";
-        });
-
-        document.querySelectorAll(".cal-day-number, .cal-day-tasks").forEach(el => {
-          el.style.color = "#ffffff";
-        });
-
-        document.querySelectorAll(".calendar-table th, .calendar-table td").forEach(el => {
-          el.style.borderColor = "rgba(255,255,255,0.2)";
-        });
-
-        document.querySelectorAll("button.main").forEach(el => {
-          el.style.color = "#ffffff";
-        });
+        document.querySelectorAll(".status-summary, #progressText, #progressBar, .checkbox-list div, #streakText, #eventText, .calendar-title").forEach(el => el.style.color = "#e6e6e6");
+        document.querySelectorAll(".cal-day-number, .cal-day-tasks").forEach(el => el.style.color = "#ffffff");
+        document.querySelectorAll(".calendar-table th, .calendar-table td").forEach(el => el.style.borderColor = "rgba(255,255,255,0.2)");
+        document.querySelectorAll("button.main").forEach(el => el.style.color = "#ffffff");
       } else {
         document.body.style.color = "#000000";
         document.getElementById("card").style.color = "#000000";
-
-        document.querySelectorAll(".status-summary, #progressText, #progressBar, .checkbox-list div, #streakText, #eventText, .calendar-title").forEach(el => {
-          el.style.color = "";
-        });
-
-        document.querySelectorAll(".cal-day-number, .cal-day-tasks").forEach(el => {
-          el.style.color = "";
-        });
-
-        document.querySelectorAll(".calendar-table th, .calendar-table td").forEach(el => {
-          el.style.borderColor = "";
-        });
-
-        document.querySelectorAll("button.main").forEach(el => {
-          el.style.color = "#ffffff";
-        });
+        document.querySelectorAll(".status-summary, #progressText, #progressBar, .checkbox-list div, #streakText, #eventText, .calendar-title").forEach(el => el.style.color = "");
+        document.querySelectorAll(".cal-day-number, .cal-day-tasks").forEach(el => el.style.color = "");
+        document.querySelectorAll(".calendar-table th, .calendar-table td").forEach(el => el.style.borderColor = "");
+        document.querySelectorAll("button.main").forEach(el => el.style.color = "#ffffff");
       }
     }
 
     applyTheme();
-    updateUI(); // 데이터는 미리 준비해두고, 화면은 첫 결과 이후에만 표시됨
+    updateUI();
 
-    // 최근 7일 데이터 생성
     function buildLast7DaysData() {
       const stats = loadDailyStats();
       const [y, m, d] = today.split("-").map(Number);
@@ -892,11 +805,7 @@ function getKSTDate() {
         const dd = String(dt.getDate()).padStart(2, "0");
         const key = `${yy}-${mm}-${dd}`;
         const cnt = stats[key] || 0;
-        result.push({
-          key,
-          label: `${mm}/${dd}`,
-          count: cnt
-        });
+        result.push({ key, label: `${mm}/${dd}`, count: cnt });
       }
       return result;
     }
@@ -925,39 +834,30 @@ function getKSTDate() {
         body.appendChild(row);
       });
 
-      const modal = document.getElementById("weeklyModal");
-      modal.style.display = "flex";
+      document.getElementById("weeklyModal").style.display = "flex";
     }
 
     function closeWeeklyStats() {
-      const modal = document.getElementById("weeklyModal");
-      modal.style.display = "none";
+      document.getElementById("weeklyModal").style.display = "none";
     }
 
-    // 2/4/6개 완료 시 주간 그래프 자동 팝업
     function checkAndShowWeeklyStats() {
       const completed = getCompletedCount();
       const thresholds = [2, 4, 6];
-
       if (!thresholds.includes(completed)) return;
 
       const status = loadWeeklyPopupStatus();
       const todayStatus = status[today] || {};
-
-      // 이미 이 개수에서 한 번 팝업했으면 스킵
       if (todayStatus[completed]) return;
 
-      // 기록 남기고 팝업
       todayStatus[completed] = true;
       status[today] = todayStatus;
       saveWeeklyPopupStatus(status);
-
       openWeeklyStatsModal();
     }
+
     function loadTungState() {
       const storedDate = localStorage.getItem("tungDate");
-
-      // 날짜가 바뀌었으면 퉁 관련 상태 리셋
       if (storedDate !== today) {
         localStorage.setItem("tungDate", today);
         localStorage.setItem("tungCount", "0");
@@ -971,11 +871,9 @@ function getKSTDate() {
       }
     }
 
-    // 현재 보고 있는 달 (초기값: 오늘 기준)
     let currentViewYear = 2026;
-    let currentViewMonth = 2; // 1~12
+    let currentViewMonth = 2;
 
-    // 달력 생성 (특정 월)
     function buildMonthlyCalendar(year, month) {
       const stats = loadDailyStats();
       const container = document.getElementById("calendarTableContainer");
@@ -984,30 +882,22 @@ function getKSTDate() {
       const firstDay = new Date(year, month - 1, 1).getDay();
       const lastDate = new Date(year, month, 0).getDate();
 
-      // 월 제목 업데이트
       document.getElementById("calendarMonthTitle").textContent = `${year}년 ${month}월`;
 
-      // 7/7 완료일 수 계산 (올해 전체)
       let perfectDaysCount = 0;
       for (const dateKey in stats) {
-        if (stats[dateKey] === tasks.length) {
-          perfectDaysCount++;
-        }
+        if (stats[dateKey] === tasks.length) perfectDaysCount++;
       }
-      
-      // 7/7 완료일 수 표시
+
       const perfectDaysEl = document.getElementById("perfectDaysCount");
-      if (perfectDaysEl) {
-        perfectDaysEl.textContent = `♥ ${perfectDaysCount} ♥`;
-      }
+      if (perfectDaysEl) perfectDaysEl.textContent = `♥ ${perfectDaysCount} ♥`;
 
       const table = document.createElement("table");
       table.className = "calendar-table";
 
       const thead = document.createElement("thead");
       const headRow = document.createElement("tr");
-      const weekdays = ["일", "월", "화", "수", "목", "금", "토"];
-      weekdays.forEach(w => {
+      ["일", "월", "화", "수", "목", "금", "토"].forEach(w => {
         const th = document.createElement("th");
         th.textContent = w;
         headRow.appendChild(th);
@@ -1019,10 +909,8 @@ function getKSTDate() {
       let row = document.createElement("tr");
       let cellCount = 0;
 
-      // 앞 공백 셀
       for (let i = 0; i < firstDay; i++) {
-        const td = document.createElement("td");
-        row.appendChild(td);
+        row.appendChild(document.createElement("td"));
         cellCount++;
       }
 
@@ -1049,22 +937,14 @@ function getKSTDate() {
 
         td.appendChild(num);
         td.appendChild(info);
-
-        // 오늘 강조
-        if (key === today) {
-          td.classList.add("cal-today");
-        }
+        if (key === today) td.classList.add("cal-today");
 
         row.appendChild(td);
         cellCount++;
       }
 
-      // 마지막 줄 남은 셀 공백 처리
       if (cellCount > 0 && cellCount < 7) {
-        for (let i = cellCount; i < 7; i++) {
-          const td = document.createElement("td");
-          row.appendChild(td);
-        }
+        for (let i = cellCount; i < 7; i++) row.appendChild(document.createElement("td"));
         tbody.appendChild(row);
       } else if (cellCount === 7) {
         tbody.appendChild(row);
@@ -1074,50 +954,29 @@ function getKSTDate() {
       container.appendChild(table);
     }
 
-    // 월 변경 함수
     function changeMonth(delta) {
       currentViewMonth += delta;
-      
-      if (currentViewMonth > 12) {
-        currentViewMonth = 1;
-        currentViewYear++;
-      } else if (currentViewMonth < 1) {
-        currentViewMonth = 12;
-        currentViewYear--;
-      }
-
+      if (currentViewMonth > 12) { currentViewMonth = 1; currentViewYear++; }
+      else if (currentViewMonth < 1) { currentViewMonth = 12; currentViewYear--; }
       buildMonthlyCalendar(currentViewYear, currentViewMonth);
     }
 
-function toggleCalendar() {
-  const container = document.getElementById("calendarContainer");
-  const btn = document.getElementById("toggleCalendarButton");
-  const forceBtn = document.getElementById("forceNextDay");
+    function toggleCalendar() {
+      const container = document.getElementById("calendarContainer");
+      const btn = document.getElementById("toggleCalendarButton");
 
-  if (container.style.display === "none" || !container.style.display) {
-    // 달력 열 때 현재 날짜 기준으로 초기화
-    const [y, m] = today.split("-").map(Number);
-    currentViewYear = y;
-    currentViewMonth = m;
-    
-    buildMonthlyCalendar(currentViewYear, currentViewMonth);
-    container.style.display = "block";
-    btn.textContent = "달력 닫기";
-
-    // ✅ 달력 켜질 때만 날짜 수동 전환 버튼 보이기
-    if (forceBtn) {
-      forceBtn.style.display = "inline-block"; // 또는 "block"
+      if (container.style.display === "none" || !container.style.display) {
+        const [y, m] = today.split("-").map(Number);
+        currentViewYear = y;
+        currentViewMonth = m;
+        buildMonthlyCalendar(currentViewYear, currentViewMonth);
+        container.style.display = "block";
+        btn.textContent = "달력 닫기";
+      } else {
+        container.style.display = "none";
+        btn.textContent = "달력 보기";
+      }
     }
-  } else {
-    container.style.display = "none";
-    btn.textContent = "달력 보기";
-
-    // ✅ 달력 닫히면 다시 숨기기
-    if (forceBtn) {
-      forceBtn.style.display = "none";
-    }
-  }
-}
 
     function pickRandom() {
       if (isPicking) return;
@@ -1133,31 +992,27 @@ function toggleCalendar() {
       document.getElementById("actionButtons").style.display = "none";
       resultEl.classList.remove("s-glow");
 
-// ✅ 완료도 안 했고, 보류도 안 된 미션만 후보에 포함
-const available = tasks.filter(t => !taskStatus[t] && !skippedTasks[t]);
+      const available = tasks.filter(t => !taskStatus[t] && !skippedTasks[t]);
 
-if (available.length === 0) {
-  const remaining = tasks.filter(t => !taskStatus[t]);
+      if (available.length === 0) {
+        const remaining = tasks.filter(t => !taskStatus[t]);
 
-  if (remaining.length === 0) {
-    // 진짜로 오늘 다 한 경우
-    resultEl.textContent = "오늘 할 일 완료!";
-    hintEl.textContent = "";
-  } else {
-    // 아직 남은 미션은 있지만 전부 보류한 경우
-    resultEl.textContent = "보류한 미션만 남았어요. 오늘은 여기까지!";
-    hintEl.textContent = "보류를 초기화하려면 새로고침하면 돼요.";
-  }
+        if (remaining.length === 0) {
+          resultEl.textContent = "오늘 할 일 완료!";
+          hintEl.textContent = "";
+        } else {
+          resultEl.textContent = "보류한 미션만 남았어요. 오늘은 여기까지!";
+          hintEl.textContent = "보류를 초기화하려면 새로고침하면 돼요.";
+        }
 
-  pickBtn.disabled = false;
-  pickBtn.textContent = "지금 당장 이거!";
-  isPicking = false;
-  showProgressIfNeeded();
-  updateTungButtonVisibility();
-  return;
-}
+        pickBtn.disabled = false;
+        pickBtn.textContent = "지금 당장 이거!";
+        isPicking = false;
+        showProgressIfNeeded();
+        updateTungButtonVisibility();
+        return;
+      }
 
-      // 고민 중... 애니메이션
       let dots = 0;
       resultEl.textContent = "고민 중";
       hintEl.textContent = "2초만 기다려줘…";
@@ -1212,19 +1067,38 @@ if (available.length === 0) {
       localStorage.setItem("taskStatus", JSON.stringify(taskStatus));
 
       let reward = getRewardForTask(currentTask);
-      
-      // 새 이벤트 3: 첫 미션 완료 시 보너스 코인 +3
+
       const completedCount = Object.values(taskStatus).filter(v => v).length;
+
+      // 첫 미션 보너스 (lucky_day)
       if (dailyEvent.id === "lucky_day" && completedCount === 1) {
         reward += 3;
         document.getElementById("hint").textContent =
           `완료 기록되었습니다! (+${reward}코인, 첫 미션 보너스 +3 포함!)`;
+
+      // 첫 미션 2배 (double_first)
+      } else if (dailyEvent.id === "double_first" && completedCount === 1) {
+        reward = reward * 2;
+        document.getElementById("hint").textContent =
+          `완료 기록되었습니다! (+${reward}코인, 첫 미션 2배 보너스!)`;
+
+      // 5개 완료 보너스 (special_5done)
+      } else if (dailyEvent.id === "special_5done" && completedCount === 5) {
+        reward += 5;
+        document.getElementById("hint").textContent =
+          `완료 기록되었습니다! (+${reward}코인, 5개 달성 보너스 +5 포함!)`;
+
+      // 마지막 미션 보너스 (buff_last_plus3)
+      } else if (dailyEvent.id === "buff_last_plus3" && completedCount === tasks.length) {
+        reward += 3;
+        document.getElementById("hint").textContent =
+          `완료 기록되었습니다! (+${reward}코인, 마지막 미션 보너스 +3 포함!)`;
+
       } else if (reward > 0) {
         document.getElementById("hint").textContent =
           `완료 기록되었습니다! (+${reward}코인)`;
       } else {
-        document.getElementById("hint").textContent =
-          "완료 기록되었습니다!";
+        document.getElementById("hint").textContent = "완료 기록되었습니다!";
       }
 
       if (reward > 0) {
@@ -1241,27 +1115,20 @@ if (available.length === 0) {
       document.getElementById("actionButtons").style.display = "none";
     }
 
-function markPending() {
-  // 현재 뽑힌 미션이 없다면 그냥 버튼만 숨기기
-  if (!currentTask || !tasks.includes(currentTask)) {
-    hideButtons();
-    return;
-  }
-
-  // 이 미션은 오늘 세션에서 제외!
-  skippedTasks[currentTask] = true;
-
-  document.getElementById("hint").textContent =
-    "잠깐 패스!";
-
-  hideButtons();
-}
+    function markPending() {
+      if (!currentTask || !tasks.includes(currentTask)) {
+        hideButtons();
+        return;
+      }
+      skippedTasks[currentTask] = true;
+      document.getElementById("hint").textContent = "잠깐 패스!";
+      hideButtons();
+    }
 
     function openTungModal() {
       const completed = getCompletedCount();
       if (completed >= tasks.length) {
-        document.getElementById("hint").textContent =
-          "이미 미션 클리어 ⚡";
+        document.getElementById("hint").textContent = "이미 미션 클리어 ⚡";
         return;
       }
       document.getElementById("tungModal").style.display = "flex";
@@ -1274,41 +1141,33 @@ function markPending() {
     function pickTungOption(name) {
       const completed = getCompletedCount();
       if (completed >= tasks.length) {
-        document.getElementById("hint").textContent =
-          "오늘 할 일 다 채움!";
+        document.getElementById("hint").textContent = "오늘 할 일 다 채움!";
         closeTungModal();
         return;
       }
 
-      // 아직 무료 퉁을 안 쓴 경우 → 무료 1회
       if (!tungFreeUsed) {
         tungFreeUsed = true;
         tungCount += 1;
-
         localStorage.setItem("tungFreeUsed", "1");
         localStorage.setItem("tungCount", String(tungCount));
         localStorage.setItem("tungDate", today);
         localStorage.setItem("tungChoice", name);
-
         document.getElementById("hint").textContent =
           `'${name}'(으)로 오늘은 퉁! (무료 퉁치기, 완료 +1 처리되었습니다)`;
       } else {
-        // 무료 퉁은 이미 사용 → 코인 5개로 추가 퉁치기
         if (coinCount < 5) {
           document.getElementById("hint").textContent =
             "코인이 부족해서 추가 퉁치기를 사용할 수 없어요. (필요: 5코인)";
           closeTungModal();
           return;
         }
-
         coinCount -= 5;
         tungCount += 1;
-
         localStorage.setItem("coinCount", String(coinCount));
         localStorage.setItem("tungCount", String(tungCount));
         localStorage.setItem("tungDate", today);
         localStorage.setItem("tungChoice", name);
-
         document.getElementById("hint").textContent =
           `'${name}'(으)로 퉁치기! (코인 5개 사용, 완료 +1 처리되었습니다)`;
       }
@@ -1320,8 +1179,7 @@ function markPending() {
 
     function useTungCoins(addCount, cost) {
       if (coinCount < cost) {
-        document.getElementById("hint").textContent =
-          `코인이 부족해요. (필요: ${cost}코인)`;
+        document.getElementById("hint").textContent = `코인이 부족해요. (필요: ${cost}코인)`;
         return;
       }
 
@@ -1329,15 +1187,12 @@ function markPending() {
       const remaining = tasks.length - completed;
 
       if (remaining <= 0) {
-        document.getElementById("hint").textContent =
-          "오늘 할 일은 이미 모두 완료했어요!";
+        document.getElementById("hint").textContent = "오늘 할 일은 이미 모두 완료했어요!";
         closeTungModal();
         return;
       }
 
-      // 남은 칸보다 더 많이 퉁치지 않도록 조정
       const actualAdd = Math.min(addCount, remaining);
-
       coinCount -= cost;
       tungCount += actualAdd;
 
@@ -1352,30 +1207,6 @@ function markPending() {
       updateUI();
       checkAndShowWeeklyStats();
     }
-
-document.getElementById("forceNextDay").addEventListener("click", () => {
-  const stats = loadDailyStats();
-  const newToday = getKSTDate(); // 최신 날짜 다시 계산
-
-  // 오늘 날짜로 리셋
-  localStorage.setItem("taskDate", newToday);
-  localStorage.setItem("dailyEventDate", newToday);
-  localStorage.setItem("tungDate", newToday);
-
-  // 퉁 관련 초기화
-  localStorage.setItem("tungCount", "0");
-  localStorage.setItem("tungFreeUsed", "0");
-  localStorage.removeItem("tungChoice");
-
-  // 미션 상태 리셋
-  const reset = {};
-  tasks.forEach(t => reset[t] = false);
-  localStorage.setItem("taskStatus", JSON.stringify(reset));
-
-  alert("날짜를 수동으로 오늘 날짜로 전환했습니다!");
-  location.reload();
-});
-
   </script>
 </body>
 </html>
