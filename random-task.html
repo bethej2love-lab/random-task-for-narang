@@ -643,8 +643,8 @@
     let skippedTasks = {};
 
     function getLevel(percent) {
-      const lvl = Math.floor(percent / 10) + 1;
-      return Math.min(10, Math.max(1, lvl));
+      const lvl = Math.floor(percent / 5) + 1;
+      return Math.min(20, Math.max(1, lvl));
     }
 
     function getRewardForTask(taskName) {
