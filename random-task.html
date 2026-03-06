@@ -211,6 +211,7 @@
       box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
       font-size: 13px;
       box-sizing: border-box;
+      color: #222;
     }
 
     /* 주간 통계 모달 전용 */
@@ -429,6 +430,13 @@
         <div id="streakText">올해 전부 다 한 날: 0일 / 351일 (0.0%)</div>
         <div class="streak-bar">
           <div class="streak-fill" id="streakFill"></div>
+        </div>
+      </div>
+
+      <div class="streak-box" style="margin-top:12px;">
+        <div id="taskStreakText">올해 누적 완료: 0개 / 2457개 (0.0%)</div>
+        <div class="streak-bar">
+          <div class="streak-fill" id="taskStreakFill"></div>
         </div>
       </div>
 
@@ -706,6 +714,17 @@
         `올해 전부 다 한 날: ${fullCompleteCount}일 / ${YEAR_TOTAL_DAYS}일 (${percent.toFixed(1)}%)`;
       document.getElementById("streakFill").style.width = `${percent}%`;
 
+      // 할 일 개수 기준 누적 그래프
+      const TASK_TOTAL = YEAR_TOTAL_DAYS * tasks.length; // 351 * 7 = 2457
+      const allStats = loadDailyStats();
+      const totalTasksDone = Object.values(allStats).reduce((sum, v) => sum + v, 0);
+      const taskPercent = Math.min(100, (totalTasksDone / TASK_TOTAL) * 100);
+      const taskStreakEl = document.getElementById("taskStreakText");
+      const taskFillEl = document.getElementById("taskStreakFill");
+      if (taskStreakEl) taskStreakEl.textContent =
+        `올해 누적 완료: ${totalTasksDone}개 / ${TASK_TOTAL}개 (${taskPercent.toFixed(1)}%)`;
+      if (taskFillEl) taskFillEl.style.width = `${taskPercent}%`;
+
       // 코인 + 레벨 표시
       document.getElementById("statusSummary").textContent =
         `코인: ${coinCount}개 · LV ${level}`;
@@ -774,14 +793,14 @@
       if (theme.isDark) {
         document.body.style.color = "#f5f5f5";
         document.getElementById("card").style.color = "#f5f5f5";
-        document.querySelectorAll(".status-summary, #progressText, #progressBar, .checkbox-list div, #streakText, #eventText, .calendar-title").forEach(el => el.style.color = "#e6e6e6");
+        document.querySelectorAll(".status-summary, #progressText, #progressBar, .checkbox-list div, #streakText, #taskStreakText, #eventText, .calendar-title").forEach(el => el.style.color = "#e6e6e6");
         document.querySelectorAll(".cal-day-number, .cal-day-tasks").forEach(el => el.style.color = "#ffffff");
         document.querySelectorAll(".calendar-table th, .calendar-table td").forEach(el => el.style.borderColor = "rgba(255,255,255,0.2)");
         document.querySelectorAll("button.main").forEach(el => el.style.color = "#ffffff");
       } else {
         document.body.style.color = "#000000";
         document.getElementById("card").style.color = "#000000";
-        document.querySelectorAll(".status-summary, #progressText, #progressBar, .checkbox-list div, #streakText, #eventText, .calendar-title").forEach(el => el.style.color = "");
+        document.querySelectorAll(".status-summary, #progressText, #progressBar, .checkbox-list div, #streakText, #taskStreakText, #eventText, .calendar-title").forEach(el => el.style.color = "");
         document.querySelectorAll(".cal-day-number, .cal-day-tasks").forEach(el => el.style.color = "");
         document.querySelectorAll(".calendar-table th, .calendar-table td").forEach(el => el.style.borderColor = "");
         document.querySelectorAll("button.main").forEach(el => el.style.color = "#ffffff");
