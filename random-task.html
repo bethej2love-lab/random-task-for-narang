@@ -458,16 +458,6 @@
     </div>
   </div>
 
-  <!-- 전체 완료 축하 모달 -->
-  <div class="modal-overlay" id="allDoneModal">
-    <div class="modal-content" style="text-align:center;">
-      <div style="font-size:48px; margin-bottom:8px;">🎉</div>
-      <div class="modal-title" style="font-size:18px;">오늘 할 일 전부 완료!</div>
-      <div style="font-size:13px; color:#555; margin-bottom:16px;" id="allDoneSubtext"></div>
-      <button class="modal-close-btn" onclick="closeAllDoneModal()">고생했어요 😊</button>
-    </div>
-  </div>
-
   <!-- 최근 7일 통계 모달 -->
   <div class="modal-overlay" id="weeklyModal">
     <div class="modal-content">
@@ -518,7 +508,7 @@
 
     const hints = {
       "듀오링고": "→ 딱 2개만 !",
-      "Brilliant": "→ 3개 이상 푸십쇼",
+      "Brilliant": "→ 4개 이상 푸십쇼",
       "책 읽기": "→ 3페이지는 읽자..",
       "플랭크 1분+간단 스트레칭": "→ 몸을 움직여라!",
       "부기스/블로그": "→ 책 등록/블로그 업로드/인스타 업로드/리뷰 답글 뭐든 제발!",
@@ -740,7 +730,15 @@
         `코인: ${coinCount}개 · LV ${level}`;
 
       // 오늘의 버프/디버프 표시
-      document.getElementById("eventText").textContent = dailyEvent.label;
+      const eventEl = document.getElementById("eventText");
+      eventEl.textContent = dailyEvent.label;
+      if (dailyEvent.type === "buff") {
+        eventEl.style.color = "#2ecc71";
+      } else if (dailyEvent.type === "debuff") {
+        eventEl.style.color = "#e74c3c";
+      } else {
+        eventEl.style.color = "#f39c12";
+      }
 
       updateTungButtonVisibility();
     }
@@ -787,7 +785,9 @@
         { emoji: "🔥", bodyBg: "#fff1f2", cardBg: "#ffffff", accent: "#f97373", accentSoft: "#fecaca", isDark: false },
         { emoji: "🌈", bodyBg: "linear-gradient(135deg,#fdf2ff,#e0f2fe)", cardBg: "#ffffff", accent: "#ec4899", accentSoft: "#f9a8d4", isDark: false },
         { emoji: "🧊", bodyBg: "#edf5ff", cardBg: "#ffffff", accent: "#0ea5e9", accentSoft: "#7dd3fc", isDark: false },
-        { emoji: "🍀", bodyBg: "#f1fdf3", cardBg: "#ffffff", accent: "#16a34a", accentSoft: "#6ee7b7", isDark: false }
+        { emoji: "🍀", bodyBg: "#f1fdf3", cardBg: "#ffffff", accent: "#16a34a", accentSoft: "#6ee7b7", isDark: false },
+        { emoji: "🌙", bodyBg: "#0d0d1a", cardBg: "#13132b", accent: "#a78bfa", accentSoft: "#c4b5fd", isDark: true },
+        { emoji: "🖤", bodyBg: "#0a0a0a", cardBg: "#1a1a1a", accent: "#e5e5e5", accentSoft: "#aaaaaa", isDark: true }
       ];
 
       const theme = themes[diffDays % themes.length];
@@ -803,14 +803,14 @@
       if (theme.isDark) {
         document.body.style.color = "#f5f5f5";
         document.getElementById("card").style.color = "#f5f5f5";
-        document.querySelectorAll(".status-summary, #progressText, #progressBar, .checkbox-list div, #streakText, #taskStreakText, #eventText, .calendar-title").forEach(el => el.style.color = "#e6e6e6");
+        document.querySelectorAll(".status-summary, #progressText, #progressBar, .checkbox-list div, #streakText, #taskStreakText, .calendar-title").forEach(el => el.style.color = "#e6e6e6");
         document.querySelectorAll(".cal-day-number, .cal-day-tasks").forEach(el => el.style.color = "#ffffff");
         document.querySelectorAll(".calendar-table th, .calendar-table td").forEach(el => el.style.borderColor = "rgba(255,255,255,0.2)");
         document.querySelectorAll("button.main").forEach(el => el.style.color = "#ffffff");
       } else {
         document.body.style.color = "#000000";
         document.getElementById("card").style.color = "#000000";
-        document.querySelectorAll(".status-summary, #progressText, #progressBar, .checkbox-list div, #streakText, #taskStreakText, #eventText, .calendar-title").forEach(el => el.style.color = "");
+        document.querySelectorAll(".status-summary, #progressText, #progressBar, .checkbox-list div, #streakText, #taskStreakText, .calendar-title").forEach(el => el.style.color = "");
         document.querySelectorAll(".cal-day-number, .cal-day-tasks").forEach(el => el.style.color = "");
         document.querySelectorAll(".calendar-table th, .calendar-table td").forEach(el => el.style.borderColor = "");
         document.querySelectorAll("button.main").forEach(el => el.style.color = "#ffffff");
@@ -872,17 +872,6 @@
 
     function checkAndShowWeeklyStats() {
       const completed = getCompletedCount();
-
-      // 전체 완료 축하 팝업 (주간 통계보다 우선)
-      if (completed >= tasks.length) {
-        const shownToday = localStorage.getItem("allDonePopupDate");
-        if (shownToday !== today) {
-          localStorage.setItem("allDonePopupDate", today);
-          setTimeout(() => showAllDoneModal(), 300);
-          return;
-        }
-      }
-
       const thresholds = [2, 4, 6];
       if (!thresholds.includes(completed)) return;
 
@@ -894,23 +883,6 @@
       status[today] = todayStatus;
       saveWeeklyPopupStatus(status);
       openWeeklyStatsModal();
-    }
-
-    function showAllDoneModal() {
-      const messages = [
-        "오늘도 완주했어요! 대단한데요? 🌟",
-        "7개 전부 다 했어요! 오늘 하루 잘 살았네요 ✨",
-        "완벽한 하루예요! 내일도 화이팅 💪",
-        "전부 클리어! 역시 믿었어요 🔥",
-        "오늘 할 일 싹 다 해치웠어요! 👏"
-      ];
-      const msg = messages[Math.floor(Math.random() * messages.length)];
-      document.getElementById("allDoneSubtext").textContent = msg;
-      document.getElementById("allDoneModal").style.display = "flex";
-    }
-
-    function closeAllDoneModal() {
-      document.getElementById("allDoneModal").style.display = "none";
     }
 
     function loadTungState() {
@@ -994,6 +966,11 @@
 
         td.appendChild(num);
         td.appendChild(info);
+        if (cnt === tasks.length) {
+          td.style.background = "rgba(46, 204, 113, 0.25)";
+        } else if (cnt >= Math.ceil(tasks.length / 2)) {
+          td.style.background = "rgba(241, 196, 15, 0.2)";
+        }
         if (key === today) td.classList.add("cal-today");
 
         row.appendChild(td);
