@@ -618,6 +618,7 @@
         <div id="triviaCategory" style="font-size:10px; color:#aaa; margin-top:5px; text-align:right;"></div>
       </div>
       <div id="triviaLoading" style="margin-top:14px; display:none; font-size:12px; color:#aaa; text-align:center; padding:12px;">✨ Loading today's trivia…</div>
+      <button id="triviaBtn" onclick="loadTodayTrivia()" style="display:none; margin-top:14px; width:100%; padding:10px 0; border-radius:999px; border:1.5px solid var(--accent,#4b8cff); background:transparent; color:var(--accent,#4b8cff); font-size:12px; font-weight:600; cursor:pointer;">💡 Get Today's Trivia</button>
       <div id="triviaNoKey" style="margin-top:14px; display:none; font-size:11px; color:#aaa; text-align:center; padding:10px; border-radius:10px; border:1px dashed #ddd;">
         API key not set. Add it in ⚙️ Settings to get daily trivia!
       </div>
@@ -1081,7 +1082,7 @@
     applyTheme();
     updateUI();
     renderTungOptions();
-    loadTodayTrivia();
+    initTriviaCard();
 
     function buildLast7DaysData() {
       const stats = loadDailyStats();
@@ -1227,7 +1228,7 @@
         tungList.appendChild(row);
       });
 
-      const savedKey = localStorage.getItem("claudeApiKey") || "";
+      const savedKey = localStorage.getItem("mandart_api_key") || "";
       const apiInput = document.getElementById("apiKeyInput");
       if (apiInput) apiInput.value = savedKey ? "••••••••••••••••" : "";
       document.getElementById("settingsModal").style.display = "flex";
@@ -1276,7 +1277,7 @@
 
       // API 키 저장
       const apiKeyVal = document.getElementById("apiKeyInput")?.value.trim();
-      if (apiKeyVal) localStorage.setItem("claudeApiKey", apiKeyVal);
+      if (apiKeyVal) localStorage.setItem("mandart_api_key", apiKeyVal);
 
       closeSettingsModal();
       alert("Saved! Refresh to apply changes 🙂");
@@ -1292,11 +1293,11 @@
       "Investment Tips", "Skincare Tips", "Movie Recommendation", "World History"
     ];
 
-    async function loadTodayTrivia() {
-      const apiKey = localStorage.getItem("claudeApiKey");
+    function initTriviaCard() {
+      const apiKey = localStorage.getItem("mandart_api_key");
       const triviaCard = document.getElementById("triviaCard");
-      const triviaLoading = document.getElementById("triviaLoading");
       const triviaNoKey = document.getElementById("triviaNoKey");
+      const triviaBtn = document.getElementById("triviaBtn");
       const triviaContent = document.getElementById("triviaContent");
       const triviaCategory = document.getElementById("triviaCategory");
 
@@ -1305,7 +1306,7 @@
         return;
       }
 
-      // 오늘 이미 받았으면 캐시 사용
+      // 오늘 이미 받았으면 캐시 표시
       const cached = localStorage.getItem("triviaDate");
       const cachedText = localStorage.getItem("triviaText");
       const cachedCat = localStorage.getItem("triviaCategory");
@@ -1316,6 +1317,19 @@
         return;
       }
 
+      // 버튼 표시
+      triviaBtn.style.display = "block";
+    }
+
+    async function loadTodayTrivia() {
+      const apiKey = localStorage.getItem("mandart_api_key");
+      const triviaCard = document.getElementById("triviaCard");
+      const triviaLoading = document.getElementById("triviaLoading");
+      const triviaBtn = document.getElementById("triviaBtn");
+      const triviaContent = document.getElementById("triviaContent");
+      const triviaCategory = document.getElementById("triviaCategory");
+
+      triviaBtn.style.display = "none";
       // 새로 요청
       triviaLoading.style.display = "block";
       const cat = triviaCategories[Math.floor(Math.random() * triviaCategories.length)];
