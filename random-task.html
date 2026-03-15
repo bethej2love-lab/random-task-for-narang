@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
-  <title>할 일 랜덤 뽑기</title>
+  <title>Random Task Picker</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     :root {
@@ -36,91 +36,127 @@
       transition: background 0.3s ease, box-shadow 0.2s ease, transform 0.1s ease;
     }
     h1 {
-      font-size: 20px;
+      font-size: 16px;
       margin-bottom: 8px;
     }
     .theme-label {
-      font-size: 18px;
+      font-size: 15px;
       margin-bottom: 20px;
     }
+    .mission-card {
+      margin: 16px 0 0;
+      border-radius: 12px;
+      background: rgba(0,0,0,0.03);
+      transition: background 0.3s;
+      min-height: 80px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 0 16px;
+    }
+    .mission-card.has-task {
+      background: rgba(0,0,0,0.04);
+      padding: 14px 16px 12px;
+    }
     #result {
-      font-size: 22px;
+      font-size: 18px;
       font-weight: 700;
-      margin: 20px 0 8px;
-      min-height: 32px;
+      min-height: unset;
+      padding: 0;
+      margin: 0;
+      background: transparent;
+      width: 100%;
+      text-align: center;
     }
     #hint {
-      font-size: 12px;
+      font-size: 11px;
       color: #666;
-      margin-bottom: 16px;
-      min-height: 16px;
+      margin: 4px 0 0;
+      min-height: unset;
+      padding: 0;
+      background: transparent;
+      width: 100%;
+      text-align: center;
     }
     button.main {
-      padding: 12px 20px;
-      font-size: 16px;
+      padding: 15px 20px;
+      font-size: 17px;
       border: none;
       border-radius: 999px;
       cursor: pointer;
       background: var(--accent, #4b8cff);
       color: white;
-      font-weight: 600;
+      font-weight: 700;
       width: 100%;
-      transition: transform 0.05s ease, opacity 0.1s ease, background 0.2s ease, box-shadow 0.1s ease;
-      box-shadow: 0 6px 14px rgba(0, 0, 0, 0.12);
+      letter-spacing: 0.3px;
+      transition: transform 0.08s ease, box-shadow 0.1s ease, background 0.2s ease;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.18);
     }
     button.main:active {
-      transform: scale(0.97);
-      opacity: 0.9;
-      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.16);
+      transform: scale(0.96);
+      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.18);
     }
     button.main:disabled {
-      opacity: 0.6;
+      opacity: 0.5;
       cursor: default;
       background: var(--accent-soft, #8faefc);
       box-shadow: none;
     }
     .action-buttons {
       display: flex;
-      gap: 10px;
+      gap: 8px;
       justify-content: center;
-      margin-top: 8px;
+      margin-top: 10px;
       margin-bottom: 6px;
     }
-    .action-buttons button {
-      flex: 1;
-      padding: 10px 0;
-      border-radius: 10px;
-      border: none;
-      font-size: 14px;
-      font-weight: 600;
-      cursor: pointer;
-    }
     .complete-btn {
+      flex: 3;
+      padding: 12px 0;
+      border-radius: 999px;
+      border: none;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
       background: #2ecc71;
       color: white;
+      box-shadow: 0 4px 12px rgba(46,204,113,0.3);
+      transition: transform 0.08s, box-shadow 0.1s;
+    }
+    .complete-btn:active {
+      transform: scale(0.97);
+      box-shadow: 0 2px 6px rgba(46,204,113,0.2);
     }
     .pending-btn {
-      background: #e0e0e0;
-      color: #333;
+      flex: 1;
+      padding: 12px 0;
+      border-radius: 999px;
+      border: 1.5px solid #ccc;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      background: transparent;
+      color: #999;
+      transition: transform 0.08s;
+    }
+    .pending-btn:active {
+      transform: scale(0.97);
     }
 
     /* 퉁치기 버튼 */
-    .tung-container {
-      display: none;
-      justify-content: flex-end;
-      margin-bottom: 8px;
-    }
     .tung-btn {
       border: none;
       border-radius: 999px;
-      padding: 4px 10px;
-      font-size: 11px;
-      background: #f1f1f1;
-      color: #555;
+      padding: 3px 7px;
+      font-size: 16px;
+      background: transparent;
       cursor: pointer;
+      line-height: 1;
+      transition: transform 0.1s;
     }
     .tung-btn:active {
-      transform: scale(0.97);
+      transform: scale(0.88);
     }
 
     .progress-box {
@@ -129,32 +165,63 @@
       font-size: 14px;
     }
     .status-summary {
-      font-size: 13px;
-      margin-bottom: 6px;
-      text-align: right;
+      display: flex;
+      justify-content: flex-end;
+      gap: 6px;
+      margin-bottom: 10px;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: rgba(0,0,0,0.06);
       color: #444;
     }
-    .progress-bar {
-      margin-top: 4px;
-      font-size: 18px;
-      letter-spacing: 2px;
-      text-align: center;
-    }
+    .badge-coin { background: rgba(241,196,15,0.15); color: #b7860b; }
+    .badge-lv   { background: rgba(75,140,255,0.13); color: var(--accent, #4b8cff); }
+
     .checkbox-list {
-      margin-top: 12px;
-      font-size: 14px;
-    }
-    .checkbox-list div {
-      margin-bottom: 6px;
-    }
-    .streak-box {
-      margin-top: 16px;
+      margin-top: 10px;
       font-size: 13px;
     }
+    .checkbox-list div {
+      margin-bottom: 5px;
+      transition: opacity 0.2s;
+    }
+    .checkbox-list div.done {
+      opacity: 0.38;
+      text-decoration: line-through;
+      color: #888;
+    }
+    .streak-box {
+      margin-top: 14px;
+    }
+    .streak-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: #aaa;
+      letter-spacing: 0.3px;
+      text-transform: uppercase;
+      margin-bottom: 5px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .streak-label span {
+      font-size: 12px;
+      font-weight: 700;
+      color: #555;
+      letter-spacing: 0;
+      text-transform: none;
+    }
     .streak-bar {
-      margin-top: 4px;
+      margin-top: 5px;
       width: 100%;
-      height: 10px;
+      height: 14px;
       border-radius: 999px;
       background: #e0e0e0;
       overflow: hidden;
@@ -165,15 +232,54 @@
       background: linear-gradient(90deg, var(--accent, #4b8cff), #2ecc71);
       transition: width 0.3s ease;
     }
-    #eventText {
-      margin-top: 10px;
+    #reportContainer {
       font-size: 12px;
-      color: #555;
     }
+    .report-section {
+      margin-bottom: 10px;
+    }
+    .report-title {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: #aaa;
+      margin-bottom: 6px;
+    }
+    .report-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 6px;
+      padding: 6px 10px;
+      border-radius: 8px;
+      background: rgba(0,0,0,0.03);
+      margin-bottom: 4px;
+      font-size: 12px;
+      line-height: 1.4;
+      color: #444;
+    }
+    .report-item .ri-icon { font-size: 13px; flex-shrink: 0; margin-top: 1px; }
+    #eventText {
+      margin-top: 18px;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 8px 12px;
+      border-radius: 10px;
+      background: rgba(0,0,0,0.04);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    #eventText.event-buff    { background: rgba(46,204,113,0.12); color: #1a7a45; }
+    #eventText.event-debuff  { background: rgba(231,76,60,0.12);  color: #b03030; }
+    #eventText.event-special { background: rgba(243,156,18,0.13); color: #9a6200; }
     .s-glow {
       color: #e67e22;
-      text-shadow: 0 0 6px rgba(255, 215, 0, 0.9);
+      text-shadow: 0 0 8px rgba(255, 215, 0, 0.9);
       animation: sPulse 0.8s ease-in-out 2;
+    }
+    .mission-card.has-task:has(#result.s-glow) {
+      background: rgba(255, 200, 0, 0.09) !important;
     }
     @keyframes sPulse {
       0% { transform: scale(1); }
@@ -315,13 +421,39 @@
 
     /* 달력 스타일 */
     #toggleCalendarButton {
-      margin-top: 10px;
+      margin-top: 0;
       font-size: 12px;
-      padding: 6px 10px;
+      font-weight: 600;
+      padding: 7px 14px;
       border-radius: 999px;
-      border: 1px solid #ddd;
-      background: #ffffff;
+      border: 1.5px solid var(--accent, #4b8cff);
+      background: transparent;
+      color: var(--accent, #4b8cff);
       cursor: pointer;
+      transition: background 0.15s, color 0.15s;
+      display: block;
+      width: 100%;
+    }
+    #toggleCalendarButton:active {
+      background: var(--accent, #4b8cff);
+      color: #fff;
+    }
+    #toggleReportButton {
+      font-size: 12px;
+      font-weight: 600;
+      padding: 7px 14px;
+      border-radius: 999px;
+      border: 1.5px solid var(--accent, #4b8cff);
+      background: transparent;
+      color: var(--accent, #4b8cff);
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s;
+      display: block;
+      width: 100%;
+    }
+    #toggleReportButton:active {
+      background: var(--accent, #4b8cff);
+      color: #fff;
     }
     #calendarContainer {
       margin-top: 10px;
@@ -371,13 +503,13 @@
         box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
       }
       h1 {
-        font-size: 18px;
+        font-size: 15px;
       }
       #result {
-        font-size: 20px;
+        font-size: 17px;
       }
       button.main {
-        font-size: 15px;
+        font-size: 14px;
         padding: 12px 16px;
       }
       .checkbox-list {
@@ -401,43 +533,46 @@
 <body>
   <div class="card" id="card">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
-      <h1 style="margin:0;">할 일 랜덤 뽑기</h1>
+      <h1 style="margin:0;">Random Task Picker</h1>
       <button onclick="openSettingsModal()" style="border:none; background:transparent; font-size:20px; cursor:pointer; padding:4px;">⚙️</button>
     </div>
     <div class="theme-label" id="themeLabel"></div>
 
-    <button class="main" id="pickButton" onclick="pickRandom()">지금 당장 이거!</button>
+    <button class="main" id="pickButton" onclick="pickRandom()">Pick one now!</button>
 
-    <div id="result">버튼을 눌러 시작!</div>
-    <div id="hint"></div>
+    <div class="mission-card" id="missionCard">
+      <div id="result">Press the button to start!</div>
+      <div id="hint"></div>
+    </div>
 
     <div class="action-buttons" style="display:none;" id="actionButtons">
-      <button class="complete-btn" onclick="markComplete()">완료</button>
-      <button class="pending-btn" onclick="markPending()">보류</button>
+      <button class="complete-btn" onclick="markComplete()">Done</button>
+      <button class="pending-btn" onclick="markPending()">Skip</button>
     </div>
 
-    <!-- 퉁치기 버튼 -->
-    <div class="tung-container" id="tungContainer">
-      <button class="tung-btn" onclick="openTungModal()">퉁치기</button>
-    </div>
+
 
     <!-- 진행도 + 체크리스트 + 연간 퍼센트 (첫 화면에서는 안 보임) -->
     <div class="progress-box" id="progressContainer" style="display:none;">
-      <div class="status-summary" id="statusSummary">코인: 0개 · LV 1</div>
+      <div class="status-summary" id="statusSummary">
+        <span class="badge badge-coin" id="badgeCoin">🪙 0</span>
+        <span class="badge badge-lv" id="badgeLv">⚡ LV 1</span>
+        <button id="tungContainer" onclick="openTungModal()" class="tung-btn" style="display:none;">💭</button>
+      </div>
 
-      <div id="progressText">오늘 완료: 0 / 7</div>
-      <div class="progress-bar" id="progressBar">○○○○○○○○○○</div>
+
+      <div style="font-size:12px; font-weight:700; color:var(--accent,#4b8cff); margin-bottom:4px;" id="progressText">Today: 0 / 7</div>
       <div class="checkbox-list" id="checkboxList"></div>
 
       <div class="streak-box">
-        <div id="streakText">올해 전부 다 한 날: 0일 / 351일 (0.0%)</div>
+        <div class="streak-label">Full days this year <span id="streakText">0 / 351 (0.0%)</span></div>
         <div class="streak-bar">
           <div class="streak-fill" id="streakFill"></div>
         </div>
       </div>
 
-      <div class="streak-box" style="margin-top:12px;">
-        <div id="taskStreakText">올해 누적 완료: 0개 / 2457개 (0.0%)</div>
+      <div class="streak-box">
+        <div class="streak-label">Total tasks this year <span id="taskStreakText">0 / 2457 (0.0%)</span></div>
         <div class="streak-bar">
           <div class="streak-fill" id="taskStreakFill"></div>
         </div>
@@ -446,7 +581,11 @@
       <div id="eventText"></div>
 
       <!-- 달력 토글 버튼 + 컨테이너 -->
-      <button id="toggleCalendarButton" onclick="toggleCalendar()">달력 보기</button>
+      <div style="display:flex; gap:8px; margin-top:18px;">
+        <button id="toggleCalendarButton" onclick="toggleCalendar()" style="flex:1;">📅 Calendar</button>
+        <button id="toggleReportButton" onclick="toggleReport()" style="flex:1; margin-top:0;">📊 Report</button>
+      </div>
+      <div id="reportContainer" style="display:none; margin-top:12px;"></div>
       <div id="calendarContainer" style="display:none;">
         <div id="calendarNav" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
           <button onclick="changeMonth(-1)" style="border:none; background:transparent; font-size:20px; cursor:pointer; padding:4px 8px;">◀</button>
@@ -455,9 +594,14 @@
         </div>
         <div id="calendarTableContainer"></div>
       </div>
-      <div style="display:flex; justify-content:flex-end; align-items:center; margin-top:8px;">
+      <div id="perfectDaysWrap" style="display:none; text-align:right; margin-top:6px;">
         <span id="perfectDaysCount" style="font-size:13px; font-weight:600; color:#e74c3c;"></span>
       </div>
+
+      <a href="https://bethej2love-lab.github.io/narang-mandart-chart/mandart" target="_blank"
+        style="display:block; margin-top:14px; padding:10px 0; text-align:center; background:var(--accent, #4b8cff); color:#fff; font-size:13px; font-weight:600; border-radius:999px; text-decoration:none;">
+        🗺️ Go to Mandart
+      </a>
     </div>
   </div>
 
@@ -465,18 +609,18 @@
   <div class="modal-overlay" id="allDoneModal">
     <div class="modal-content" style="text-align:center;">
       <div style="font-size:48px; margin-bottom:8px;">🎉</div>
-      <div class="modal-title" style="font-size:18px;">오늘 할 일 전부 완료!</div>
+      <div class="modal-title" style="font-size:18px;">All done today!</div>
       <div style="font-size:13px; color:#555; margin-bottom:16px;" id="allDoneSubtext"></div>
-      <button class="modal-close-btn" onclick="closeAllDoneModal()">고생했어요 😊</button>
+      <button class="modal-close-btn" onclick="closeAllDoneModal()">Great work 😊</button>
     </div>
   </div>
 
   <!-- 최근 7일 통계 모달 -->
   <div class="modal-overlay" id="weeklyModal">
     <div class="modal-content">
-      <div class="modal-title">최근 7일 완료 현황</div>
+      <div class="modal-title">Last 7 Days</div>
       <div id="weeklyStatsBody"></div>
-      <button class="modal-close-btn" onclick="closeWeeklyStats()">확인</button>
+      <button class="modal-close-btn" onclick="closeWeeklyStats()">OK</button>
     </div>
   </div>
 
@@ -484,18 +628,18 @@
   <div class="modal-overlay" id="tungModal">
     <div class="modal-content tung-modal-content">
       <div class="tung-header">
-        <div class="tung-title">오늘은 퉁치기…?</div>
+        <div class="tung-title">Skip today…?</div>
         <button class="tung-close" onclick="closeTungModal()">×</button>
       </div>
       <div class="tung-options" id="tungOptionsList"></div>
       <div class="tung-subtext">
-        기본 1회는 무료, 그 이후에는 코인으로 추가 퉁치기를 할 수 있어요.
+        First skip is free. Use coins for extra skips.
       </div>
 
       <div class="tung-coin-actions">
-        <button class="tung-coin-btn" onclick="useTungCoins(1, 20)">코인 20개로 오늘 완료 +1</button>
-        <button class="tung-coin-btn" onclick="useTungCoins(2, 30)">코인 30개로 오늘 완료 +2</button>
-        <button class="tung-coin-btn" onclick="useTungCoins(3, 50)">코인 50개로 오늘 완료 +3</button>
+        <button class="tung-coin-btn" onclick="useTungCoins(1, 20)">20 coins → +1 done</button>
+        <button class="tung-coin-btn" onclick="useTungCoins(2, 30)">30 coins → +2 done</button>
+        <button class="tung-coin-btn" onclick="useTungCoins(3, 50)">50 coins → +3 done</button>
       </div>
     </div>
   </div>
@@ -503,18 +647,18 @@
   <!-- 설정 모달 -->
   <div class="modal-overlay" id="settingsModal">
     <div class="modal-content" style="max-height:80vh; overflow-y:auto;">
-      <div class="modal-title">⚙️ 설정</div>
+      <div class="modal-title">⚙️ Settings</div>
 
-      <div style="font-size:12px; font-weight:700; margin-bottom:6px; color:#888;">미션 편집</div>
+      <div style="font-size:12px; font-weight:700; margin-bottom:6px; color:#888;">Missions</div>
       <div id="settingsMissionList" style="display:flex; flex-direction:column; gap:8px; margin-bottom:14px;"></div>
 
-      <div style="font-size:12px; font-weight:700; margin-bottom:6px; color:#888;">퉁치기 옵션</div>
+      <div style="font-size:12px; font-weight:700; margin-bottom:6px; color:#888;">Skip Options</div>
       <div id="settingsTungList" style="display:flex; flex-direction:column; gap:6px; margin-bottom:6px;"></div>
-      <button onclick="addTungOption()" style="width:100%; padding:7px; border-radius:8px; border:1px dashed #ccc; background:transparent; font-size:12px; cursor:pointer; margin-bottom:14px;">+ 항목 추가</button>
+      <button onclick="addTungOption()" style="width:100%; padding:7px; border-radius:8px; border:1px dashed #ccc; background:transparent; font-size:12px; cursor:pointer; margin-bottom:14px;">+ Add option</button>
 
       <div style="display:flex; gap:8px;">
-        <button class="modal-close-btn" style="background:#e0e0e0; color:#333;" onclick="closeSettingsModal()">취소</button>
-        <button class="modal-close-btn" onclick="saveSettings()">저장</button>
+        <button class="modal-close-btn" style="background:#e0e0e0; color:#333;" onclick="closeSettingsModal()">Cancel</button>
+        <button class="modal-close-btn" onclick="saveSettings()">Save</button>
       </div>
     </div>
   </div>
@@ -556,9 +700,9 @@
     const taskTier = Object.fromEntries(missionData.map(m => [m.name, m.tier]));
 
     const tierLabel = {
-      "S": "S급",
-      "A": "A급",
-      "B": "B급"
+      "S": "S-Tier",
+      "A": "A-Tier",
+      "B": "B-Tier"
     };
 
     // 코인 기본 보상
@@ -585,18 +729,18 @@
 
     // 랜덤 버프/디버프 목록
     const dailyEvents = [
-      { id: "buff_all_plus1",  label: "오늘의 버프: 모든 미션 코인 +1!", type: "buff" },
-      { id: "buff_s_plus1",    label: "오늘의 버프: S급 미션 코인 +1!", type: "buff" },
-      { id: "nerf_s_minus1",   label: "오늘의 디버프: S급 미션 코인 -1…", type: "debuff" },
-      { id: "half_day_full",   label: "오늘의 특수: 4개만 완료해도 '완료한 날'로 인정!", type: "special" },
-      { id: "buff_b_plus2",    label: "오늘의 버프: B급 미션 코인 +2!", type: "buff" },
-      { id: "nerf_all_minus1", label: "오늘의 디버프: 모든 미션 코인 -1…", type: "debuff" },
-      { id: "lucky_day",       label: "오늘의 특수: 첫 미션 완료 시 보너스 코인 +3!", type: "special" },
-      { id: "buff_a_plus2",    label: "오늘의 버프: A급 미션 코인 +2!", type: "buff" },
-      { id: "double_first",    label: "오늘의 버프: 첫 번째로 완료한 미션 코인 2배!", type: "buff" },
-      { id: "nerf_b_zero",     label: "오늘의 디버프: B급 미션 코인이 없어요… 어쩔 수 없지 뭐", type: "debuff" },
-      { id: "special_5done",   label: "오늘의 특수: 5개 완료 시 보너스 코인 +5!", type: "special" },
-      { id: "buff_last_plus3", label: "오늘의 버프: 마지막 미션 완료 시 코인 +3 추가!", type: "buff" }
+      { id: "buff_all_plus1",  label: "Today's Buff: All missions +1 coin!", type: "buff" },
+      { id: "buff_s_plus1",    label: "Today's Buff: S-tier +1 coin!", type: "buff" },
+      { id: "nerf_s_minus1",   label: "Today's Debuff: S-tier -1 coin…", type: "debuff" },
+      { id: "half_day_full",   label: "Today's Special: 4 missions = full day!", type: "special" },
+      { id: "buff_b_plus2",    label: "Today's Buff: B-tier +2 coins!", type: "buff" },
+      { id: "nerf_all_minus1", label: "Today's Debuff: All missions -1 coin…", type: "debuff" },
+      { id: "lucky_day",       label: "Today's Special: First mission = +3 bonus coins!", type: "special" },
+      { id: "buff_a_plus2",    label: "Today's Buff: A-tier +2 coins!", type: "buff" },
+      { id: "double_first",    label: "Today's Buff: First mission coins x2!", type: "buff" },
+      { id: "nerf_b_zero",     label: "Today's Debuff: B-tier earns no coins… sorry", type: "debuff" },
+      { id: "special_5done",   label: "Today's Special: 5 missions = +5 bonus coins!", type: "special" },
+      { id: "buff_last_plus3", label: "Today's Buff: Last mission +3 coins!", type: "buff" }
     ];
 
     function loadTaskStatus() {
@@ -646,6 +790,37 @@
 
     function saveDailyStats(stats) {
       localStorage.setItem("dailyStats", JSON.stringify(stats));
+    }
+
+    // 미션별 완료 기록 저장
+    function loadMissionLog() {
+      const raw = localStorage.getItem("missionLog");
+      if (!raw) return {};
+      try { return JSON.parse(raw); } catch(e) { return {}; }
+    }
+    function saveMissionLog(log) {
+      localStorage.setItem("missionLog", JSON.stringify(log));
+    }
+    function recordMissionDone(taskName) {
+      const log = loadMissionLog();
+      if (!log[today]) log[today] = {};
+      log[today][taskName] = (log[today][taskName] || 0) + 1;
+      saveMissionLog(log);
+    }
+
+    // 퉁치기 기록 저장
+    function loadSkipLog() {
+      const raw = localStorage.getItem("skipLog");
+      if (!raw) return {};
+      try { return JSON.parse(raw); } catch(e) { return {}; }
+    }
+    function saveSkipLog(log) {
+      localStorage.setItem("skipLog", JSON.stringify(log));
+    }
+    function recordSkip() {
+      const log = loadSkipLog();
+      log[today] = (log[today] || 0) + 1;
+      saveSkipLog(log);
     }
 
     function loadWeeklyPopupStatus() {
@@ -707,7 +882,12 @@
         fullNeeded = Math.ceil(tasks.length / 2);
       }
 
-      if (completed >= fullNeeded && fullCompleteDate !== today) {
+      // 퉁치기 없이 실제 미션만 7개 완료했을 때만 카운트
+      const realCompleted = Object.values(taskStatus).filter(v => v).length;
+      let realFullNeeded = tasks.length;
+      if (dailyEvent.id === "half_day_full") realFullNeeded = Math.ceil(tasks.length / 2);
+
+      if (realCompleted >= realFullNeeded && fullCompleteDate !== today) {
         fullCompleteCount += 1;
         fullCompleteDate = today;
         localStorage.setItem("fullCompleteCount", String(fullCompleteCount));
@@ -721,16 +901,14 @@
 
       // 오늘 진행도
       document.getElementById("progressText").textContent =
-        `오늘 완료: ${completed} / ${tasks.length}`;
-
-      const circle = "●".repeat(completed) + "○".repeat(tasks.length - completed);
-      document.getElementById("progressBar").textContent = circle;
+        `Today: ${completed} / ${tasks.length}`;
 
       const listEl = document.getElementById("checkboxList");
       listEl.innerHTML = "";
       tasks.forEach(t => {
         const div = document.createElement("div");
-        div.textContent = (taskStatus[t] ? "✔ " : "□ ") + t;
+        div.textContent = (taskStatus[t] ? "✔  " : "○  ") + t;
+        if (taskStatus[t]) div.classList.add("done");
         listEl.appendChild(div);
       });
 
@@ -739,7 +917,7 @@
       const level = getLevel(percent);
 
       document.getElementById("streakText").textContent =
-        `올해 전부 다 한 날: ${fullCompleteCount}일 / ${YEAR_TOTAL_DAYS}일 (${percent.toFixed(1)}%)`;
+        `${fullCompleteCount} / ${YEAR_TOTAL_DAYS} (${percent.toFixed(1)}%)`;
       document.getElementById("streakFill").style.width = `${percent}%`;
 
       // 할 일 개수 기준 누적 그래프
@@ -750,22 +928,29 @@
       const taskStreakEl = document.getElementById("taskStreakText");
       const taskFillEl = document.getElementById("taskStreakFill");
       if (taskStreakEl) taskStreakEl.textContent =
-        `올해 누적 완료: ${totalTasksDone}개 / ${TASK_TOTAL}개 (${taskPercent.toFixed(1)}%)`;
+        `${totalTasksDone} / ${TASK_TOTAL} (${taskPercent.toFixed(1)}%)`;
       if (taskFillEl) taskFillEl.style.width = `${taskPercent}%`;
 
       // 코인 + 레벨 표시
-      document.getElementById("statusSummary").textContent =
-        `코인: ${coinCount}개 · LV ${level}`;
+      const coinBadge = document.getElementById("badgeCoin");
+      const lvBadge = document.getElementById("badgeLv");
+      if (coinBadge) coinBadge.textContent = `🪙 ${coinCount}`;
+      if (lvBadge) lvBadge.textContent = `⚡ LV ${level}`;
 
       // 오늘의 버프/디버프 표시
       const eventEl = document.getElementById("eventText");
-      eventEl.textContent = dailyEvent.label;
+      eventEl.className = "";
+      const eventIcon = dailyEvent.type === "buff" ? "🟢" : dailyEvent.type === "debuff" ? "🔴" : "🟡";
+      eventEl.innerHTML = `<span>${eventIcon}</span><span>${dailyEvent.label}</span>`;
       if (dailyEvent.type === "buff") {
-        eventEl.style.color = "#2ecc71";
+        eventEl.classList.add("event-buff");
+        eventEl.style.color = "";
       } else if (dailyEvent.type === "debuff") {
-        eventEl.style.color = "#e74c3c";
+        eventEl.classList.add("event-debuff");
+        eventEl.style.color = "";
       } else {
-        eventEl.style.color = "#f39c12";
+        eventEl.classList.add("event-special");
+        eventEl.style.color = "";
       }
 
       updateTungButtonVisibility();
@@ -792,7 +977,7 @@
       if (completed >= tasks.length) {
         container.style.display = "none";
       } else {
-        container.style.display = "flex";
+        container.style.display = "inline-block";
       }
     }
 
@@ -831,14 +1016,36 @@
       if (theme.isDark) {
         document.body.style.color = "#f5f5f5";
         document.getElementById("card").style.color = "#f5f5f5";
-        document.querySelectorAll(".status-summary, #progressText, #progressBar, .checkbox-list div, #streakText, #taskStreakText, .calendar-title").forEach(el => el.style.color = "#e6e6e6");
+        document.querySelectorAll(".calendar-title").forEach(el => el.style.color = "#e6e6e6");
+        const ptEl = document.getElementById("progressText");
+        if (ptEl) ptEl.style.color = "var(--accent-soft, #a5b4fc)";
+        document.querySelectorAll(".checkbox-list div:not(.done)").forEach(el => el.style.color = "#e6e6e6");
+        document.querySelectorAll(".streak-label").forEach(el => el.style.color = "#888");
+        document.querySelectorAll(".streak-label span, #streakText, #taskStreakText").forEach(el => el.style.color = "#ccc");
+        document.querySelectorAll(".today-count").forEach(el => el.style.color = "var(--accent-soft, #a5b4fc)");
+        document.getElementById("missionCard").style.background = "rgba(255,255,255,0.05)";
+        document.querySelectorAll(".badge-coin").forEach(el => { el.style.background = "rgba(241,196,15,0.2)"; el.style.color = "#f1c40f"; });
+        document.querySelectorAll(".badge-lv").forEach(el => { el.style.background = "rgba(163,185,252,0.15)"; el.style.color = "#a5b4fc"; });
+        const evEl = document.getElementById("eventText");
+        if (evEl) {
+          if (evEl.classList.contains("event-buff"))    { evEl.style.background = "rgba(46,204,113,0.18)";  evEl.style.color = "#6ee7b7"; }
+          if (evEl.classList.contains("event-debuff"))  { evEl.style.background = "rgba(231,76,60,0.18)";   evEl.style.color = "#fca5a5"; }
+          if (evEl.classList.contains("event-special")) { evEl.style.background = "rgba(243,156,18,0.18)";  evEl.style.color = "#fcd34d"; }
+        }
         document.querySelectorAll(".cal-day-number, .cal-day-tasks").forEach(el => el.style.color = "#ffffff");
         document.querySelectorAll(".calendar-table th, .calendar-table td").forEach(el => el.style.borderColor = "rgba(255,255,255,0.2)");
         document.querySelectorAll("button.main").forEach(el => el.style.color = "#ffffff");
       } else {
         document.body.style.color = "#000000";
         document.getElementById("card").style.color = "#000000";
-        document.querySelectorAll(".status-summary, #progressText, #progressBar, .checkbox-list div, #streakText, #taskStreakText, .calendar-title").forEach(el => el.style.color = "");
+        document.querySelectorAll(".calendar-title, .checkbox-list div, .streak-label, .streak-label span, #streakText, #taskStreakText").forEach(el => el.style.color = "");
+        const ptElL = document.getElementById("progressText");
+        if (ptElL) ptElL.style.color = "";
+        document.getElementById("missionCard").style.background = "";
+        document.querySelectorAll(".badge-coin").forEach(el => { el.style.background = ""; el.style.color = ""; });
+        document.querySelectorAll(".badge-lv").forEach(el => { el.style.background = ""; el.style.color = ""; });
+        const evElL = document.getElementById("eventText");
+        if (evElL) { evElL.style.background = ""; evElL.style.color = ""; }
         document.querySelectorAll(".cal-day-number, .cal-day-tasks").forEach(el => el.style.color = "");
         document.querySelectorAll(".calendar-table th, .calendar-table td").forEach(el => el.style.borderColor = "");
         document.querySelectorAll("button.main").forEach(el => el.style.color = "#ffffff");
@@ -927,11 +1134,11 @@
 
     function showAllDoneModal() {
       const messages = [
-        "오늘도 완주했어요! 대단한데요? 🌟",
-        "7개 전부 다 했어요! 오늘 하루 잘 살았네요 ✨",
-        "완벽한 하루예요! 내일도 화이팅 💪",
-        "전부 클리어! 역시 믿었어요 🔥",
-        "오늘 할 일 싹 다 해치웠어요! 👏"
+        "Another full day! Amazing 🌟",
+        "All 7 done! What a great day ✨",
+        "Perfect day! Keep it up tomorrow 💪",
+        "Full clear! Knew you could do it 🔥",
+        "Crushed every task today! 👏"
       ];
       const msg = messages[Math.floor(Math.random() * messages.length)];
       document.getElementById("allDoneSubtext").textContent = msg;
@@ -968,9 +1175,9 @@
             <input id="mName_${i}" value="${m.name}" placeholder="미션 이름"
               style="flex:1; border:1px solid #ddd; border-radius:6px; padding:4px 8px; font-size:12px;">
             <select id="mTier_${i}" style="border:1px solid #ddd; border-radius:6px; padding:4px 6px; font-size:12px;">
-              <option value="S" ${m.tier==="S"?"selected":""}>S급</option>
-              <option value="A" ${m.tier==="A"?"selected":""}>A급</option>
-              <option value="B" ${m.tier==="B"?"selected":""}>B급</option>
+              <option value="S" ${m.tier==="S"?"selected":""}>S-Tier</option>
+              <option value="A" ${m.tier==="A"?"selected":""}>A-Tier</option>
+              <option value="B" ${m.tier==="B"?"selected":""}>B-Tier</option>
             </select>
           </div>
           <input id="mHint_${i}" value="${m.hint}" placeholder="힌트 코멘트"
@@ -1038,7 +1245,7 @@
       localStorage.setItem("customTungOptions", JSON.stringify(newTung));
 
       closeSettingsModal();
-      alert("저장했어요! 페이지를 새로고침하면 적용돼요 🙂");
+      alert("Saved! Refresh to apply changes 🙂");
     }
 
     function closeSettingsModal() {
@@ -1148,11 +1355,124 @@
       container.appendChild(table);
     }
 
+    function toggleReport() {
+      const rc = document.getElementById("reportContainer");
+      const btn = document.getElementById("toggleReportButton");
+      if (rc.style.display === "none" || !rc.style.display) {
+        const [y, m] = today.split("-").map(Number);
+        buildReport(currentViewYear || y, currentViewMonth || m);
+        rc.style.display = "block";
+        btn.textContent = "📊 Close";
+      } else {
+        rc.style.display = "none";
+        btn.textContent = "📊 Report";
+      }
+    }
+
     function changeMonth(delta) {
       currentViewMonth += delta;
       if (currentViewMonth > 12) { currentViewMonth = 1; currentViewYear++; }
       else if (currentViewMonth < 1) { currentViewMonth = 12; currentViewYear--; }
       buildMonthlyCalendar(currentViewYear, currentViewMonth);
+      buildReport(currentViewYear, currentViewMonth);
+    }
+
+    function buildReport(year, month) {
+      const container = document.getElementById("reportContainer");
+      if (!container) return;
+
+      const stats = loadDailyStats();
+      const missionLog = loadMissionLog();
+      const skipLog = loadSkipLog();
+
+      // 이번 달 날짜 범위
+      const lastDate = new Date(year, month, 0).getDate();
+      const monthDays = [];
+      for (let d = 1; d <= lastDate; d++) {
+        const mm = String(month).padStart(2,"0");
+        const dd = String(d).padStart(2,"0");
+        monthDays.push(`${year}-${mm}-${dd}`);
+      }
+
+      // 이번 주 날짜 범위 (오늘 기준 월~일)
+      const todayDate = new Date(...today.split("-").map((v,i)=>i===1?v-1:+v));
+      const dow = todayDate.getDay();
+      const weekStart = new Date(todayDate); weekStart.setDate(todayDate.getDate() - (dow === 0 ? 6 : dow - 1));
+      const weekDays = [];
+      for (let i = 0; i < 7; i++) {
+        const d = new Date(weekStart); d.setDate(weekStart.getDate() + i);
+        const yy = d.getFullYear();
+        const mm = String(d.getMonth()+1).padStart(2,"0");
+        const dd = String(d.getDate()).padStart(2,"0");
+        weekDays.push(`${yy}-${mm}-${dd}`);
+      }
+
+      function makeItems(days, label) {
+        const items = [];
+        const totalDays = days.filter(d => d <= today).length;
+        if (totalDays === 0) return items;
+
+        // 완료율
+        const doneDays = days.filter(d => stats[d] === tasks.length).length;
+        const doneRate = Math.round(doneDays / totalDays * 100);
+        if (doneRate === 100) items.push({ icon:"🏆", text:`Perfect! All ${totalDays} days fully completed.` });
+        else if (doneRate >= 70) items.push({ icon:"✅", text:`Great job! ${doneRate}% full completion rate this ${label}.` });
+        else if (doneRate >= 40) items.push({ icon:"📈", text:`${doneRate}% full days this ${label}. Room to grow!` });
+        else items.push({ icon:"💪", text:`Only ${doneRate}% full days this ${label}. Let's push harder!` });
+
+        // 퉁치기 횟수
+        const skipTotal = days.reduce((s, d) => s + (skipLog[d] || 0), 0);
+        if (skipTotal >= 5) items.push({ icon:"😅", text:`Skipped ${skipTotal} times this ${label}. Maybe a bit too many?` });
+        else if (skipTotal >= 3) items.push({ icon:"🙈", text:`${skipTotal} skips this ${label}. Try to cut it down!` });
+        else if (skipTotal === 0 && totalDays >= 3) items.push({ icon:"🔥", text:`Zero skips this ${label}! Amazing discipline.` });
+
+        // 미션별 분석
+        const missionCount = {};
+        tasks.forEach(t => { missionCount[t] = 0; });
+        days.forEach(d => {
+          if (missionLog[d]) {
+            Object.entries(missionLog[d]).forEach(([t, c]) => {
+              if (missionCount[t] !== undefined) missionCount[t] += c;
+            });
+          }
+        });
+        const sorted = Object.entries(missionCount).sort((a,b) => b[1]-a[1]);
+        const maxDone = sorted[0];
+        const minDone = sorted[sorted.length-1];
+        const activeDays = days.filter(d => d <= today).length;
+
+        if (maxDone && maxDone[1] >= Math.round(activeDays * 0.7)) {
+          items.push({ icon:"⭐", text:`"${maxDone[0]}" is your strongest mission this ${label}!` });
+        }
+        if (minDone && minDone[1] === 0 && activeDays >= 3) {
+          items.push({ icon:"😬", text:`"${minDone[0]}" — not done once this ${label}. Don't forget it!` });
+        } else if (minDone && minDone[1] <= Math.round(activeDays * 0.2) && activeDays >= 5) {
+          items.push({ icon:"⚠️", text:`"${minDone[0]}" is being neglected this ${label}. Only ${minDone[1]} time(s).` });
+        }
+
+        return items;
+      }
+
+      const weekItems = makeItems(weekDays, "week");
+      const monthItems = makeItems(monthDays, "month");
+
+      let html = "";
+
+      if (weekItems.length > 0) {
+        html += `<div class="report-section">
+          <div class="report-title">📊 This Week</div>
+          ${weekItems.map(i => `<div class="report-item"><span class="ri-icon">${i.icon}</span><span>${i.text}</span></div>`).join("")}
+        </div>`;
+      }
+      if (monthItems.length > 0) {
+        html += `<div class="report-section">
+          <div class="report-title">📅 ${year}.${String(month).padStart(2,"0")} Monthly</div>
+          ${monthItems.map(i => `<div class="report-item"><span class="ri-icon">${i.icon}</span><span>${i.text}</span></div>`).join("")}
+        </div>`;
+      }
+
+      if (!html) html = `<div class="report-item"><span class="ri-icon">🌱</span><span>Not enough data yet. Keep going!</span></div>`;
+      container.innerHTML = html;
     }
 
     function toggleCalendar() {
@@ -1165,10 +1485,12 @@
         currentViewMonth = m;
         buildMonthlyCalendar(currentViewYear, currentViewMonth);
         container.style.display = "block";
-        btn.textContent = "달력 닫기";
+        btn.textContent = "📅 Close";
+        document.getElementById("perfectDaysWrap").style.display = "block";
       } else {
         container.style.display = "none";
-        btn.textContent = "달력 보기";
+        btn.textContent = "📅 Calendar";
+        document.getElementById("perfectDaysWrap").style.display = "none";
       }
     }
 
@@ -1181,10 +1503,12 @@
       const hintEl = document.getElementById("hint");
 
       pickBtn.disabled = true;
-      pickBtn.textContent = "고르는 중...";
+      pickBtn.textContent = "Picking…";
 
       document.getElementById("actionButtons").style.display = "none";
       resultEl.classList.remove("s-glow");
+      resultEl.classList.remove("has-task");
+      document.getElementById("missionCard").classList.remove("has-task");
 
       const available = tasks.filter(t => !taskStatus[t] && !skippedTasks[t]);
 
@@ -1192,15 +1516,15 @@
         const remaining = tasks.filter(t => !taskStatus[t]);
 
         if (remaining.length === 0) {
-          resultEl.textContent = "오늘 할 일 완료!";
+          resultEl.textContent = "All done today!";
           hintEl.textContent = "";
         } else {
-          resultEl.textContent = "보류한 미션만 남았어요. 오늘은 여기까지!";
-          hintEl.textContent = "보류를 초기화하려면 새로고침하면 돼요.";
+          resultEl.textContent = "Only skipped missions left. That's it for today!";
+          hintEl.textContent = "Refresh to reset skipped missions.";
         }
 
         pickBtn.disabled = false;
-        pickBtn.textContent = "지금 당장 이거!";
+        pickBtn.textContent = "Pick one now!";
         isPicking = false;
         showProgressIfNeeded();
         updateTungButtonVisibility();
@@ -1208,11 +1532,11 @@
       }
 
       let dots = 0;
-      resultEl.textContent = "고민 중";
-      hintEl.textContent = "2초만 기다려줘…";
+      resultEl.textContent = "Thinking";
+      hintEl.textContent = "Just a sec…";
       const loading = setInterval(() => {
         dots = (dots + 1) % 4;
-        resultEl.textContent = "고민 중" + ".".repeat(dots);
+        resultEl.textContent = "Thinking" + ".".repeat(dots);
       }, 400);
 
       setTimeout(() => {
@@ -1224,15 +1548,17 @@
         currentTask = finalChoice;
         currentTier = finalTier;
 
-        const label = tierLabel[finalTier] || "B급";
+        const label = tierLabel[finalTier] || "B-Tier";
         const badge = `<span class="tier-label">${label}</span>`;
         const safeText = finalChoice.replace(/</g, "&lt;").replace(/>/g, "&gt;");
         resultEl.innerHTML = `${badge}${safeText}`;
+        resultEl.classList.add("has-task");
+        document.getElementById("missionCard").classList.add("has-task");
 
         const baseHint = hints[finalChoice] || "";
         if (finalTier === "S") {
           resultEl.classList.add("s-glow");
-          hintEl.textContent = `✨ S급 미션 등장! ✨ ${baseHint}`;
+          hintEl.textContent = `✨ S-tier mission! ✨ ${baseHint}`;
         } else {
           hintEl.textContent = baseHint;
         }
@@ -1240,7 +1566,7 @@
         document.getElementById("actionButtons").style.display = "flex";
 
         pickBtn.disabled = false;
-        pickBtn.textContent = "지금 당장 이거!";
+        pickBtn.textContent = "Pick one now!";
         isPicking = false;
 
         showProgressIfNeeded();
@@ -1252,13 +1578,14 @@
       if (!currentTask || !tasks.includes(currentTask)) return;
 
       if (taskStatus[currentTask]) {
-        document.getElementById("hint").textContent = "이미 완료한 미션이에요!";
+        document.getElementById("hint").textContent = "Already done!";
         hideButtons();
         return;
       }
 
       taskStatus[currentTask] = true;
       localStorage.setItem("taskStatus", JSON.stringify(taskStatus));
+      recordMissionDone(currentTask);
 
       let reward = getRewardForTask(currentTask);
 
@@ -1268,31 +1595,31 @@
       if (dailyEvent.id === "lucky_day" && completedCount === 1) {
         reward += 3;
         document.getElementById("hint").textContent =
-          `완료 기록되었습니다! (+${reward}코인, 첫 미션 보너스 +3 포함!)`;
+          `Done! (+${reward} coins, first mission bonus +3!)`;
 
       // 첫 미션 2배 (double_first)
       } else if (dailyEvent.id === "double_first" && completedCount === 1) {
         reward = reward * 2;
         document.getElementById("hint").textContent =
-          `완료 기록되었습니다! (+${reward}코인, 첫 미션 2배 보너스!)`;
+          `Done! (+${reward} coins, first mission x2!)`;
 
       // 5개 완료 보너스 (special_5done)
       } else if (dailyEvent.id === "special_5done" && completedCount === 5) {
         reward += 5;
         document.getElementById("hint").textContent =
-          `완료 기록되었습니다! (+${reward}코인, 5개 달성 보너스 +5 포함!)`;
+          `Done! (+${reward} coins, 5 missions bonus +5!)`;
 
       // 마지막 미션 보너스 (buff_last_plus3)
       } else if (dailyEvent.id === "buff_last_plus3" && completedCount === tasks.length) {
         reward += 3;
         document.getElementById("hint").textContent =
-          `완료 기록되었습니다! (+${reward}코인, 마지막 미션 보너스 +3 포함!)`;
+          `Done! (+${reward} coins, last mission bonus +3!)`;
 
       } else if (reward > 0) {
         document.getElementById("hint").textContent =
-          `완료 기록되었습니다! (+${reward}코인)`;
+          `Done! (+${reward} coins)`;
       } else {
-        document.getElementById("hint").textContent = "완료 기록되었습니다!";
+        document.getElementById("hint").textContent = "Done!";
       }
 
       if (reward > 0) {
@@ -1315,14 +1642,14 @@
         return;
       }
       skippedTasks[currentTask] = true;
-      document.getElementById("hint").textContent = "잠깐 패스!";
+      document.getElementById("hint").textContent = "Skipped!";
       hideButtons();
     }
 
     function openTungModal() {
       const completed = getCompletedCount();
       if (completed >= tasks.length) {
-        document.getElementById("hint").textContent = "이미 미션 클리어 ⚡";
+        document.getElementById("hint").textContent = "Already cleared ⚡";
         return;
       }
       document.getElementById("tungModal").style.display = "flex";
@@ -1335,7 +1662,7 @@
     function pickTungOption(name) {
       const completed = getCompletedCount();
       if (completed >= tasks.length) {
-        document.getElementById("hint").textContent = "오늘 할 일 다 채움!";
+        document.getElementById("hint").textContent = "All done today!";
         closeTungModal();
         return;
       }
@@ -1347,12 +1674,13 @@
         localStorage.setItem("tungCount", String(tungCount));
         localStorage.setItem("tungDate", today);
         localStorage.setItem("tungChoice", name);
+        recordSkip();
         document.getElementById("hint").textContent =
-          `'${name}'(으)로 오늘은 퉁! (무료 퉁치기, 완료 +1 처리되었습니다)`;
+          `Skipped with '${name}'! (free skip, +1 done)`;
       } else {
         if (coinCount < 5) {
           document.getElementById("hint").textContent =
-            "코인이 부족해서 추가 퉁치기를 사용할 수 없어요. (필요: 5코인)";
+            "Not enough coins for extra skip. (need: 5 coins)";
           closeTungModal();
           return;
         }
@@ -1362,8 +1690,9 @@
         localStorage.setItem("tungCount", String(tungCount));
         localStorage.setItem("tungDate", today);
         localStorage.setItem("tungChoice", name);
+        recordSkip();
         document.getElementById("hint").textContent =
-          `'${name}'(으)로 퉁치기! (코인 5개 사용, 완료 +1 처리되었습니다)`;
+          `Skipped with '${name}'! (5 coins used, +1 done)`;
       }
 
       closeTungModal();
@@ -1373,7 +1702,7 @@
 
     function useTungCoins(addCount, cost) {
       if (coinCount < cost) {
-        document.getElementById("hint").textContent = `코인이 부족해요. (필요: ${cost}코인)`;
+        document.getElementById("hint").textContent = `Not enough coins. (need: ${cost})`;
         return;
       }
 
@@ -1381,7 +1710,7 @@
       const remaining = tasks.length - completed;
 
       if (remaining <= 0) {
-        document.getElementById("hint").textContent = "오늘 할 일은 이미 모두 완료했어요!";
+        document.getElementById("hint").textContent = "All tasks already done today!";
         closeTungModal();
         return;
       }
@@ -1393,9 +1722,10 @@
       localStorage.setItem("coinCount", String(coinCount));
       localStorage.setItem("tungCount", String(tungCount));
       localStorage.setItem("tungDate", today);
+      for (let i = 0; i < actualAdd; i++) recordSkip();
 
       document.getElementById("hint").textContent =
-        `코인 ${cost}개를 사용해 오늘 완료 ${actualAdd}개를 퉁쳤어요!`;
+        `Used ${cost} coins to skip ${actualAdd} task(s)!`;
 
       closeTungModal();
       updateUI();
