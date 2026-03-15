@@ -1321,8 +1321,12 @@
       const cat = triviaCategories[Math.floor(Math.random() * triviaCategories.length)];
 
       try {
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 15000);
+
         const res = await fetch("https://api.anthropic.com/v1/messages", {
           method: "POST",
+          signal: controller.signal,
           headers: {
             "Content-Type": "application/json",
             "x-api-key": apiKey,
@@ -1334,12 +1338,17 @@
             max_tokens: 300,
             messages: [{
               role: "user",
-              content: `Give me one interesting, bite-sized trivia fact about "${cat}". 
-Keep it to 2-3 sentences max. Be specific, fascinating, and easy to understand. 
-No intro phrases like "Did you know" — just the fact directly. Respond in Korean.`
+              content: `Give me one interesting, bite-sized trivia fact about "${cat}". Keep it to 2-3 sentences max. Be specific, fascinating, and easy to understand. No intro phrases like "Did you know" — just the fact directly. Respond in Korean.`
             }]
           })
         });
+
+        clearTimeout(timeout);
+
+        if (!res.ok) {
+          const err = await res.json().catch(() => ({}));
+          throw new Error(err?.error?.message || `HTTP ${res.status}`);
+        }
 
         const data = await res.json();
         if (data.content?.[0]?.text) {
@@ -1352,11 +1361,14 @@ No intro phrases like "Did you know" — just the fact directly. Respond in Kore
           triviaLoading.style.display = "none";
           triviaCard.style.display = "block";
         } else {
-          throw new Error("No content");
+          throw new Error("No content in response");
         }
       } catch(e) {
         triviaLoading.style.display = "none";
-        triviaContent.textContent = "Failed to load trivia. Check your API key in Settings.";
+        const msg = e.name === "AbortError"
+          ? "Request timed out. Please try refreshing."
+          : `Failed to load trivia: ${e.message}`;
+        triviaContent.textContent = msg;
         triviaCategory.textContent = "";
         triviaCard.style.display = "block";
       }
