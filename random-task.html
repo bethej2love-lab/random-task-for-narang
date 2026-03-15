@@ -400,7 +400,10 @@
 </head>
 <body>
   <div class="card" id="card">
-    <h1>할 일 랜덤 뽑기</h1>
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+      <h1 style="margin:0;">할 일 랜덤 뽑기</h1>
+      <button onclick="openSettingsModal()" style="border:none; background:transparent; font-size:20px; cursor:pointer; padding:4px;">⚙️</button>
+    </div>
     <div class="theme-label" id="themeLabel"></div>
 
     <button class="main" id="pickButton" onclick="pickRandom()">지금 당장 이거!</button>
@@ -484,15 +487,7 @@
         <div class="tung-title">오늘은 퉁치기…?</div>
         <button class="tung-close" onclick="closeTungModal()">×</button>
       </div>
-      <div class="tung-options">
-        <button class="tung-option-btn" onclick="pickTungOption('영화')">영화</button>
-        <button class="tung-option-btn" onclick="pickTungOption('전시')">전시</button>
-        <button class="tung-option-btn" onclick="pickTungOption('우쿨렐레')">우쿨렐레</button>
-        <button class="tung-option-btn" onclick="pickTungOption('뜨개질')">뜨개질</button>
-        <button class="tung-option-btn" onclick="pickTungOption('요리')">요리</button>
-        <button class="tung-option-btn" onclick="pickTungOption('청소')">청소</button>
-        <button class="tung-option-btn" onclick="pickTungOption('벌떡 기상')">벌떡 기상</button>
-      </div>
+      <div class="tung-options" id="tungOptionsList"></div>
       <div class="tung-subtext">
         기본 1회는 무료, 그 이후에는 코인으로 추가 퉁치기를 할 수 있어요.
       </div>
@@ -505,37 +500,60 @@
     </div>
   </div>
 
+  <!-- 설정 모달 -->
+  <div class="modal-overlay" id="settingsModal">
+    <div class="modal-content" style="max-height:80vh; overflow-y:auto;">
+      <div class="modal-title">⚙️ 설정</div>
+
+      <div style="font-size:12px; font-weight:700; margin-bottom:6px; color:#888;">미션 편집</div>
+      <div id="settingsMissionList" style="display:flex; flex-direction:column; gap:8px; margin-bottom:14px;"></div>
+
+      <div style="font-size:12px; font-weight:700; margin-bottom:6px; color:#888;">퉁치기 옵션</div>
+      <div id="settingsTungList" style="display:flex; flex-direction:column; gap:6px; margin-bottom:6px;"></div>
+      <button onclick="addTungOption()" style="width:100%; padding:7px; border-radius:8px; border:1px dashed #ccc; background:transparent; font-size:12px; cursor:pointer; margin-bottom:14px;">+ 항목 추가</button>
+
+      <div style="display:flex; gap:8px;">
+        <button class="modal-close-btn" style="background:#e0e0e0; color:#333;" onclick="closeSettingsModal()">취소</button>
+        <button class="modal-close-btn" onclick="saveSettings()">저장</button>
+      </div>
+    </div>
+  </div>
+
   <script>
-    const tasks = [
-      "듀오링고",
-      "Brilliant",
-      "책 읽기",
-      "플랭크 1분+간단 스트레칭",
-      "부기스/블로그",
-      "달리기",
-      "자격증 공부"
+    // 기본 미션 데이터
+    const defaultMissions = [
+      { name: "듀오링고",              hint: "→ 딱 2개만 !",                                                                                                    tier: "B" },
+      { name: "Brilliant",             hint: "→ 3개 이상 푸십쇼",                                                                                               tier: "B" },
+      { name: "책 읽기",               hint: "→ 3페이지는 읽자..",                                                                                              tier: "A" },
+      { name: "플랭크 1분+간단 스트레칭", hint: "→ 몸을 움직여라!",                                                                                             tier: "B" },
+      { name: "부기스/블로그",          hint: "→ 책 등록/블로그 업로드/인스타 업로드/리뷰 답글 뭐든 제발!",                                                      tier: "S" },
+      { name: "달리기",                hint: "→ 5분이라도! (만보 대체 가능ㅎ)",                                                                                  tier: "S" },
+      { name: "자격증 공부",            hint: "→ 컴활 2급 / 임상심리사 2급 / 청소년상담사 3급 / 투자자산운용사 / 정보처리기사 / 공인중개사 / 사회조사분석사",       tier: "A" }
     ];
 
-    const hints = {
-      "듀오링고": "→ 딱 2개만 !",
-      "Brilliant": "→ 4개 이상 푸십쇼",
-      "책 읽기": "→ 5페이지는 읽자..",
-      "플랭크 1분+간단 스트레칭": "→ 몸을 움직여라!",
-      "부기스/블로그": "→ 책 등록/블로그 업로드/인스타 업로드/리뷰 답글 뭐든 제발!",
-      "달리기": "→ 5분이라도! (만보 대체 가능ㅎ)",
-      "자격증 공부": "→ 컴활 2급 / 임상심리사 2급 / 청소년상담사 3급 / 투자자산운용사 / 정보처리기사 / 공인중개사 / 사회조사분석사"
-    };
+    const defaultTungOptions = ["영화", "전시", "우쿨렐레", "뜨개질", "요리", "청소", "벌떡 기상"];
+
+    function loadCustomMissions() {
+      const raw = localStorage.getItem("customMissions");
+      if (!raw) return defaultMissions;
+      try { return JSON.parse(raw); } catch(e) { return defaultMissions; }
+    }
+
+    function loadCustomTungOptions() {
+      const raw = localStorage.getItem("customTungOptions");
+      if (!raw) return defaultTungOptions;
+      try { return JSON.parse(raw); } catch(e) { return defaultTungOptions; }
+    }
+
+    // 동적 데이터 로드
+    let missionData = loadCustomMissions();
+    let tungOptions = loadCustomTungOptions();
+
+    const tasks = missionData.map(m => m.name);
+    const hints = Object.fromEntries(missionData.map(m => [m.name, m.hint]));
 
     // 등급 설정
-    const taskTier = {
-      "달리기": "S",
-      "부기스/블로그": "S",
-      "책 읽기": "A",
-      "자격증 공부": "A",
-      "Brilliant": "B",
-      "플랭크 1분+간단 스트레칭": "B",
-      "듀오링고": "B"
-    };
+    const taskTier = Object.fromEntries(missionData.map(m => [m.name, m.tier]));
 
     const tierLabel = {
       "S": "S급",
@@ -829,6 +847,7 @@
 
     applyTheme();
     updateUI();
+    renderTungOptions();
 
     function buildLast7DaysData() {
       const stats = loadDailyStats();
@@ -921,6 +940,109 @@
 
     function closeAllDoneModal() {
       document.getElementById("allDoneModal").style.display = "none";
+    }
+
+    // 퉁치기 옵션 동적 렌더링
+    function renderTungOptions() {
+      const list = document.getElementById("tungOptionsList");
+      if (!list) return;
+      list.innerHTML = "";
+      tungOptions.forEach(name => {
+        const btn = document.createElement("button");
+        btn.className = "tung-option-btn";
+        btn.textContent = name;
+        btn.onclick = () => pickTungOption(name);
+        list.appendChild(btn);
+      });
+    }
+
+    // 설정 모달 열기
+    function openSettingsModal() {
+      const missionList = document.getElementById("settingsMissionList");
+      missionList.innerHTML = "";
+      missionData.forEach((m, i) => {
+        const row = document.createElement("div");
+        row.style.cssText = "border:1px solid #eee; border-radius:10px; padding:8px 10px;";
+        row.innerHTML = `
+          <div style="display:flex; gap:6px; margin-bottom:5px;">
+            <input id="mName_${i}" value="${m.name}" placeholder="미션 이름"
+              style="flex:1; border:1px solid #ddd; border-radius:6px; padding:4px 8px; font-size:12px;">
+            <select id="mTier_${i}" style="border:1px solid #ddd; border-radius:6px; padding:4px 6px; font-size:12px;">
+              <option value="S" ${m.tier==="S"?"selected":""}>S급</option>
+              <option value="A" ${m.tier==="A"?"selected":""}>A급</option>
+              <option value="B" ${m.tier==="B"?"selected":""}>B급</option>
+            </select>
+          </div>
+          <input id="mHint_${i}" value="${m.hint}" placeholder="힌트 코멘트"
+            style="width:100%; box-sizing:border-box; border:1px solid #ddd; border-radius:6px; padding:4px 8px; font-size:11px; color:#555;">
+        `;
+        missionList.appendChild(row);
+      });
+
+      const tungList = document.getElementById("settingsTungList");
+      tungList.innerHTML = "";
+      tungOptions.forEach((opt, i) => {
+        const row = document.createElement("div");
+        row.style.cssText = "display:flex; gap:6px; align-items:center;";
+        row.innerHTML = `
+          <input id="tung_${i}" value="${opt}"
+            style="flex:1; border:1px solid #ddd; border-radius:6px; padding:4px 8px; font-size:12px;">
+          <button onclick="removeTungOption(${i})"
+            style="border:none; background:transparent; font-size:16px; cursor:pointer; color:#aaa; padding:0 4px;">×</button>
+        `;
+        tungList.appendChild(row);
+      });
+
+      document.getElementById("settingsModal").style.display = "flex";
+    }
+
+    function addTungOption() {
+      const list = document.getElementById("settingsTungList");
+      const i = list.children.length;
+      const row = document.createElement("div");
+      row.style.cssText = "display:flex; gap:6px; align-items:center;";
+      row.innerHTML = `
+        <input id="tung_${i}" value=""
+          style="flex:1; border:1px solid #ddd; border-radius:6px; padding:4px 8px; font-size:12px;">
+        <button onclick="removeTungOption(${i})"
+          style="border:none; background:transparent; font-size:16px; cursor:pointer; color:#aaa; padding:0 4px;">×</button>
+      `;
+      list.appendChild(row);
+    }
+
+    function removeTungOption(i) {
+      const list = document.getElementById("settingsTungList");
+      if (list.children[i]) list.children[i].remove();
+      // id 재정렬
+      Array.from(list.children).forEach((row, idx) => {
+        const inp = row.querySelector("input");
+        const btn = row.querySelector("button");
+        if (inp) inp.id = `tung_${idx}`;
+        if (btn) btn.setAttribute("onclick", `removeTungOption(${idx})`);
+      });
+    }
+
+    function saveSettings() {
+      // 미션 저장
+      const newMissions = missionData.map((m, i) => ({
+        name: document.getElementById(`mName_${i}`)?.value.trim() || m.name,
+        hint: document.getElementById(`mHint_${i}`)?.value.trim() || m.hint,
+        tier: document.getElementById(`mTier_${i}`)?.value || m.tier
+      }));
+      localStorage.setItem("customMissions", JSON.stringify(newMissions));
+
+      // 퉁치기 옵션 저장
+      const tungList = document.getElementById("settingsTungList");
+      const newTung = Array.from(tungList.querySelectorAll("input"))
+        .map(inp => inp.value.trim()).filter(v => v);
+      localStorage.setItem("customTungOptions", JSON.stringify(newTung));
+
+      closeSettingsModal();
+      alert("저장했어요! 페이지를 새로고침하면 적용돼요 🙂");
+    }
+
+    function closeSettingsModal() {
+      document.getElementById("settingsModal").style.display = "none";
     }
 
     function loadTungState() {
