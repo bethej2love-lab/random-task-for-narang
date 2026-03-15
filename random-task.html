@@ -458,6 +458,16 @@
     </div>
   </div>
 
+  <!-- 전체 완료 축하 모달 -->
+  <div class="modal-overlay" id="allDoneModal">
+    <div class="modal-content" style="text-align:center;">
+      <div style="font-size:48px; margin-bottom:8px;">🎉</div>
+      <div class="modal-title" style="font-size:18px;">오늘 할 일 전부 완료!</div>
+      <div style="font-size:13px; color:#555; margin-bottom:16px;" id="allDoneSubtext"></div>
+      <button class="modal-close-btn" onclick="closeAllDoneModal()">고생했어요 😊</button>
+    </div>
+  </div>
+
   <!-- 최근 7일 통계 모달 -->
   <div class="modal-overlay" id="weeklyModal">
     <div class="modal-content">
@@ -508,7 +518,7 @@
 
     const hints = {
       "듀오링고": "→ 딱 2개만 !",
-      "Brilliant": "→ 4개 이상 푸십쇼",
+      "Brilliant": "→ 3개 이상 푸십쇼",
       "책 읽기": "→ 3페이지는 읽자..",
       "플랭크 1분+간단 스트레칭": "→ 몸을 움직여라!",
       "부기스/블로그": "→ 책 등록/블로그 업로드/인스타 업로드/리뷰 답글 뭐든 제발!",
@@ -643,8 +653,8 @@
     let skippedTasks = {};
 
     function getLevel(percent) {
-      const lvl = Math.floor(percent / 5) + 1;
-      return Math.min(20, Math.max(1, lvl));
+      const lvl = Math.floor(percent / 10) + 1;
+      return Math.min(10, Math.max(1, lvl));
     }
 
     function getRewardForTask(taskName) {
@@ -862,6 +872,17 @@
 
     function checkAndShowWeeklyStats() {
       const completed = getCompletedCount();
+
+      // 전체 완료 축하 팝업 (주간 통계보다 우선)
+      if (completed >= tasks.length) {
+        const shownToday = localStorage.getItem("allDonePopupDate");
+        if (shownToday !== today) {
+          localStorage.setItem("allDonePopupDate", today);
+          setTimeout(() => showAllDoneModal(), 300);
+          return;
+        }
+      }
+
       const thresholds = [2, 4, 6];
       if (!thresholds.includes(completed)) return;
 
@@ -873,6 +894,23 @@
       status[today] = todayStatus;
       saveWeeklyPopupStatus(status);
       openWeeklyStatsModal();
+    }
+
+    function showAllDoneModal() {
+      const messages = [
+        "오늘도 완주했어요! 대단한데요? 🌟",
+        "7개 전부 다 했어요! 오늘 하루 잘 살았네요 ✨",
+        "완벽한 하루예요! 내일도 화이팅 💪",
+        "전부 클리어! 역시 믿었어요 🔥",
+        "오늘 할 일 싹 다 해치웠어요! 👏"
+      ];
+      const msg = messages[Math.floor(Math.random() * messages.length)];
+      document.getElementById("allDoneSubtext").textContent = msg;
+      document.getElementById("allDoneModal").style.display = "flex";
+    }
+
+    function closeAllDoneModal() {
+      document.getElementById("allDoneModal").style.display = "none";
     }
 
     function loadTungState() {
@@ -1229,4 +1267,3 @@
   </script>
 </body>
 </html>
-
