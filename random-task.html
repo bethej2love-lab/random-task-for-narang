@@ -1059,9 +1059,17 @@
           if (evEl.classList.contains("event-debuff"))  { evEl.style.background = "rgba(231,76,60,0.18)";   evEl.style.color = "#fca5a5"; }
           if (evEl.classList.contains("event-special")) { evEl.style.background = "rgba(243,156,18,0.18)";  evEl.style.color = "#fcd34d"; }
         }
-        document.querySelectorAll(".cal-day-number, .cal-day-tasks").forEach(el => el.style.color = "#ffffff");
+        document.querySelectorAll(".cal-day-number, .cal-day-tasks").forEach(el => el.style.color = "#e0e0e0");
         document.querySelectorAll(".calendar-table th, .calendar-table td").forEach(el => el.style.borderColor = "rgba(255,255,255,0.2)");
         document.querySelectorAll("button.main").forEach(el => el.style.color = "#ffffff");
+        document.querySelectorAll(".report-item").forEach(el => el.style.color = "#cccccc");
+        document.querySelectorAll(".report-title").forEach(el => el.style.color = "#888888");
+        const tc = document.getElementById("triviaContent");
+        if (tc) tc.style.color = "#cccccc";
+        const tcat = document.getElementById("triviaCategory");
+        if (tcat) tcat.style.color = "#888888";
+        const tcard = document.getElementById("triviaCard");
+        if (tcard) { const inner = tcard.querySelector("div:first-child"); if(inner) inner.style.color = "#888888"; }
       } else {
         document.body.style.color = "#000000";
         document.getElementById("card").style.color = "#000000";
@@ -1074,6 +1082,12 @@
         const evElL = document.getElementById("eventText");
         if (evElL) { evElL.style.background = ""; evElL.style.color = ""; }
         document.querySelectorAll(".cal-day-number, .cal-day-tasks").forEach(el => el.style.color = "");
+        document.querySelectorAll(".report-item").forEach(el => el.style.color = "");
+        document.querySelectorAll(".report-title").forEach(el => el.style.color = "");
+        const tcL = document.getElementById("triviaContent");
+        if (tcL) tcL.style.color = "";
+        const tcatL = document.getElementById("triviaCategory");
+        if (tcatL) tcatL.style.color = "";
         document.querySelectorAll(".calendar-table th, .calendar-table td").forEach(el => el.style.borderColor = "");
         document.querySelectorAll("button.main").forEach(el => el.style.color = "#ffffff");
       }
