@@ -1040,6 +1040,7 @@
       const card = document.getElementById("card");
       if (card) card.style.background = theme.cardBg;
 
+      window._isDarkTheme = theme.isDark;
       if (theme.isDark) {
         document.body.style.color = "#f5f5f5";
         document.getElementById("card").style.color = "#f5f5f5";
@@ -1477,6 +1478,10 @@
 
         td.appendChild(num);
         td.appendChild(info);
+        if (window._isDarkTheme) {
+          num.style.color = "#e0e0e0";
+          info.style.color = "#e0e0e0";
+        }
         if (cnt === tasks.length) {
           td.style.background = "rgba(46, 204, 113, 0.25)";
         } else if (cnt >= Math.ceil(tasks.length / 2)) {
@@ -1605,17 +1610,17 @@
       if (weekItems.length > 0) {
         html += `<div class="report-section">
           <div class="report-title">📊 This Week</div>
-          ${weekItems.map(i => `<div class="report-item"><span class="ri-icon">${i.icon}</span><span>${i.text}</span></div>`).join("")}
+          ${weekItems.map(i => `<div class="report-item" style="${window._isDarkTheme ? 'color:#d0d0d0;background:rgba(255,255,255,0.06)' : ''}"><span class="ri-icon">${i.icon}</span><span>${i.text}</span></div>`).join("")}
         </div>`;
       }
       if (monthItems.length > 0) {
         html += `<div class="report-section">
           <div class="report-title">📅 ${year}.${String(month).padStart(2,"0")} Monthly</div>
-          ${monthItems.map(i => `<div class="report-item"><span class="ri-icon">${i.icon}</span><span>${i.text}</span></div>`).join("")}
+          ${monthItems.map(i => `<div class="report-item" style="${window._isDarkTheme ? 'color:#d0d0d0;background:rgba(255,255,255,0.06)' : ''}"><span class="ri-icon">${i.icon}</span><span>${i.text}</span></div>`).join("")}
         </div>`;
       }
 
-      if (!html) html = `<div class="report-item"><span class="ri-icon">🌱</span><span>Not enough data yet. Keep going!</span></div>`;
+      if (!html) html = `<div class="report-item" style="${window._isDarkTheme ? 'color:#d0d0d0;background:rgba(255,255,255,0.06)' : ''}"><span class="ri-icon">🌱</span><span>Not enough data yet. Keep going!</span></div>`;
       container.innerHTML = html;
     }
 
