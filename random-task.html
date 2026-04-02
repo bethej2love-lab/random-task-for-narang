@@ -496,6 +496,19 @@
       background: rgba(75, 140, 255, 0.15);
     }
 
+    /* API 키 상태 뱃지 */
+    .api-key-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 11px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-weight: 600;
+    }
+    .api-key-badge.set   { background: rgba(46,204,113,0.15); color: #1a7a45; }
+    .api-key-badge.unset { background: rgba(0,0,0,0.06);      color: #999; }
+
     /* 모바일 최적화 */
     @media (max-width: 480px) {
       body {
@@ -536,9 +549,17 @@
 </head>
 <body>
   <div class="card" id="card">
+    <!-- ▼ 헤더: 설정(⚙️) + API키(🔑) 버튼 분리 -->
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
       <h1 style="margin:0;">Random Task Picker</h1>
-      <button onclick="openSettingsModal()" style="border:none; background:transparent; font-size:20px; cursor:pointer; padding:4px;">⚙️</button>
+      <div style="display:flex; gap:6px; align-items:center;">
+        <button onclick="openApiKeyModal()" id="apiKeyHeaderBtn"
+          style="border:none; background:transparent; font-size:18px; cursor:pointer; padding:4px;"
+          title="API Key 설정">🔑</button>
+        <button onclick="openSettingsModal()"
+          style="border:none; background:transparent; font-size:20px; cursor:pointer; padding:4px;"
+          title="설정">⚙️</button>
+      </div>
     </div>
     <div class="theme-label" id="themeLabel"></div>
 
@@ -554,8 +575,6 @@
       <button class="pending-btn" onclick="markPending()">Skip</button>
     </div>
 
-
-
     <!-- 진행도 + 체크리스트 + 연간 퍼센트 (첫 화면에서는 안 보임) -->
     <div class="progress-box" id="progressContainer" style="display:none;">
       <div class="status-summary" id="statusSummary">
@@ -563,7 +582,6 @@
         <span class="badge badge-lv" id="badgeLv">⚡ LV 1</span>
         <button id="tungContainer" onclick="openTungModal()" class="tung-btn" style="display:none;">💭</button>
       </div>
-
 
       <div style="font-size:12px; font-weight:700; color:var(--accent,#4b8cff); margin-bottom:4px;" id="progressText">Today: 0 / 7</div>
       <div class="checkbox-list" id="checkboxList"></div>
@@ -620,7 +638,7 @@
       <div id="triviaLoading" style="margin-top:14px; display:none; font-size:12px; color:#aaa; text-align:center; padding:12px;">✨ Loading today's trivia…</div>
       <button id="triviaBtn" onclick="loadTodayTrivia()" style="display:none; margin-top:14px; width:100%; padding:10px 0; border-radius:999px; border:1.5px solid var(--accent,#4b8cff); background:transparent; color:var(--accent,#4b8cff); font-size:12px; font-weight:600; cursor:pointer;">💡 Get Today's Trivia</button>
       <div id="triviaNoKey" style="margin-top:14px; display:none; font-size:11px; color:#aaa; text-align:center; padding:10px; border-radius:10px; border:1px dashed #ddd;">
-        API key not set. Add it in ⚙️ Settings to get daily trivia!
+        API key not set. Tap 🔑 in the top-right to add it!
       </div>
     </div>
   </div>
@@ -664,7 +682,30 @@
     </div>
   </div>
 
-  <!-- 설정 모달 -->
+  <!-- ▼ API 키 전용 모달 (설정 모달과 완전 분리) -->
+  <div class="modal-overlay" id="apiKeyModal">
+    <div class="modal-content">
+      <div class="modal-title">🔑 Claude API Key</div>
+
+      <div id="apiKeyStatus" style="text-align:center; margin-bottom:12px;"></div>
+
+      <input id="apiKeyModalInput" type="password" placeholder="sk-ant-..."
+        style="width:100%; box-sizing:border-box; border:1px solid #ddd; border-radius:8px; padding:9px 12px; font-size:13px; font-family:monospace; margin-bottom:6px;">
+
+      <div style="font-size:10px; color:#aaa; margin-bottom:14px; line-height:1.5;">
+        이 기기의 localStorage에만 저장돼요. GitHub에 올라가지 않아요.<br>
+        Trivia 기능에 사용됩니다.
+      </div>
+
+      <div style="display:flex; gap:8px;">
+        <button class="modal-close-btn" style="background:#e0e0e0; color:#333;" onclick="closeApiKeyModal()">Cancel</button>
+        <button class="modal-close-btn" style="background:#e74c3c;" onclick="clearApiKey()">Clear</button>
+        <button class="modal-close-btn" onclick="saveApiKey()">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ▼ 설정 모달 (API 키 섹션 제거됨) -->
   <div class="modal-overlay" id="settingsModal">
     <div class="modal-content" style="max-height:80vh; overflow-y:auto;">
       <div class="modal-title">⚙️ Settings</div>
@@ -676,12 +717,10 @@
       <div id="settingsTungList" style="display:flex; flex-direction:column; gap:6px; margin-bottom:6px;"></div>
       <button onclick="addTungOption()" style="width:100%; padding:7px; border-radius:8px; border:1px dashed #ccc; background:transparent; font-size:12px; cursor:pointer; margin-bottom:14px;">+ Add option</button>
 
-      <div style="font-size:12px; font-weight:700; margin-bottom:6px; color:#888;">Claude API Key</div>
-      <div style="margin-bottom:6px;">
-        <input id="apiKeyInput" type="password" placeholder="sk-ant-..."
-          style="width:100%; box-sizing:border-box; border:1px solid #ddd; border-radius:8px; padding:7px 10px; font-size:12px; font-family:monospace;">
+      <!-- API 키는 별도 🔑 버튼으로 분리되었음을 안내 -->
+      <div style="font-size:11px; color:#aaa; padding:8px 12px; border-radius:8px; background:rgba(0,0,0,0.04); margin-bottom:14px; display:flex; align-items:center; gap:6px;">
+        🔑 API Key는 상단 <strong>🔑 버튼</strong>에서 따로 관리할 수 있어요.
       </div>
-      <div style="font-size:10px; color:#aaa; margin-bottom:14px;">저장되면 이 기기 localStorage에만 보관돼요. GitHub에 올라가지 않아요.</div>
 
       <div style="display:flex; gap:8px;">
         <button class="modal-close-btn" style="background:#e0e0e0; color:#333;" onclick="closeSettingsModal()">Cancel</button>
@@ -716,14 +755,12 @@
       try { return JSON.parse(raw); } catch(e) { return defaultTungOptions; }
     }
 
-    // 동적 데이터 로드
     let missionData = loadCustomMissions();
     let tungOptions = loadCustomTungOptions();
 
     const tasks = missionData.map(m => m.name);
     const hints = Object.fromEntries(missionData.map(m => [m.name, m.hint]));
 
-    // 등급 설정
     const taskTier = Object.fromEntries(missionData.map(m => [m.name, m.tier]));
 
     const tierLabel = {
@@ -732,7 +769,6 @@
       "B": "B-Tier"
     };
 
-    // 코인 기본 보상
     const baseReward = {
       "S": 3,
       "A": 2,
@@ -740,10 +776,8 @@
       "BONUS": 0
     };
 
-    // 연간 기준일: 1월 15일 시작 → 351일 기준
     const YEAR_TOTAL_DAYS = 351;
 
-    // 한국 기준 날짜 (로컬 시간 기준, YYYY-MM-DD)
     function getKSTDate() {
       const now = new Date();
       const year = now.getFullYear();
@@ -754,7 +788,6 @@
 
     const today = getKSTDate();
 
-    // 랜덤 버프/디버프 목록
     const dailyEvents = [
       { id: "buff_all_plus1",  label: "Today's Buff: All missions +1 coin!", type: "buff" },
       { id: "buff_s_plus1",    label: "Today's Buff: S-tier +1 coin!", type: "buff" },
@@ -819,7 +852,6 @@
       localStorage.setItem("dailyStats", JSON.stringify(stats));
     }
 
-    // 미션별 완료 기록 저장
     function loadMissionLog() {
       const raw = localStorage.getItem("missionLog");
       if (!raw) return {};
@@ -835,7 +867,6 @@
       saveMissionLog(log);
     }
 
-    // 퉁치기 기록 저장
     function loadSkipLog() {
       const raw = localStorage.getItem("skipLog");
       if (!raw) return {};
@@ -872,6 +903,50 @@
     let currentTier = null;
     let skippedTasks = {};
 
+    // ─── API 키 모달 ───────────────────────────────────────────────
+    function openApiKeyModal() {
+      const existingKey = localStorage.getItem("mandart_api_key") || "";
+      const statusEl = document.getElementById("apiKeyStatus");
+      const inputEl  = document.getElementById("apiKeyModalInput");
+
+      if (existingKey) {
+        statusEl.innerHTML = `<span class="api-key-badge set">✅ 저장됨</span>`;
+        inputEl.value = ""; // 기존 키 노출 방지, 빈칸으로 두어 수정 시에만 입력
+        inputEl.placeholder = "새 키를 입력하면 교체돼요";
+      } else {
+        statusEl.innerHTML = `<span class="api-key-badge unset">미설정</span>`;
+        inputEl.value = "";
+        inputEl.placeholder = "sk-ant-...";
+      }
+
+      document.getElementById("apiKeyModal").style.display = "flex";
+    }
+
+    function closeApiKeyModal() {
+      document.getElementById("apiKeyModal").style.display = "none";
+    }
+
+    function saveApiKey() {
+      const val = document.getElementById("apiKeyModalInput").value.trim();
+      if (val) {
+        localStorage.setItem("mandart_api_key", val);
+        closeApiKeyModal();
+        initTriviaCard(); // trivia 버튼 상태 갱신
+        alert("API Key 저장 완료! 🔑");
+      } else {
+        closeApiKeyModal(); // 빈칸이면 그냥 닫기 (기존 키 유지)
+      }
+    }
+
+    function clearApiKey() {
+      if (confirm("API Key를 삭제할까요?")) {
+        localStorage.removeItem("mandart_api_key");
+        closeApiKeyModal();
+        initTriviaCard();
+      }
+    }
+    // ──────────────────────────────────────────────────────────────
+
     function getLevel(percent) {
       const lvl = Math.floor(percent / 5) + 1;
       return Math.min(20, Math.max(1, lvl));
@@ -903,13 +978,11 @@
     function updateUI() {
       const completed = getCompletedCount();
 
-      // 오늘을 "완료한 날"로 인정하는 기준
       let fullNeeded = tasks.length;
       if (dailyEvent.id === "half_day_full") {
         fullNeeded = Math.ceil(tasks.length / 2);
       }
 
-      // 퉁치기 없이 실제 미션만 7개 완료했을 때만 카운트
       const realCompleted = Object.values(taskStatus).filter(v => v).length;
       let realFullNeeded = tasks.length;
       if (dailyEvent.id === "half_day_full") realFullNeeded = Math.ceil(tasks.length / 2);
@@ -921,12 +994,10 @@
         localStorage.setItem("fullCompleteDate", fullCompleteDate);
       }
 
-      // 오늘 완료 개수 → 일별 통계에 저장
       const stats = loadDailyStats();
       stats[today] = completed;
       saveDailyStats(stats);
 
-      // 오늘 진행도
       document.getElementById("progressText").textContent =
         `Today: ${completed} / ${tasks.length}`;
 
@@ -939,7 +1010,6 @@
         listEl.appendChild(div);
       });
 
-      // 351일 기준으로 연간 퍼센트 계산
       const percent = Math.min(100, (fullCompleteCount / YEAR_TOTAL_DAYS) * 100);
       const level = getLevel(percent);
 
@@ -947,8 +1017,7 @@
         `${fullCompleteCount} / ${YEAR_TOTAL_DAYS} (${percent.toFixed(1)}%)`;
       document.getElementById("streakFill").style.width = `${percent}%`;
 
-      // 할 일 개수 기준 누적 그래프
-      const TASK_TOTAL = YEAR_TOTAL_DAYS * tasks.length; // 351 * 7 = 2457
+      const TASK_TOTAL = YEAR_TOTAL_DAYS * tasks.length;
       const allStats = loadDailyStats();
       const totalTasksDone = Object.values(allStats).reduce((sum, v) => sum + v, 0);
       const taskPercent = Math.min(100, (totalTasksDone / TASK_TOTAL) * 100);
@@ -958,13 +1027,11 @@
         `${totalTasksDone} / ${TASK_TOTAL} (${taskPercent.toFixed(1)}%)`;
       if (taskFillEl) taskFillEl.style.width = `${taskPercent}%`;
 
-      // 코인 + 레벨 표시
       const coinBadge = document.getElementById("badgeCoin");
       const lvBadge = document.getElementById("badgeLv");
       if (coinBadge) coinBadge.textContent = `🪙 ${coinCount}`;
       if (lvBadge) lvBadge.textContent = `⚡ LV ${level}`;
 
-      // 오늘의 버프/디버프 표시
       const eventEl = document.getElementById("eventText");
       eventEl.className = "";
       const eventIcon = dailyEvent.type === "buff" ? "🟢" : dailyEvent.type === "debuff" ? "🔴" : "🟡";
@@ -1152,7 +1219,6 @@
     function checkAndShowWeeklyStats() {
       const completed = getCompletedCount();
 
-      // 전체 완료 축하 팝업 (주간 통계보다 우선)
       if (completed >= tasks.length) {
         const shownToday = localStorage.getItem("allDonePopupDate");
         if (shownToday !== today) {
@@ -1192,7 +1258,6 @@
       document.getElementById("allDoneModal").style.display = "none";
     }
 
-    // 퉁치기 옵션 동적 렌더링
     function renderTungOptions() {
       const list = document.getElementById("tungOptionsList");
       if (!list) return;
@@ -1206,7 +1271,7 @@
       });
     }
 
-    // 설정 모달 열기
+    // ▼ 설정 모달 - API 키 섹션 없음
     function openSettingsModal() {
       const missionList = document.getElementById("settingsMissionList");
       missionList.innerHTML = "";
@@ -1243,9 +1308,6 @@
         tungList.appendChild(row);
       });
 
-      const savedKey = localStorage.getItem("mandart_api_key") || "";
-      const apiInput = document.getElementById("apiKeyInput");
-      if (apiInput) apiInput.value = savedKey ? "••••••••••••••••" : "";
       document.getElementById("settingsModal").style.display = "flex";
     }
 
@@ -1266,7 +1328,6 @@
     function removeTungOption(i) {
       const list = document.getElementById("settingsTungList");
       if (list.children[i]) list.children[i].remove();
-      // id 재정렬
       Array.from(list.children).forEach((row, idx) => {
         const inp = row.querySelector("input");
         const btn = row.querySelector("button");
@@ -1275,8 +1336,8 @@
       });
     }
 
+    // ▼ saveSettings — API 키 저장 로직 완전 제거 (별도 모달에서 처리)
     function saveSettings() {
-      // 미션 저장
       const newMissions = missionData.map((m, i) => ({
         name: document.getElementById(`mName_${i}`)?.value.trim() || m.name,
         hint: document.getElementById(`mHint_${i}`)?.value.trim() || m.hint,
@@ -1284,15 +1345,10 @@
       }));
       localStorage.setItem("customMissions", JSON.stringify(newMissions));
 
-      // 퉁치기 옵션 저장
       const tungList = document.getElementById("settingsTungList");
       const newTung = Array.from(tungList.querySelectorAll("input"))
         .map(inp => inp.value.trim()).filter(v => v);
       localStorage.setItem("customTungOptions", JSON.stringify(newTung));
-
-      // API 키 저장
-      const apiKeyVal = document.getElementById("apiKeyInput")?.value.trim();
-      if (apiKeyVal) localStorage.setItem("mandart_api_key", apiKeyVal);
 
       closeSettingsModal();
       alert("Saved! Refresh to apply changes 🙂");
@@ -1316,12 +1372,19 @@
       const triviaContent = document.getElementById("triviaContent");
       const triviaCategory = document.getElementById("triviaCategory");
 
+      // 🔑 버튼 상태 갱신
+      const headerBtn = document.getElementById("apiKeyHeaderBtn");
+      if (headerBtn) headerBtn.title = apiKey ? "API Key: 설정됨 ✅" : "API Key 설정";
+
       if (!apiKey) {
         triviaNoKey.style.display = "block";
+        triviaBtn.style.display = "none";
+        triviaCard.style.display = "none";
         return;
       }
 
-      // 오늘 이미 받았으면 캐시 표시
+      triviaNoKey.style.display = "none";
+
       const cached = localStorage.getItem("triviaDate");
       const cachedText = localStorage.getItem("triviaText");
       const cachedCat = localStorage.getItem("triviaCategory");
@@ -1329,10 +1392,10 @@
         triviaContent.textContent = cachedText;
         triviaCategory.textContent = `# ${cachedCat}`;
         triviaCard.style.display = "block";
+        triviaBtn.style.display = "none";
         return;
       }
 
-      // 버튼 표시
       triviaBtn.style.display = "block";
     }
 
@@ -1345,7 +1408,6 @@
       const triviaCategory = document.getElementById("triviaCategory");
 
       triviaBtn.style.display = "none";
-      // 새로 요청
       triviaLoading.style.display = "block";
       const cat = triviaCategories[Math.floor(Math.random() * triviaCategories.length)];
 
@@ -1534,7 +1596,6 @@
       const missionLog = loadMissionLog();
       const skipLog = loadSkipLog();
 
-      // 이번 달 날짜 범위
       const lastDate = new Date(year, month, 0).getDate();
       const monthDays = [];
       for (let d = 1; d <= lastDate; d++) {
@@ -1543,7 +1604,6 @@
         monthDays.push(`${year}-${mm}-${dd}`);
       }
 
-      // 이번 주 날짜 범위 (오늘 기준 월~일)
       const todayDate = new Date(...today.split("-").map((v,i)=>i===1?v-1:+v));
       const dow = todayDate.getDay();
       const weekStart = new Date(todayDate); weekStart.setDate(todayDate.getDate() - (dow === 0 ? 6 : dow - 1));
@@ -1561,7 +1621,6 @@
         const totalDays = days.filter(d => d <= today).length;
         if (totalDays === 0) return items;
 
-        // 완료율
         const doneDays = days.filter(d => stats[d] === tasks.length).length;
         const doneRate = Math.round(doneDays / totalDays * 100);
         if (doneRate === 100) items.push({ icon:"🏆", text:`Perfect! All ${totalDays} days fully completed.` });
@@ -1569,13 +1628,11 @@
         else if (doneRate >= 40) items.push({ icon:"📈", text:`${doneRate}% full days this ${label}. Room to grow!` });
         else items.push({ icon:"💪", text:`Only ${doneRate}% full days this ${label}. Let's push harder!` });
 
-        // 퉁치기 횟수
         const skipTotal = days.reduce((s, d) => s + (skipLog[d] || 0), 0);
         if (skipTotal >= 5) items.push({ icon:"😅", text:`Skipped ${skipTotal} times this ${label}. Maybe a bit too many?` });
         else if (skipTotal >= 3) items.push({ icon:"🙈", text:`${skipTotal} skips this ${label}. Try to cut it down!` });
         else if (skipTotal === 0 && totalDays >= 3) items.push({ icon:"🔥", text:`Zero skips this ${label}! Amazing discipline.` });
 
-        // 미션별 분석
         const missionCount = {};
         tasks.forEach(t => { missionCount[t] = 0; });
         days.forEach(d => {
@@ -1740,25 +1797,21 @@
 
       const completedCount = Object.values(taskStatus).filter(v => v).length;
 
-      // 첫 미션 보너스 (lucky_day)
       if (dailyEvent.id === "lucky_day" && completedCount === 1) {
         reward += 3;
         document.getElementById("hint").textContent =
           `Done! (+${reward} coins, first mission bonus +3!)`;
 
-      // 첫 미션 2배 (double_first)
       } else if (dailyEvent.id === "double_first" && completedCount === 1) {
         reward = reward * 2;
         document.getElementById("hint").textContent =
           `Done! (+${reward} coins, first mission x2!)`;
 
-      // 5개 완료 보너스 (special_5done)
       } else if (dailyEvent.id === "special_5done" && completedCount === 5) {
         reward += 5;
         document.getElementById("hint").textContent =
           `Done! (+${reward} coins, 5 missions bonus +5!)`;
 
-      // 마지막 미션 보너스 (buff_last_plus3)
       } else if (dailyEvent.id === "buff_last_plus3" && completedCount === tasks.length) {
         reward += 3;
         document.getElementById("hint").textContent =
