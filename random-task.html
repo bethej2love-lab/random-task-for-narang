@@ -144,7 +144,6 @@
       transform: scale(0.97);
     }
 
-    /* 퉁치기 버튼 */
     .tung-btn {
       border: none;
       border-radius: 999px;
@@ -302,7 +301,6 @@
       vertical-align: middle;
     }
 
-    /* 공통 모달 오버레이 */
     .modal-overlay {
       position: fixed;
       inset: 0;
@@ -324,7 +322,6 @@
       color: #222;
     }
 
-    /* 주간 통계 모달 전용 */
     .modal-title {
       font-size: 15px;
       font-weight: 700;
@@ -357,7 +354,6 @@
       color: #fff;
     }
 
-    /* 퉁치기 모달 전용 */
     .tung-modal-content {
       padding-top: 16px;
     }
@@ -423,7 +419,6 @@
       background: #e5e7eb;
     }
 
-    /* 달력 스타일 */
     #toggleCalendarButton {
       margin-top: 0;
       font-size: 12px;
@@ -496,7 +491,6 @@
       background: rgba(75, 140, 255, 0.15);
     }
 
-    /* API 키 상태 뱃지 */
     .api-key-badge {
       display: inline-flex;
       align-items: center;
@@ -509,7 +503,6 @@
     .api-key-badge.set   { background: rgba(46,204,113,0.15); color: #1a7a45; }
     .api-key-badge.unset { background: rgba(0,0,0,0.06);      color: #999; }
 
-    /* 모바일 최적화 */
     @media (max-width: 480px) {
       body {
         padding-top: 24px;
@@ -549,7 +542,6 @@
 </head>
 <body>
   <div class="card" id="card">
-    <!-- ▼ 헤더: 설정(⚙️) + API키(🔑) 버튼 분리 -->
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
       <h1 style="margin:0;">Random Task Picker</h1>
       <div style="display:flex; gap:6px; align-items:center;">
@@ -575,7 +567,6 @@
       <button class="pending-btn" onclick="markPending()">Skip</button>
     </div>
 
-    <!-- 진행도 + 체크리스트 + 연간 퍼센트 (첫 화면에서는 안 보임) -->
     <div class="progress-box" id="progressContainer" style="display:none;">
       <div class="status-summary" id="statusSummary">
         <span class="badge badge-coin" id="badgeCoin">🪙 0</span>
@@ -602,7 +593,6 @@
 
       <div id="eventText"></div>
 
-      <!-- 달력 토글 버튼 + 컨테이너 -->
       <div style="display:flex; gap:8px; margin-top:18px;">
         <button id="toggleCalendarButton" onclick="toggleCalendar()" style="flex:1;">📅 Calendar</button>
         <button id="toggleReportButton" onclick="toggleReport()" style="flex:1; margin-top:0;">📊 Report</button>
@@ -682,7 +672,7 @@
     </div>
   </div>
 
-  <!-- ▼ API 키 전용 모달 (설정 모달과 완전 분리) -->
+  <!-- API 키 전용 모달 -->
   <div class="modal-overlay" id="apiKeyModal">
     <div class="modal-content">
       <div class="modal-title">🔑 Claude API Key</div>
@@ -705,7 +695,7 @@
     </div>
   </div>
 
-  <!-- ▼ 설정 모달 (API 키 섹션 제거됨) -->
+  <!-- 설정 모달 -->
   <div class="modal-overlay" id="settingsModal">
     <div class="modal-content" style="max-height:80vh; overflow-y:auto;">
       <div class="modal-title">⚙️ Settings</div>
@@ -717,7 +707,6 @@
       <div id="settingsTungList" style="display:flex; flex-direction:column; gap:6px; margin-bottom:6px;"></div>
       <button onclick="addTungOption()" style="width:100%; padding:7px; border-radius:8px; border:1px dashed #ccc; background:transparent; font-size:12px; cursor:pointer; margin-bottom:14px;">+ Add option</button>
 
-      <!-- API 키는 별도 🔑 버튼으로 분리되었음을 안내 -->
       <div style="font-size:11px; color:#aaa; padding:8px 12px; border-radius:8px; background:rgba(0,0,0,0.04); margin-bottom:14px; display:flex; align-items:center; gap:6px;">
         🔑 API Key는 상단 <strong>🔑 버튼</strong>에서 따로 관리할 수 있어요.
       </div>
@@ -760,21 +749,10 @@
 
     const tasks = missionData.map(m => m.name);
     const hints = Object.fromEntries(missionData.map(m => [m.name, m.hint]));
-
     const taskTier = Object.fromEntries(missionData.map(m => [m.name, m.tier]));
 
-    const tierLabel = {
-      "S": "S-Tier",
-      "A": "A-Tier",
-      "B": "B-Tier"
-    };
-
-    const baseReward = {
-      "S": 3,
-      "A": 2,
-      "B": 1,
-      "BONUS": 0
-    };
+    const tierLabel = { "S": "S-Tier", "A": "A-Tier", "B": "B-Tier" };
+    const baseReward = { "S": 3, "A": 2, "B": 1, "BONUS": 0 };
 
     const YEAR_TOTAL_DAYS = 351;
 
@@ -891,6 +869,31 @@
       localStorage.setItem("weeklyPopupStatus", JSON.stringify(status));
     }
 
+    // ── Trivia 히스토리 관리 ─────────────────────────────────────
+    function loadTriviaHistory() {
+      const raw = localStorage.getItem("triviaHistory");
+      if (!raw) return [];
+      try { return JSON.parse(raw); } catch(e) { return []; }
+    }
+
+    function saveTriviaHistory(entry) {
+      const history = loadTriviaHistory();
+      history.push(entry);
+      // 최근 30개만 보관
+      if (history.length > 30) history.splice(0, history.length - 30);
+      localStorage.setItem("triviaHistory", JSON.stringify(history));
+    }
+
+    function pickTriviaCategory() {
+      // 최근 5회 사용한 카테고리 제외
+      const history = loadTriviaHistory();
+      const recentCats = history.slice(-5).map(h => h.category);
+      const available = triviaCategories.filter(c => !recentCats.includes(c));
+      const pool = available.length > 0 ? available : triviaCategories;
+      return pool[Math.floor(Math.random() * pool.length)];
+    }
+    // ─────────────────────────────────────────────────────────────
+
     let { count: tungCount, freeUsed: tungFreeUsed } = loadTungState();
 
     let taskStatus = loadTaskStatus();
@@ -911,7 +914,7 @@
 
       if (existingKey) {
         statusEl.innerHTML = `<span class="api-key-badge set">✅ 저장됨</span>`;
-        inputEl.value = ""; // 기존 키 노출 방지, 빈칸으로 두어 수정 시에만 입력
+        inputEl.value = "";
         inputEl.placeholder = "새 키를 입력하면 교체돼요";
       } else {
         statusEl.innerHTML = `<span class="api-key-badge unset">미설정</span>`;
@@ -931,10 +934,10 @@
       if (val) {
         localStorage.setItem("mandart_api_key", val);
         closeApiKeyModal();
-        initTriviaCard(); // trivia 버튼 상태 갱신
+        initTriviaCard();
         alert("API Key 저장 완료! 🔑");
       } else {
-        closeApiKeyModal(); // 빈칸이면 그냥 닫기 (기존 키 유지)
+        closeApiKeyModal();
       }
     }
 
@@ -1271,7 +1274,6 @@
       });
     }
 
-    // ▼ 설정 모달 - API 키 섹션 없음
     function openSettingsModal() {
       const missionList = document.getElementById("settingsMissionList");
       missionList.innerHTML = "";
@@ -1336,7 +1338,6 @@
       });
     }
 
-    // ▼ saveSettings — API 키 저장 로직 완전 제거 (별도 모달에서 처리)
     function saveSettings() {
       const newMissions = missionData.map((m, i) => ({
         name: document.getElementById(`mName_${i}`)?.value.trim() || m.name,
@@ -1372,7 +1373,6 @@
       const triviaContent = document.getElementById("triviaContent");
       const triviaCategory = document.getElementById("triviaCategory");
 
-      // 🔑 버튼 상태 갱신
       const headerBtn = document.getElementById("apiKeyHeaderBtn");
       if (headerBtn) headerBtn.title = apiKey ? "API Key: 설정됨 ✅" : "API Key 설정";
 
@@ -1409,7 +1409,23 @@
 
       triviaBtn.style.display = "none";
       triviaLoading.style.display = "block";
-      const cat = triviaCategories[Math.floor(Math.random() * triviaCategories.length)];
+
+      // 최근 사용 카테고리 제외하고 뽑기
+      const cat = pickTriviaCategory();
+
+      // 최근 10개 히스토리를 프롬프트에 포함
+      const history = loadTriviaHistory();
+      const recentSummaries = history.slice(-10)
+        .map(h => `[${h.category}] ${h.summary}`)
+        .join("\n");
+      const avoidClause = recentSummaries
+        ? `\n\n아래는 최근에 이미 다룬 내용이니 겹치지 않게 해줘:\n${recentSummaries}`
+        : "";
+
+      // 카테고리별 프롬프트 분기
+      const prompt = cat === "Movie Recommendation"
+        ? `오늘 볼 만한 영화 한 편을 추천해줘. 제목(개봉연도), 장르, 추천 이유 1~2문장을 포함해서 구체적으로 말해줘. 너무 유명한 영화(타이타닉, 인셉션 등)보다는 덜 알려진 명작이나 숨은 걸작 위주로 골라줘.${avoidClause}`
+        : `"${cat}"에 대한 흥미롭고 구체적인 상식 한 가지를 2~3문장으로 말해줘. "알고 계셨나요?" 같은 서두 없이 바로 본론으로 시작해. 최대한 구체적인 수치나 사례를 포함해서 생생하게.${avoidClause}`;
 
       try {
         const res = await fetch("https://api.anthropic.com/v1/messages", {
@@ -1423,10 +1439,7 @@
           body: JSON.stringify({
             model: "claude-sonnet-4-20250514",
             max_tokens: 300,
-            messages: [{
-              role: "user",
-              content: `Give me one interesting, bite-sized trivia fact about "${cat}". Keep it to 2-3 sentences max. Be specific, fascinating, and easy to understand. No intro phrases like "Did you know" — just the fact directly. Respond in Korean.`
-            }]
+            messages: [{ role: "user", content: prompt }]
           })
         });
 
@@ -1438,9 +1451,19 @@
         const data = await res.json();
         if (data.content?.[0]?.text) {
           const text = data.content[0].text.trim();
+
+          // 오늘 캐시 저장
           localStorage.setItem("triviaDate", today);
           localStorage.setItem("triviaText", text);
           localStorage.setItem("triviaCategory", cat);
+
+          // 히스토리에 기록 (앞 60자를 요약으로)
+          saveTriviaHistory({
+            date: today,
+            category: cat,
+            summary: text.slice(0, 60)
+          });
+
           triviaContent.textContent = text;
           triviaCategory.textContent = `# ${cat}`;
           triviaLoading.style.display = "none";
@@ -1801,22 +1824,18 @@
         reward += 3;
         document.getElementById("hint").textContent =
           `Done! (+${reward} coins, first mission bonus +3!)`;
-
       } else if (dailyEvent.id === "double_first" && completedCount === 1) {
         reward = reward * 2;
         document.getElementById("hint").textContent =
           `Done! (+${reward} coins, first mission x2!)`;
-
       } else if (dailyEvent.id === "special_5done" && completedCount === 5) {
         reward += 5;
         document.getElementById("hint").textContent =
           `Done! (+${reward} coins, 5 missions bonus +5!)`;
-
       } else if (dailyEvent.id === "buff_last_plus3" && completedCount === tasks.length) {
         reward += 3;
         document.getElementById("hint").textContent =
           `Done! (+${reward} coins, last mission bonus +3!)`;
-
       } else if (reward > 0) {
         document.getElementById("hint").textContent =
           `Done! (+${reward} coins)`;
