@@ -158,14 +158,13 @@
     .api-key-badge.set   { background: rgba(46,204,113,0.15); color: #1a7a45; }
     .api-key-badge.unset { background: rgba(0,0,0,0.06); color: #999; }
 
-    /* ─── Year Goals (intensity plan) ─────────────────────────── */
+    /* ─── Year Goals ─────────────────────────────────────── */
     #goalsContainer { margin-top: 12px; display: none; }
     .goals-section-title {
       font-size: 10px; font-weight: 700; text-transform: uppercase;
       letter-spacing: 0.5px; color: #aaa; margin-bottom: 12px;
     }
     .goals-timeline { display: flex; flex-direction: column; gap: 0; position: relative; }
-    /* 세로 연결선 */
     .goals-timeline::before {
       content: ""; position: absolute; left: 28px; top: 6px;
       bottom: 6px; width: 2px; background: #e8e8e8; z-index: 0;
@@ -177,33 +176,24 @@
     .goal-dot-wrap { width: 20px; flex-shrink: 0; display: flex; flex-direction: column; align-items: center; padding-top: 2px; }
     .goal-dot {
       width: 10px; height: 10px; border-radius: 50%;
-      border: 2px solid #ddd; background: #fff;
-      flex-shrink: 0; transition: all 0.2s;
+      border: 2px solid #ddd; background: #fff; flex-shrink: 0; transition: all 0.2s;
     }
     .goal-dot.past    { background: #2ecc71; border-color: #2ecc71; }
     .goal-dot.current { background: var(--accent,#4b8cff); border-color: var(--accent,#4b8cff); box-shadow: 0 0 0 3px rgba(75,140,255,0.2); }
     .goal-dot.future  { background: #fff; border-color: #ddd; }
     .goal-dot.empty   { background: #f5f5f5; border-color: #eee; }
     .goal-body { flex: 1; min-width: 0; }
-    .goal-month-header {
-      display: flex; align-items: center; gap: 6px; margin-bottom: 2px;
-    }
-    .goal-month-name {
-      font-size: 11px; font-weight: 700; color: #bbb; flex-shrink: 0;
-    }
+    .goal-month-header { display: flex; align-items: center; gap: 6px; margin-bottom: 2px; }
+    .goal-month-name { font-size: 11px; font-weight: 700; color: #bbb; flex-shrink: 0; }
     .goal-month-name.past    { color: #2ecc71; }
     .goal-month-name.current { color: var(--accent,#4b8cff); }
     .goal-month-name.future  { color: #ccc; }
     .goal-month-badge {
       font-size: 9px; font-weight: 700; padding: 1px 6px; border-radius: 999px;
-      background: rgba(75,140,255,0.12); color: var(--accent,#4b8cff);
-      display: none;
+      background: rgba(75,140,255,0.12); color: var(--accent,#4b8cff); display: none;
     }
     .goal-month-badge.show { display: inline-block; }
-    .goal-plan-text {
-      font-size: 12px; color: #555; line-height: 1.5;
-      white-space: pre-wrap; word-break: break-word;
-    }
+    .goal-plan-text { font-size: 12px; color: #555; line-height: 1.5; white-space: pre-wrap; word-break: break-word; }
     .goal-plan-text.empty-hint { color: #ccc; font-style: italic; font-size: 11px; }
     .goal-edit-inline {
       margin-top: 4px; font-size: 11px; color: var(--accent,#4b8cff);
@@ -211,15 +201,12 @@
       background: none; border: none; padding: 0; font-family: inherit;
     }
     .goal-row:hover .goal-edit-inline { opacity: 1; }
-
-    /* Goals 편집 모달 */
     .goals-edit-row { margin-bottom: 12px; }
     .goals-edit-month-label { font-size: 12px; font-weight: 700; color: var(--accent,#4b8cff); margin-bottom: 4px; }
     .goals-edit-textarea {
       width: 100%; box-sizing: border-box; border: 1px solid #e5e7eb;
       border-radius: 8px; padding: 8px 10px; font-size: 12px; color: #444;
-      font-family: inherit; resize: none; line-height: 1.5;
-      min-height: 52px;
+      font-family: inherit; resize: none; line-height: 1.5; min-height: 52px;
     }
     .goals-edit-textarea:focus { outline: none; border-color: var(--accent,#4b8cff); }
 
@@ -300,7 +287,7 @@
         <span id="perfectDaysCount" style="font-size:13px; font-weight:600; color:#e74c3c;"></span>
       </div>
 
-      <!-- ── Year Goals: 강도 플랜 타임라인 ── -->
+      <!-- ── Year Goals ── -->
       <div id="goalsContainer">
         <div class="goals-section-title" style="margin-top:2px;">🎯 2026 Intensity Plan</div>
         <div class="goals-timeline" id="goalsTimeline"></div>
@@ -334,7 +321,6 @@
     </div>
   </div>
 
-  <!-- 모달들 -->
   <div class="modal-overlay" id="allDoneModal">
     <div class="modal-content" style="text-align:center;">
       <div style="font-size:48px; margin-bottom:8px;">🎉</div>
@@ -343,7 +329,6 @@
       <button class="modal-close-btn" onclick="closeAllDoneModal()">Great work 😊</button>
     </div>
   </div>
-
   <div class="modal-overlay" id="weeklyModal">
     <div class="modal-content">
       <div class="modal-title">Last 7 Days</div>
@@ -351,7 +336,6 @@
       <button class="modal-close-btn" onclick="closeWeeklyStats()">OK</button>
     </div>
   </div>
-
   <div class="modal-overlay" id="tungModal">
     <div class="modal-content tung-modal-content">
       <div class="tung-header">
@@ -367,7 +351,6 @@
       </div>
     </div>
   </div>
-
   <div class="modal-overlay" id="apiKeyModal">
     <div class="modal-content">
       <div class="modal-title">🔑 Claude API Key</div>
@@ -384,7 +367,6 @@
       </div>
     </div>
   </div>
-
   <div class="modal-overlay" id="settingsModal">
     <div class="modal-content" style="max-height:80vh; overflow-y:auto;">
       <div class="modal-title">⚙️ Settings</div>
@@ -402,13 +384,11 @@
       </div>
     </div>
   </div>
-
-  <!-- Goals 편집 모달 -->
   <div class="modal-overlay" id="goalsEditModal">
     <div class="modal-content" style="max-height:85vh; overflow-y:auto;">
       <div class="modal-title">🎯 Intensity Plan 편집</div>
       <div style="font-size:11px; color:#aaa; margin-bottom:14px; text-align:center; line-height:1.6;">
-        이번 달부터 뭘 바꿀지, 어떤 미션을 강화할지<br>자유롭게 메모해두세요.
+        이번 달부터 뭘 바꿀지, 어떤 미션을 강화할지<br>자유롭게 수정하세요.
       </div>
       <div id="goalsEditList"></div>
       <div style="display:flex; gap:8px; margin-top:4px;">
@@ -449,7 +429,6 @@
     }
     const today = getKSTDate();
 
-    // ── Daily Events ──────────────────────────────────────────────
     const dailyEvents = [
       { id:"buff_all_plus1",  label:"Today's Buff: All missions +1 coin!",              type:"buff"    },
       { id:"buff_s_plus1",    label:"Today's Buff: S-tier +1 coin!",                    type:"buff"    },
@@ -465,13 +444,12 @@
       { id:"buff_last_plus3", label:"Today's Buff: Last mission +3 coins!",             type:"buff"    }
     ];
 
-    // ── Storage helpers ───────────────────────────────────────────
     const ls = {
-      get:  (k) => { try { return JSON.parse(localStorage.getItem(k)); } catch(e) { return null; } },
-      set:  (k,v) => localStorage.setItem(k, JSON.stringify(v)),
-      str:  (k) => localStorage.getItem(k),
+      get:   (k) => { try { return JSON.parse(localStorage.getItem(k)); } catch(e) { return null; } },
+      set:   (k,v) => localStorage.setItem(k, JSON.stringify(v)),
+      str:   (k) => localStorage.getItem(k),
       setStr:(k,v) => localStorage.setItem(k, v),
-      rm:   (k) => localStorage.removeItem(k)
+      rm:    (k) => localStorage.removeItem(k)
     };
 
     function loadTaskStatus() {
@@ -497,7 +475,6 @@
     function loadWeeklyPopup() { return ls.get("weeklyPopupStatus")||{}; }
     function saveWeeklyPopup(s){ ls.set("weeklyPopupStatus",s); }
 
-    // ── Trivia history ────────────────────────────────────────────
     function loadTriviaHistory()  { return ls.get("triviaHistory")||[]; }
     function saveTriviaHistory(e) { const h=loadTriviaHistory();h.push(e);if(h.length>30)h.splice(0,h.length-30);ls.set("triviaHistory",h); }
     function pickTriviaCategory() {
@@ -507,14 +484,38 @@
       return pool[Math.floor(Math.random()*pool.length)];
     }
 
-    // ── Year Goals: 강도 플랜 ─────────────────────────────────────
+    // ── Year Goals ────────────────────────────────────────────────
     const MONTH_NAMES = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+
+    // localStorage에 저장된 게 없을 때만 쓰이는 기본 플랜
+    const DEFAULT_GOALS = [
+      { plan: "" }, // 1월 - 소급 입력 가능
+      { plan: "" }, // 2월
+      { plan: "" }, // 3월
+      // 4월
+      { plan: "플랭크 50초\n독서 15p\n브릴리언트 5개\n말해보카 50개\n달리기 2km or 만보\n퀴즈 서술형 or 객관식 80\n부기스 인스타/블로그+스토어" },
+      // 5월
+      { plan: "플랭크 1분\n독서 20p\n브릴리언트 6개\n말해보카 55개\n달리기 2.5km\n퀴즈 서술형 or 객관식 90\n부기스 주 2회 이상" },
+      // 6월
+      { plan: "플랭크 1분 15초\n독서 25p\n브릴리언트 6개\n말해보카 60개\n달리기 3km\n퀴즈 서술형 or 객관식 100\n부기스 블로그 주 3회 고정" },
+      // 7월
+      { plan: "플랭크 1분 30초\n독서 30p\n브릴리언트 7개\n말해보카 65개\n달리기 3.5km\n퀴즈 서술형 or 객관식 110\n부기스 스토어 월매출 목표 설정" },
+      // 8월
+      { plan: "플랭크 1분 45초\n독서 35p\n브릴리언트 7개\n말해보카 70개\n달리기 4km\n퀴즈 서술형 or 객관식 120\n부기스 콘텐츠 루틴화" },
+      // 9월
+      { plan: "플랭크 2분\n독서 40p\n브릴리언트 8개\n말해보카 80개\n달리기 4.5km\n퀴즈 서술형 or 객관식 130\n부기스 블로그+인스타 동시 운영" },
+      // 10월
+      { plan: "플랭크 2분 30초\n독서 45p\n브릴리언트 8개\n말해보카 85개\n달리기 5km\n퀴즈 서술형 or 객관식 140\n부기스 스토어 주 1회 신제품" },
+      // 11월
+      { plan: "플랭크 3분 × 1세트\n독서 50p\n브릴리언트 9개\n말해보카 90개\n달리기 5.5km\n퀴즈 서술형 or 객관식 150\n부기스 전 채널 주 3회 이상" },
+      // 12월
+      { plan: "🏆 플랭크 3분 × 2세트\n독서 50p\n브릴리언트 10개\n말해보카 100개\n달리기 6km\n퀴즈 서술형 or 객관식 160\n부기스 전채널 + 스토어 루틴" }
+    ];
 
     function loadYearGoals() {
       const raw = ls.get("yearGoals2026");
-      // 12개 항목의 배열 { plan: string } 형태
       if (raw && Array.isArray(raw) && raw.length === 12) return raw;
-      return MONTH_NAMES.map(() => ({ plan: "" }));
+      return DEFAULT_GOALS.map(g => ({ ...g }));
     }
     function saveYearGoals(g) { ls.set("yearGoals2026", g); }
 
@@ -523,30 +524,22 @@
       const tl = document.getElementById("goalsTimeline");
       if (!tl) return;
       tl.innerHTML = "";
-      const curMonth = parseInt(today.split("-")[1], 10); // 1-based
+      const curMonth = parseInt(today.split("-")[1], 10);
 
       goals.forEach((g, i) => {
-        const mn = i + 1; // 1-based month
+        const mn = i + 1;
         const state = mn < curMonth ? "past" : mn === curMonth ? "current" : "future";
         const hasPlan = g.plan && g.plan.trim().length > 0;
 
-        const row = document.createElement("div");
-        row.className = "goal-row";
+        const row = document.createElement("div"); row.className = "goal-row";
 
-        // 점
-        const dotWrap = document.createElement("div");
-        dotWrap.className = "goal-dot-wrap";
+        const dotWrap = document.createElement("div"); dotWrap.className = "goal-dot-wrap";
         const dot = document.createElement("div");
         dot.className = `goal-dot ${hasPlan ? state : "empty"}`;
-        dotWrap.appendChild(dot);
-        row.appendChild(dotWrap);
+        dotWrap.appendChild(dot); row.appendChild(dotWrap);
 
-        // 내용
-        const body = document.createElement("div");
-        body.className = "goal-body";
-
-        const header = document.createElement("div");
-        header.className = "goal-month-header";
+        const body = document.createElement("div"); body.className = "goal-body";
+        const header = document.createElement("div"); header.className = "goal-month-header";
 
         const nameLbl = document.createElement("span");
         nameLbl.className = `goal-month-name ${state}`;
@@ -555,8 +548,7 @@
 
         if (state === "current") {
           const badge = document.createElement("span");
-          badge.className = "goal-month-badge show";
-          badge.textContent = "NOW";
+          badge.className = "goal-month-badge show"; badge.textContent = "NOW";
           header.appendChild(badge);
         }
         body.appendChild(header);
@@ -567,14 +559,12 @@
           planEl.textContent = g.plan;
         } else {
           planEl.className = "goal-plan-text empty-hint";
-          planEl.textContent = state === "future" ? "계획 없음" : state === "current" ? "아직 플랜 미작성" : "기록 없음";
+          planEl.textContent = state === "current" ? "아직 플랜 미작성" : state === "future" ? "계획 없음" : "기록 없음";
         }
         body.appendChild(planEl);
 
-        // 편집 버튼 (호버 시 표시)
         const editBtn = document.createElement("button");
-        editBtn.className = "goal-edit-inline";
-        editBtn.textContent = "✏️ edit";
+        editBtn.className = "goal-edit-inline"; editBtn.textContent = "✏️ edit";
         editBtn.onclick = () => openGoalsEditModalAt(i);
         body.appendChild(editBtn);
 
@@ -593,33 +583,21 @@
       }
     }
 
-    function openGoalsEditModal()      { openGoalsEditModalAt(null); }
+    function openGoalsEditModal()         { openGoalsEditModalAt(null); }
     function openGoalsEditModalAt(focusIdx) {
       const goals = loadYearGoals();
-      const list = document.getElementById("goalsEditList");
-      list.innerHTML = "";
+      const list = document.getElementById("goalsEditList"); list.innerHTML = "";
       goals.forEach((g, i) => {
-        const div = document.createElement("div");
-        div.className = "goals-edit-row";
-        const lbl = document.createElement("div");
-        lbl.className = "goals-edit-month-label";
+        const div = document.createElement("div"); div.className = "goals-edit-row";
+        const lbl = document.createElement("div"); lbl.className = "goals-edit-month-label";
         lbl.textContent = `${MONTH_NAMES[i]} (${i+1}월)`;
-        const ta = document.createElement("textarea");
-        ta.className = "goals-edit-textarea";
-        ta.id = `gPlan_${i}`;
-        ta.placeholder = "이번 달 강도 업그레이드 계획을 적어보세요\n예) 달리기 10분→20분, 플랭크 1분→2분";
-        ta.value = g.plan || "";
-        // 입력 내용에 따라 높이 자동 조절
-        ta.addEventListener("input", () => {
-          ta.style.height = "auto";
-          ta.style.height = ta.scrollHeight + "px";
-        });
-        div.appendChild(lbl);
-        div.appendChild(ta);
-        list.appendChild(div);
+        const ta = document.createElement("textarea"); ta.className = "goals-edit-textarea";
+        ta.id = `gPlan_${i}`; ta.value = g.plan || "";
+        ta.placeholder = "이번 달 강도 플랜을 적어보세요";
+        ta.addEventListener("input", () => { ta.style.height = "auto"; ta.style.height = ta.scrollHeight + "px"; });
+        div.appendChild(lbl); div.appendChild(ta); list.appendChild(div);
       });
       document.getElementById("goalsEditModal").style.display = "flex";
-      // 특정 달 포커스
       if (focusIdx !== null) {
         setTimeout(() => {
           const el = document.getElementById(`gPlan_${focusIdx}`);
@@ -630,16 +608,11 @@
     function closeGoalsEditModal() { document.getElementById("goalsEditModal").style.display = "none"; }
     function saveGoals() {
       const goals = loadYearGoals();
-      goals.forEach((_, i) => {
-        const ta = document.getElementById(`gPlan_${i}`);
-        if (ta) goals[i].plan = ta.value.trim();
-      });
-      saveYearGoals(goals);
-      closeGoalsEditModal();
-      renderGoalsTimeline();
+      goals.forEach((_, i) => { const ta = document.getElementById(`gPlan_${i}`); if(ta) goals[i].plan = ta.value.trim(); });
+      saveYearGoals(goals); closeGoalsEditModal(); renderGoalsTimeline();
     }
 
-    // ── State init ────────────────────────────────────────────────
+    // ── State ─────────────────────────────────────────────────────
     function loadTungState() {
       if(ls.str("tungDate")!==today){ls.setStr("tungDate",today);ls.setStr("tungCount","0");ls.setStr("tungFreeUsed","0");ls.rm("tungChoice");return{count:0,freeUsed:false};}
       return{count:parseInt(ls.str("tungCount")||"0",10),freeUsed:ls.str("tungFreeUsed")==="1"};
@@ -647,17 +620,14 @@
     let {count:tungCount,freeUsed:tungFreeUsed}=loadTungState();
     let taskStatus=loadTaskStatus();
     let {count:fullCompleteCount,lastDate:fullCompleteDate}=loadFullDays();
-    let coinCount=loadCoins();
-    let dailyEvent=loadDailyEvent();
-    let isPicking=false,hasShownProgress=false,currentTask=null,currentTier=null,skippedTasks={};
+    let coinCount=loadCoins(), dailyEvent=loadDailyEvent();
+    let isPicking=false, hasShownProgress=false, currentTask=null, currentTier=null, skippedTasks={};
 
-    // ── API Key ───────────────────────────────────────────────────
     function openApiKeyModal(){const k=ls.str("mandart_api_key")||"";document.getElementById("apiKeyStatus").innerHTML=k?`<span class="api-key-badge set">✅ 저장됨</span>`:`<span class="api-key-badge unset">미설정</span>`;const inp=document.getElementById("apiKeyModalInput");inp.value="";inp.placeholder=k?"새 키를 입력하면 교체돼요":"sk-ant-...";document.getElementById("apiKeyModal").style.display="flex";}
     function closeApiKeyModal(){document.getElementById("apiKeyModal").style.display="none";}
     function saveApiKey(){const v=document.getElementById("apiKeyModalInput").value.trim();if(v){ls.setStr("mandart_api_key",v);closeApiKeyModal();initTriviaCard();alert("API Key 저장 완료! 🔑");}else closeApiKeyModal();}
     function clearApiKey(){if(confirm("API Key를 삭제할까요?")){ls.rm("mandart_api_key");closeApiKeyModal();initTriviaCard();}}
 
-    // ── Game logic ────────────────────────────────────────────────
     function getLevel(p){return Math.min(20,Math.max(1,Math.floor(p/5)+1));}
     function getRewardForTask(name){
       const tier=taskTier[name]||"B";let r=baseReward[tier];if(tier==="BONUS")return 0;
@@ -694,11 +664,9 @@
       ev.classList.add(dailyEvent.type==="buff"?"event-buff":dailyEvent.type==="debuff"?"event-debuff":"event-special");
       updateTungButtonVisibility();
     }
-
     function showProgressIfNeeded(){if(!hasShownProgress){document.getElementById("progressContainer").style.display="block";hasShownProgress=true;}}
     function updateTungButtonVisibility(){const c=document.getElementById("tungContainer");if(!c)return;c.style.display=(!currentTask||getCompletedCount()>=tasks.length)?"none":"inline-block";}
 
-    // ── Theme ─────────────────────────────────────────────────────
     function applyTheme(){
       const[y,m,d]=getKSTDate().split("-").map(Number),date=new Date(y,m-1,d);
       const diff=Math.floor((date-new Date(date.getFullYear(),0,1))/86400000);
@@ -723,50 +691,19 @@
       document.body.style.background=t.b;
       const card=document.getElementById("card");if(card)card.style.background=t.c;
       window._isDarkTheme=t.dk;
-      if(t.dk){
-        document.body.style.color="#f5f5f5";if(card)card.style.color="#f5f5f5";
-        document.getElementById("missionCard").style.background="rgba(255,255,255,0.05)";
-        document.querySelectorAll(".badge-coin").forEach(e=>{e.style.background="rgba(241,196,15,0.2)";e.style.color="#f1c40f";});
-        document.querySelectorAll(".badge-lv").forEach(e=>{e.style.background="rgba(163,185,252,0.15)";e.style.color="#a5b4fc";});
-        const pt=document.getElementById("progressText");if(pt)pt.style.color="var(--accent-soft,#a5b4fc)";
-        document.querySelectorAll(".streak-label").forEach(e=>e.style.color="#888");
-        document.querySelectorAll(".streak-label span").forEach(e=>e.style.color="#ccc");
-        document.querySelectorAll("button.main").forEach(e=>e.style.color="#fff");
-      }else{
-        document.body.style.color="#000";if(card)card.style.color="#000";
-        document.getElementById("missionCard").style.background="";
-        document.querySelectorAll(".badge-coin,.badge-lv").forEach(e=>{e.style.background="";e.style.color="";});
-        const pt=document.getElementById("progressText");if(pt)pt.style.color="";
-        document.querySelectorAll(".streak-label,.streak-label span").forEach(e=>e.style.color="");
-        document.querySelectorAll("button.main").forEach(e=>e.style.color="#fff");
-      }
+      if(t.dk){document.body.style.color="#f5f5f5";if(card)card.style.color="#f5f5f5";document.getElementById("missionCard").style.background="rgba(255,255,255,0.05)";document.querySelectorAll(".badge-coin").forEach(e=>{e.style.background="rgba(241,196,15,0.2)";e.style.color="#f1c40f";});document.querySelectorAll(".badge-lv").forEach(e=>{e.style.background="rgba(163,185,252,0.15)";e.style.color="#a5b4fc";});const pt=document.getElementById("progressText");if(pt)pt.style.color="var(--accent-soft,#a5b4fc)";document.querySelectorAll(".streak-label").forEach(e=>e.style.color="#888");document.querySelectorAll(".streak-label span").forEach(e=>e.style.color="#ccc");document.querySelectorAll("button.main").forEach(e=>e.style.color="#fff");}
+      else{document.body.style.color="#000";if(card)card.style.color="#000";document.getElementById("missionCard").style.background="";document.querySelectorAll(".badge-coin,.badge-lv").forEach(e=>{e.style.background="";e.style.color="";});const pt=document.getElementById("progressText");if(pt)pt.style.color="";document.querySelectorAll(".streak-label,.streak-label span").forEach(e=>e.style.color="");document.querySelectorAll("button.main").forEach(e=>e.style.color="#fff");}
     }
 
     applyTheme(); updateUI(); renderTungOptions(); initTriviaCard();
 
-    // ── Weekly stats ──────────────────────────────────────────────
-    function buildLast7DaysData(){
-      const stats=loadDailyStats(),[y,m,d]=today.split("-").map(Number),base=new Date(y,m-1,d),res=[];
-      for(let i=6;i>=0;i--){const dt=new Date(base);dt.setDate(base.getDate()-i);const k=`${dt.getFullYear()}-${String(dt.getMonth()+1).padStart(2,"0")}-${String(dt.getDate()).padStart(2,"0")}`;res.push({key:k,label:k.slice(5).replace("-","/"),count:stats[k]||0});}
-      return res;
-    }
-    function openWeeklyStatsModal(){
-      const body=document.getElementById("weeklyStatsBody");body.innerHTML="";
-      buildLast7DaysData().forEach(item=>{const r=document.createElement("div");r.className="weekly-row";const l=document.createElement("div");l.className="weekly-label";l.textContent=item.label;const b=document.createElement("div");b.className="weekly-bar";b.textContent="●".repeat(item.count)+"○".repeat(tasks.length-item.count)+` (${item.count}/${tasks.length})`;r.appendChild(l);r.appendChild(b);body.appendChild(r);});
-      document.getElementById("weeklyModal").style.display="flex";
-    }
+    function buildLast7DaysData(){const stats=loadDailyStats(),[y,m,d]=today.split("-").map(Number),base=new Date(y,m-1,d),res=[];for(let i=6;i>=0;i--){const dt=new Date(base);dt.setDate(base.getDate()-i);const k=`${dt.getFullYear()}-${String(dt.getMonth()+1).padStart(2,"0")}-${String(dt.getDate()).padStart(2,"0")}`;res.push({key:k,label:k.slice(5).replace("-","/"),count:stats[k]||0});}return res;}
+    function openWeeklyStatsModal(){const body=document.getElementById("weeklyStatsBody");body.innerHTML="";buildLast7DaysData().forEach(item=>{const r=document.createElement("div");r.className="weekly-row";const l=document.createElement("div");l.className="weekly-label";l.textContent=item.label;const b=document.createElement("div");b.className="weekly-bar";b.textContent="●".repeat(item.count)+"○".repeat(tasks.length-item.count)+` (${item.count}/${tasks.length})`;r.appendChild(l);r.appendChild(b);body.appendChild(r);});document.getElementById("weeklyModal").style.display="flex";}
     function closeWeeklyStats(){document.getElementById("weeklyModal").style.display="none";}
-    function checkAndShowWeeklyStats(){
-      const comp=getCompletedCount();
-      if(comp>=tasks.length){if(ls.str("allDonePopupDate")!==today){ls.setStr("allDonePopupDate",today);setTimeout(()=>showAllDoneModal(),300);return;}}
-      const thr=[2,4,6];if(!thr.includes(comp))return;
-      const s=loadWeeklyPopup(),ts=s[today]||{};if(ts[comp])return;
-      ts[comp]=true;s[today]=ts;saveWeeklyPopup(s);openWeeklyStatsModal();
-    }
+    function checkAndShowWeeklyStats(){const comp=getCompletedCount();if(comp>=tasks.length){if(ls.str("allDonePopupDate")!==today){ls.setStr("allDonePopupDate",today);setTimeout(()=>showAllDoneModal(),300);return;}}const thr=[2,4,6];if(!thr.includes(comp))return;const s=loadWeeklyPopup(),ts=s[today]||{};if(ts[comp])return;ts[comp]=true;s[today]=ts;saveWeeklyPopup(s);openWeeklyStatsModal();}
     function showAllDoneModal(){const msgs=["Another full day! Amazing 🌟","All 7 done! What a great day ✨","Perfect day! Keep it up tomorrow 💪","Full clear! Knew you could do it 🔥","Crushed every task today! 👏"];document.getElementById("allDoneSubtext").textContent=msgs[Math.floor(Math.random()*msgs.length)];document.getElementById("allDoneModal").style.display="flex";}
     function closeAllDoneModal(){document.getElementById("allDoneModal").style.display="none";}
 
-    // ── Settings ──────────────────────────────────────────────────
     function renderTungOptions(){const list=document.getElementById("tungOptionsList");if(!list)return;list.innerHTML="";tungOptions.forEach(name=>{const btn=document.createElement("button");btn.className="tung-option-btn";btn.textContent=name;btn.onclick=()=>pickTungOption(name);list.appendChild(btn);});}
     function openSettingsModal(){
       const ml=document.getElementById("settingsMissionList");ml.innerHTML="";
@@ -780,144 +717,26 @@
     function saveSettings(){ls.set("customMissions",missionData.map((_,i)=>({name:document.getElementById(`mName_${i}`)?.value.trim()||missionData[i].name,hint:document.getElementById(`mHint_${i}`)?.value.trim()||missionData[i].hint,tier:document.getElementById(`mTier_${i}`)?.value||missionData[i].tier})));ls.set("customTungOptions",Array.from(document.getElementById("settingsTungList").querySelectorAll("input")).map(e=>e.value.trim()).filter(v=>v));closeSettingsModal();alert("Saved! Refresh to apply changes 🙂");}
     function closeSettingsModal(){document.getElementById("settingsModal").style.display="none";}
 
-    // ── Trivia ────────────────────────────────────────────────────
     const triviaCategories=["World Geography","Science Formulas","Math Facts","Football (Soccer)","Computer Science","AI Knowledge","Investment Tips","Skincare Tips","Movie Recommendation","World History"];
-    function initTriviaCard(){
-      const k=ls.str("mandart_api_key");const hb=document.getElementById("apiKeyHeaderBtn");if(hb)hb.title=k?"API Key: 설정됨 ✅":"API Key 설정";
-      if(!k){document.getElementById("triviaNoKey").style.display="block";document.getElementById("triviaBtn").style.display="none";document.getElementById("triviaCard").style.display="none";return;}
-      document.getElementById("triviaNoKey").style.display="none";
-      if(ls.str("triviaDate")===today&&ls.str("triviaText")){document.getElementById("triviaContent").textContent=ls.str("triviaText");document.getElementById("triviaCategory").textContent=`# ${ls.str("triviaCategory")}`;document.getElementById("triviaCard").style.display="block";document.getElementById("triviaBtn").style.display="none";return;}
-      document.getElementById("triviaBtn").style.display="block";
-    }
-    async function loadTodayTrivia(){
-      const k=ls.str("mandart_api_key");
-      document.getElementById("triviaBtn").style.display="none";document.getElementById("triviaLoading").style.display="block";
-      const cat=pickTriviaCategory();
-      const hist=loadTriviaHistory();const recent=hist.slice(-10).map(h=>`[${h.category}] ${h.summary}`).join("\n");
-      const avoid=recent?`\n\n아래는 최근에 이미 다룬 내용이니 겹치지 않게 해줘:\n${recent}`:"";
-      const prompt=cat==="Movie Recommendation"
-        ?`오늘 볼 만한 영화 한 편을 추천해줘. 제목(개봉연도), 장르, 추천 이유 1~2문장을 포함해서 구체적으로 말해줘. 너무 유명한 영화(타이타닉, 인셉션 등)보다는 덜 알려진 명작이나 숨은 걸작 위주로 골라줘.${avoid}`
-        :`"${cat}"에 대한 흥미롭고 구체적인 상식 한 가지를 2~3문장으로 말해줘. "알고 계셨나요?" 같은 서두 없이 바로 본론으로 시작해. 최대한 구체적인 수치나 사례를 포함해서 생생하게.${avoid}`;
-      try{
-        const res=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json","x-api-key":k,"anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:300,messages:[{role:"user",content:prompt}]})});
-        if(!res.ok){const e=await res.json().catch(()=>({}));throw new Error(e?.error?.message||`HTTP ${res.status}`);}
-        const data=await res.json();
-        if(data.content?.[0]?.text){const text=data.content[0].text.trim();ls.setStr("triviaDate",today);ls.setStr("triviaText",text);ls.setStr("triviaCategory",cat);saveTriviaHistory({date:today,category:cat,summary:text.slice(0,60)});document.getElementById("triviaContent").textContent=text;document.getElementById("triviaCategory").textContent=`# ${cat}`;document.getElementById("triviaLoading").style.display="none";document.getElementById("triviaCard").style.display="block";}
-        else throw new Error("No content");
-      }catch(e){document.getElementById("triviaLoading").style.display="none";document.getElementById("triviaContent").textContent=`Failed: ${e.message}`;document.getElementById("triviaCategory").textContent="";document.getElementById("triviaCard").style.display="block";}
-    }
+    function initTriviaCard(){const k=ls.str("mandart_api_key");const hb=document.getElementById("apiKeyHeaderBtn");if(hb)hb.title=k?"API Key: 설정됨 ✅":"API Key 설정";if(!k){document.getElementById("triviaNoKey").style.display="block";document.getElementById("triviaBtn").style.display="none";document.getElementById("triviaCard").style.display="none";return;}document.getElementById("triviaNoKey").style.display="none";if(ls.str("triviaDate")===today&&ls.str("triviaText")){document.getElementById("triviaContent").textContent=ls.str("triviaText");document.getElementById("triviaCategory").textContent=`# ${ls.str("triviaCategory")}`;document.getElementById("triviaCard").style.display="block";document.getElementById("triviaBtn").style.display="none";return;}document.getElementById("triviaBtn").style.display="block";}
+    async function loadTodayTrivia(){const k=ls.str("mandart_api_key");document.getElementById("triviaBtn").style.display="none";document.getElementById("triviaLoading").style.display="block";const cat=pickTriviaCategory();const hist=loadTriviaHistory();const recent=hist.slice(-10).map(h=>`[${h.category}] ${h.summary}`).join("\n");const avoid=recent?`\n\n아래는 최근에 이미 다룬 내용이니 겹치지 않게 해줘:\n${recent}`:"";const prompt=cat==="Movie Recommendation"?`오늘 볼 만한 영화 한 편을 추천해줘. 제목(개봉연도), 장르, 추천 이유 1~2문장을 포함해서 구체적으로 말해줘. 너무 유명한 영화(타이타닉, 인셉션 등)보다는 덜 알려진 명작이나 숨은 걸작 위주로 골라줘.${avoid}`:`"${cat}"에 대한 흥미롭고 구체적인 상식 한 가지를 2~3문장으로 말해줘. "알고 계셨나요?" 같은 서두 없이 바로 본론으로 시작해. 최대한 구체적인 수치나 사례를 포함해서 생생하게.${avoid}`;try{const res=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json","x-api-key":k,"anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:300,messages:[{role:"user",content:prompt}]})});if(!res.ok){const e=await res.json().catch(()=>({}));throw new Error(e?.error?.message||`HTTP ${res.status}`);}const data=await res.json();if(data.content?.[0]?.text){const text=data.content[0].text.trim();ls.setStr("triviaDate",today);ls.setStr("triviaText",text);ls.setStr("triviaCategory",cat);saveTriviaHistory({date:today,category:cat,summary:text.slice(0,60)});document.getElementById("triviaContent").textContent=text;document.getElementById("triviaCategory").textContent=`# ${cat}`;document.getElementById("triviaLoading").style.display="none";document.getElementById("triviaCard").style.display="block";}else throw new Error("No content");}catch(e){document.getElementById("triviaLoading").style.display="none";document.getElementById("triviaContent").textContent=`Failed: ${e.message}`;document.getElementById("triviaCategory").textContent="";document.getElementById("triviaCard").style.display="block";}}
 
-    // ── Calendar ──────────────────────────────────────────────────
     let currentViewYear=parseInt(today.split("-")[0]),currentViewMonth=parseInt(today.split("-")[1]);
-    function buildMonthlyCalendar(year,month){
-      const stats=loadDailyStats(),cont=document.getElementById("calendarTableContainer");cont.innerHTML="";
-      document.getElementById("calendarMonthTitle").textContent=`${year}년 ${month}월`;
-      let perf=0;for(const k in stats){if(stats[k]===tasks.length)perf++;}const pe=document.getElementById("perfectDaysCount");if(pe)pe.textContent=`♥ ${perf} ♥`;
-      const fd=new Date(year,month-1,1).getDay(),ld=new Date(year,month,0).getDate();
-      const table=document.createElement("table");table.className="calendar-table";
-      const thead=document.createElement("thead"),hr=document.createElement("tr");
-      ["일","월","화","수","목","금","토"].forEach(w=>{const th=document.createElement("th");th.textContent=w;hr.appendChild(th);});thead.appendChild(hr);table.appendChild(thead);
-      const tbody=document.createElement("tbody");let row=document.createElement("tr"),cc=0;
-      for(let i=0;i<fd;i++){row.appendChild(document.createElement("td"));cc++;}
-      for(let day=1;day<=ld;day++){
-        if(cc===7){tbody.appendChild(row);row=document.createElement("tr");cc=0;}
-        const td=document.createElement("td"),key=`${year}-${String(month).padStart(2,"0")}-${String(day).padStart(2,"0")}`,cnt=stats[key]||0;
-        const num=document.createElement("div");num.className="cal-day-number";num.textContent=day;
-        const info=document.createElement("div");info.className="cal-day-tasks";info.textContent=`${cnt}/${tasks.length}`;
-        td.appendChild(num);td.appendChild(info);
-        if(cnt===tasks.length)td.style.background="rgba(46,204,113,0.25)";else if(cnt>=Math.ceil(tasks.length/2))td.style.background="rgba(241,196,15,0.2)";
-        if(key===today)td.classList.add("cal-today");
-        row.appendChild(td);cc++;
-      }
-      if(cc>0){for(let i=cc;i<7;i++)row.appendChild(document.createElement("td"));tbody.appendChild(row);}
-      table.appendChild(tbody);cont.appendChild(table);
-    }
+    function buildMonthlyCalendar(year,month){const stats=loadDailyStats(),cont=document.getElementById("calendarTableContainer");cont.innerHTML="";document.getElementById("calendarMonthTitle").textContent=`${year}년 ${month}월`;let perf=0;for(const k in stats){if(stats[k]===tasks.length)perf++;}const pe=document.getElementById("perfectDaysCount");if(pe)pe.textContent=`♥ ${perf} ♥`;const fd=new Date(year,month-1,1).getDay(),ld=new Date(year,month,0).getDate();const table=document.createElement("table");table.className="calendar-table";const thead=document.createElement("thead"),hr=document.createElement("tr");["일","월","화","수","목","금","토"].forEach(w=>{const th=document.createElement("th");th.textContent=w;hr.appendChild(th);});thead.appendChild(hr);table.appendChild(thead);const tbody=document.createElement("tbody");let row=document.createElement("tr"),cc=0;for(let i=0;i<fd;i++){row.appendChild(document.createElement("td"));cc++;}for(let day=1;day<=ld;day++){if(cc===7){tbody.appendChild(row);row=document.createElement("tr");cc=0;}const td=document.createElement("td"),key=`${year}-${String(month).padStart(2,"0")}-${String(day).padStart(2,"0")}`,cnt=stats[key]||0;const num=document.createElement("div");num.className="cal-day-number";num.textContent=day;const info=document.createElement("div");info.className="cal-day-tasks";info.textContent=`${cnt}/${tasks.length}`;td.appendChild(num);td.appendChild(info);if(cnt===tasks.length)td.style.background="rgba(46,204,113,0.25)";else if(cnt>=Math.ceil(tasks.length/2))td.style.background="rgba(241,196,15,0.2)";if(key===today)td.classList.add("cal-today");row.appendChild(td);cc++;}if(cc>0){for(let i=cc;i<7;i++)row.appendChild(document.createElement("td"));tbody.appendChild(row);}table.appendChild(tbody);cont.appendChild(table);}
     function toggleCalendar(){const c=document.getElementById("calendarContainer"),btn=document.getElementById("toggleCalendarButton");if(!c.style.display||c.style.display==="none"){currentViewYear=parseInt(today.split("-")[0]);currentViewMonth=parseInt(today.split("-")[1]);buildMonthlyCalendar(currentViewYear,currentViewMonth);c.style.display="block";btn.textContent="📅 Close";document.getElementById("perfectDaysWrap").style.display="block";}else{c.style.display="none";btn.textContent="📅 Calendar";document.getElementById("perfectDaysWrap").style.display="none";}}
     function changeMonth(delta){currentViewMonth+=delta;if(currentViewMonth>12){currentViewMonth=1;currentViewYear++;}else if(currentViewMonth<1){currentViewMonth=12;currentViewYear--;}buildMonthlyCalendar(currentViewYear,currentViewMonth);const rc=document.getElementById("reportContainer");if(rc&&rc.style.display!=="none")buildReport(currentViewYear,currentViewMonth);}
-
-    // ── Report ────────────────────────────────────────────────────
     function toggleReport(){const rc=document.getElementById("reportContainer"),btn=document.getElementById("toggleReportButton");if(!rc.style.display||rc.style.display==="none"){buildReport(currentViewYear,currentViewMonth);rc.style.display="block";btn.textContent="📊 Close";}else{rc.style.display="none";btn.textContent="📊 Report";}}
-    function buildReport(year,month){
-      const cont=document.getElementById("reportContainer");if(!cont)return;
-      const stats=loadDailyStats(),ml=loadMissionLog(),sl=loadSkipLog();
-      const ld=new Date(year,month,0).getDate(),mdays=[];for(let d=1;d<=ld;d++)mdays.push(`${year}-${String(month).padStart(2,"0")}-${String(d).padStart(2,"0")}`);
-      const td2=new Date(...today.split("-").map((v,i)=>i===1?v-1:+v)),dow=td2.getDay();
-      const ws=new Date(td2);ws.setDate(td2.getDate()-(dow===0?6:dow-1));
-      const wdays=[];for(let i=0;i<7;i++){const dd=new Date(ws);dd.setDate(ws.getDate()+i);wdays.push(`${dd.getFullYear()}-${String(dd.getMonth()+1).padStart(2,"0")}-${String(dd.getDate()).padStart(2,"0")}`);}
-      function makeItems(days,label){
-        const items=[],td=days.filter(d=>d<=today).length;if(td===0)return items;
-        const dd=days.filter(d=>stats[d]===tasks.length).length,dr=Math.round(dd/td*100);
-        if(dr===100)items.push({i:"🏆",t:`Perfect! All ${td} days fully completed.`});else if(dr>=70)items.push({i:"✅",t:`Great job! ${dr}% full completion rate this ${label}.`});else if(dr>=40)items.push({i:"📈",t:`${dr}% full days this ${label}. Room to grow!`});else items.push({i:"💪",t:`Only ${dr}% full days this ${label}. Let's push harder!`});
-        const st=days.reduce((s,d)=>s+(sl[d]||0),0);if(st>=5)items.push({i:"😅",t:`Skipped ${st} times this ${label}. Maybe a bit too many?`});else if(st>=3)items.push({i:"🙈",t:`${st} skips this ${label}. Try to cut it down!`});else if(st===0&&td>=3)items.push({i:"🔥",t:`Zero skips this ${label}! Amazing discipline.`});
-        const mc={};tasks.forEach(t=>mc[t]=0);days.forEach(d=>{if(ml[d])Object.entries(ml[d]).forEach(([t,c])=>{if(mc[t]!=null)mc[t]+=c;});});
-        const sorted=Object.entries(mc).sort((a,b)=>b[1]-a[1]),mx=sorted[0],mn=sorted[sorted.length-1],act=days.filter(d=>d<=today).length;
-        if(mx&&mx[1]>=Math.round(act*0.7))items.push({i:"⭐",t:`"${mx[0]}" is your strongest mission this ${label}!`});
-        if(mn&&mn[1]===0&&act>=3)items.push({i:"😬",t:`"${mn[0]}" — not done once this ${label}. Don't forget it!`});else if(mn&&mn[1]<=Math.round(act*0.2)&&act>=5)items.push({i:"⚠️",t:`"${mn[0]}" is being neglected this ${label}. Only ${mn[1]} time(s).`});
-        return items;
-      }
-      const dk=window._isDarkTheme?'color:#d0d0d0;background:rgba(255,255,255,0.06)':'';
-      const wi=makeItems(wdays,"week"),mi=makeItems(mdays,"month");let html="";
-      if(wi.length)html+=`<div class="report-section"><div class="report-title">📊 This Week</div>${wi.map(x=>`<div class="report-item" style="${dk}"><span class="ri-icon">${x.i}</span><span>${x.t}</span></div>`).join("")}</div>`;
-      if(mi.length)html+=`<div class="report-section"><div class="report-title">📅 ${year}.${String(month).padStart(2,"0")} Monthly</div>${mi.map(x=>`<div class="report-item" style="${dk}"><span class="ri-icon">${x.i}</span><span>${x.t}</span></div>`).join("")}</div>`;
-      if(!html)html=`<div class="report-item" style="${dk}"><span class="ri-icon">🌱</span><span>Not enough data yet. Keep going!</span></div>`;
-      cont.innerHTML=html;
-    }
+    function buildReport(year,month){const cont=document.getElementById("reportContainer");if(!cont)return;const stats=loadDailyStats(),ml=loadMissionLog(),sl=loadSkipLog();const ld=new Date(year,month,0).getDate(),mdays=[];for(let d=1;d<=ld;d++)mdays.push(`${year}-${String(month).padStart(2,"0")}-${String(d).padStart(2,"0")}`);const td2=new Date(...today.split("-").map((v,i)=>i===1?v-1:+v)),dow=td2.getDay();const ws=new Date(td2);ws.setDate(td2.getDate()-(dow===0?6:dow-1));const wdays=[];for(let i=0;i<7;i++){const dd=new Date(ws);dd.setDate(ws.getDate()+i);wdays.push(`${dd.getFullYear()}-${String(dd.getMonth()+1).padStart(2,"0")}-${String(dd.getDate()).padStart(2,"0")}`);}function makeItems(days,label){const items=[],td=days.filter(d=>d<=today).length;if(td===0)return items;const dd=days.filter(d=>stats[d]===tasks.length).length,dr=Math.round(dd/td*100);if(dr===100)items.push({i:"🏆",t:`Perfect! All ${td} days fully completed.`});else if(dr>=70)items.push({i:"✅",t:`Great job! ${dr}% full completion rate this ${label}.`});else if(dr>=40)items.push({i:"📈",t:`${dr}% full days this ${label}. Room to grow!`});else items.push({i:"💪",t:`Only ${dr}% full days this ${label}. Let's push harder!`});const st=days.reduce((s,d)=>s+(sl[d]||0),0);if(st>=5)items.push({i:"😅",t:`Skipped ${st} times this ${label}. Maybe a bit too many?`});else if(st>=3)items.push({i:"🙈",t:`${st} skips this ${label}. Try to cut it down!`});else if(st===0&&td>=3)items.push({i:"🔥",t:`Zero skips this ${label}! Amazing discipline.`});const mc={};tasks.forEach(t=>mc[t]=0);days.forEach(d=>{if(ml[d])Object.entries(ml[d]).forEach(([t,c])=>{if(mc[t]!=null)mc[t]+=c;});});const sorted=Object.entries(mc).sort((a,b)=>b[1]-a[1]),mx=sorted[0],mn=sorted[sorted.length-1],act=days.filter(d=>d<=today).length;if(mx&&mx[1]>=Math.round(act*0.7))items.push({i:"⭐",t:`"${mx[0]}" is your strongest mission this ${label}!`});if(mn&&mn[1]===0&&act>=3)items.push({i:"😬",t:`"${mn[0]}" — not done once this ${label}. Don't forget it!`});else if(mn&&mn[1]<=Math.round(act*0.2)&&act>=5)items.push({i:"⚠️",t:`"${mn[0]}" is being neglected this ${label}. Only ${mn[1]} time(s).`});return items;}const dk=window._isDarkTheme?'color:#d0d0d0;background:rgba(255,255,255,0.06)':'';const wi=makeItems(wdays,"week"),mi=makeItems(mdays,"month");let html="";if(wi.length)html+=`<div class="report-section"><div class="report-title">📊 This Week</div>${wi.map(x=>`<div class="report-item" style="${dk}"><span class="ri-icon">${x.i}</span><span>${x.t}</span></div>`).join("")}</div>`;if(mi.length)html+=`<div class="report-section"><div class="report-title">📅 ${year}.${String(month).padStart(2,"0")} Monthly</div>${mi.map(x=>`<div class="report-item" style="${dk}"><span class="ri-icon">${x.i}</span><span>${x.t}</span></div>`).join("")}</div>`;if(!html)html=`<div class="report-item" style="${dk}"><span class="ri-icon">🌱</span><span>Not enough data yet. Keep going!</span></div>`;cont.innerHTML=html;}
 
-    // ── Pick random ───────────────────────────────────────────────
-    function pickRandom(){
-      if(isPicking)return;isPicking=true;
-      const pb=document.getElementById("pickButton"),re=document.getElementById("result"),he=document.getElementById("hint");
-      pb.disabled=true;pb.textContent="Picking…";
-      document.getElementById("actionButtons").style.display="none";re.classList.remove("s-glow","has-task");document.getElementById("missionCard").classList.remove("has-task");
-      const avail=tasks.filter(t=>!taskStatus[t]&&!skippedTasks[t]);
-      if(avail.length===0){const rem=tasks.filter(t=>!taskStatus[t]);re.textContent=rem.length===0?"All done today!":"Only skipped missions left. That's it for today!";he.textContent=rem.length===0?"":"Refresh to reset skipped missions.";pb.disabled=false;pb.textContent="Pick one now!";isPicking=false;showProgressIfNeeded();updateTungButtonVisibility();return;}
-      let dots=0;re.textContent="Thinking";he.textContent="Just a sec…";
-      const loading=setInterval(()=>{dots=(dots+1)%4;re.textContent="Thinking"+".".repeat(dots);},400);
-      setTimeout(()=>{
-        clearInterval(loading);
-        const fc=avail[Math.floor(Math.random()*avail.length)],ft=taskTier[fc]||"B";
-        currentTask=fc;currentTier=ft;
-        re.innerHTML=`<span class="tier-label">${tierLabel[ft]||"B-Tier"}</span>${fc.replace(/</g,"&lt;").replace(/>/g,"&gt;")}`;
-        re.classList.add("has-task");document.getElementById("missionCard").classList.add("has-task");
-        if(ft==="S"){re.classList.add("s-glow");he.textContent=`✨ S-tier mission! ✨ ${hints[fc]||""}`;}else he.textContent=hints[fc]||"";
-        document.getElementById("actionButtons").style.display="flex";
-        pb.disabled=false;pb.textContent="Pick one now!";isPicking=false;showProgressIfNeeded();updateTungButtonVisibility();
-      },2000);
-    }
+    function pickRandom(){if(isPicking)return;isPicking=true;const pb=document.getElementById("pickButton"),re=document.getElementById("result"),he=document.getElementById("hint");pb.disabled=true;pb.textContent="Picking…";document.getElementById("actionButtons").style.display="none";re.classList.remove("s-glow","has-task");document.getElementById("missionCard").classList.remove("has-task");const avail=tasks.filter(t=>!taskStatus[t]&&!skippedTasks[t]);if(avail.length===0){const rem=tasks.filter(t=>!taskStatus[t]);re.textContent=rem.length===0?"All done today!":"Only skipped missions left. That's it for today!";he.textContent=rem.length===0?"":"Refresh to reset skipped missions.";pb.disabled=false;pb.textContent="Pick one now!";isPicking=false;showProgressIfNeeded();updateTungButtonVisibility();return;}let dots=0;re.textContent="Thinking";he.textContent="Just a sec…";const loading=setInterval(()=>{dots=(dots+1)%4;re.textContent="Thinking"+".".repeat(dots);},400);setTimeout(()=>{clearInterval(loading);const fc=avail[Math.floor(Math.random()*avail.length)],ft=taskTier[fc]||"B";currentTask=fc;currentTier=ft;re.innerHTML=`<span class="tier-label">${tierLabel[ft]||"B-Tier"}</span>${fc.replace(/</g,"&lt;").replace(/>/g,"&gt;")}`;re.classList.add("has-task");document.getElementById("missionCard").classList.add("has-task");if(ft==="S"){re.classList.add("s-glow");he.textContent=`✨ S-tier mission! ✨ ${hints[fc]||""}`;}else he.textContent=hints[fc]||"";document.getElementById("actionButtons").style.display="flex";pb.disabled=false;pb.textContent="Pick one now!";isPicking=false;showProgressIfNeeded();updateTungButtonVisibility();},2000);}
 
-    // ── Complete / Skip ───────────────────────────────────────────
-    function markComplete(){
-      if(!currentTask||!tasks.includes(currentTask))return;
-      if(taskStatus[currentTask]){document.getElementById("hint").textContent="Already done!";hideButtons();return;}
-      taskStatus[currentTask]=true;ls.set("taskStatus",taskStatus);recordMissionDone(currentTask);
-      let r=getRewardForTask(currentTask);const cnt=Object.values(taskStatus).filter(v=>v).length;
-      const h=document.getElementById("hint");
-      if(dailyEvent.id==="lucky_day"&&cnt===1){r+=3;h.textContent=`Done! (+${r} coins, first mission bonus +3!)`;}
-      else if(dailyEvent.id==="double_first"&&cnt===1){r*=2;h.textContent=`Done! (+${r} coins, first mission x2!)`;}
-      else if(dailyEvent.id==="special_5done"&&cnt===5){r+=5;h.textContent=`Done! (+${r} coins, 5 missions bonus +5!)`;}
-      else if(dailyEvent.id==="buff_last_plus3"&&cnt===tasks.length){r+=3;h.textContent=`Done! (+${r} coins, last mission bonus +3!)`;}
-      else if(r>0)h.textContent=`Done! (+${r} coins)`;else h.textContent="Done!";
-      if(r>0){coinCount+=r;ls.setStr("coinCount",String(coinCount));}
-      hideButtons();updateUI();checkAndShowWeeklyStats();
-    }
+    function markComplete(){if(!currentTask||!tasks.includes(currentTask))return;if(taskStatus[currentTask]){document.getElementById("hint").textContent="Already done!";hideButtons();return;}taskStatus[currentTask]=true;ls.set("taskStatus",taskStatus);recordMissionDone(currentTask);let r=getRewardForTask(currentTask);const cnt=Object.values(taskStatus).filter(v=>v).length;const h=document.getElementById("hint");if(dailyEvent.id==="lucky_day"&&cnt===1){r+=3;h.textContent=`Done! (+${r} coins, first mission bonus +3!)`;}else if(dailyEvent.id==="double_first"&&cnt===1){r*=2;h.textContent=`Done! (+${r} coins, first mission x2!)`;}else if(dailyEvent.id==="special_5done"&&cnt===5){r+=5;h.textContent=`Done! (+${r} coins, 5 missions bonus +5!)`;}else if(dailyEvent.id==="buff_last_plus3"&&cnt===tasks.length){r+=3;h.textContent=`Done! (+${r} coins, last mission bonus +3!)`;}else if(r>0)h.textContent=`Done! (+${r} coins)`;else h.textContent="Done!";if(r>0){coinCount+=r;ls.setStr("coinCount",String(coinCount));}hideButtons();updateUI();checkAndShowWeeklyStats();}
     function hideButtons(){document.getElementById("actionButtons").style.display="none";}
     function markPending(){if(!currentTask||!tasks.includes(currentTask)){hideButtons();return;}skippedTasks[currentTask]=true;document.getElementById("hint").textContent="Skipped!";hideButtons();}
-
-    // ── Tung ─────────────────────────────────────────────────────
     function openTungModal(){if(getCompletedCount()>=tasks.length){document.getElementById("hint").textContent="Already cleared ⚡";return;}document.getElementById("tungModal").style.display="flex";}
     function closeTungModal(){document.getElementById("tungModal").style.display="none";}
-    function pickTungOption(name){
-      const comp=getCompletedCount();if(comp>=tasks.length){document.getElementById("hint").textContent="All done today!";closeTungModal();return;}
-      if(!tungFreeUsed){tungFreeUsed=true;tungCount++;ls.setStr("tungFreeUsed","1");ls.setStr("tungCount",String(tungCount));ls.setStr("tungDate",today);ls.setStr("tungChoice",name);recordSkip();document.getElementById("hint").textContent=`Skipped with '${name}'! (free skip, +1 done)`;}
-      else{if(coinCount<5){document.getElementById("hint").textContent="Not enough coins for extra skip. (need: 5 coins)";closeTungModal();return;}coinCount-=5;tungCount++;ls.setStr("coinCount",String(coinCount));ls.setStr("tungCount",String(tungCount));ls.setStr("tungDate",today);ls.setStr("tungChoice",name);recordSkip();document.getElementById("hint").textContent=`Skipped with '${name}'! (5 coins used, +1 done)`;}
-      closeTungModal();updateUI();checkAndShowWeeklyStats();
-    }
-    function useTungCoins(add,cost){
-      if(coinCount<cost){document.getElementById("hint").textContent=`Not enough coins. (need: ${cost})`;return;}
-      const rem=tasks.length-getCompletedCount();if(rem<=0){document.getElementById("hint").textContent="All tasks already done today!";closeTungModal();return;}
-      const actual=Math.min(add,rem);coinCount-=cost;tungCount+=actual;ls.setStr("coinCount",String(coinCount));ls.setStr("tungCount",String(tungCount));ls.setStr("tungDate",today);for(let i=0;i<actual;i++)recordSkip();
-      document.getElementById("hint").textContent=`Used ${cost} coins to skip ${actual} task(s)!`;closeTungModal();updateUI();checkAndShowWeeklyStats();
-    }
+    function pickTungOption(name){const comp=getCompletedCount();if(comp>=tasks.length){document.getElementById("hint").textContent="All done today!";closeTungModal();return;}if(!tungFreeUsed){tungFreeUsed=true;tungCount++;ls.setStr("tungFreeUsed","1");ls.setStr("tungCount",String(tungCount));ls.setStr("tungDate",today);ls.setStr("tungChoice",name);recordSkip();document.getElementById("hint").textContent=`Skipped with '${name}'! (free skip, +1 done)`;}else{if(coinCount<5){document.getElementById("hint").textContent="Not enough coins for extra skip. (need: 5 coins)";closeTungModal();return;}coinCount-=5;tungCount++;ls.setStr("coinCount",String(coinCount));ls.setStr("tungCount",String(tungCount));ls.setStr("tungDate",today);ls.setStr("tungChoice",name);recordSkip();document.getElementById("hint").textContent=`Skipped with '${name}'! (5 coins used, +1 done)`;}closeTungModal();updateUI();checkAndShowWeeklyStats();}
+    function useTungCoins(add,cost){if(coinCount<cost){document.getElementById("hint").textContent=`Not enough coins. (need: ${cost})`;return;}const rem=tasks.length-getCompletedCount();if(rem<=0){document.getElementById("hint").textContent="All tasks already done today!";closeTungModal();return;}const actual=Math.min(add,rem);coinCount-=cost;tungCount+=actual;ls.setStr("coinCount",String(coinCount));ls.setStr("tungCount",String(tungCount));ls.setStr("tungDate",today);for(let i=0;i<actual;i++)recordSkip();document.getElementById("hint").textContent=`Used ${cost} coins to skip ${actual} task(s)!`;closeTungModal();updateUI();checkAndShowWeeklyStats();}
   </script>
 </body>
 </html>
