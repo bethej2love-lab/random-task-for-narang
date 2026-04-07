@@ -11,532 +11,226 @@
       --accent-bg: #f4f4f4;
       --card-bg: #ffffff;
     }
-
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: flex-start;
-      min-height: 100vh;
-      margin: 0;
-      padding-top: 40px;
-      background: var(--accent-bg, #f4f4f4);
-      transition: background 0.3s ease;
+      display: flex; flex-direction: column; align-items: center;
+      justify-content: flex-start; min-height: 100vh; margin: 0; padding-top: 40px;
+      background: var(--accent-bg, #f4f4f4); transition: background 0.3s ease;
     }
     .card {
-      background: var(--card-bg, #ffffff);
-      padding: 24px 32px;
-      border-radius: 16px;
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
-      text-align: center;
-      max-width: 420px;
-      width: 100%;
-      box-sizing: border-box;
-      transition: background 0.3s ease, box-shadow 0.2s ease, transform 0.1s ease;
+      background: var(--card-bg, #ffffff); padding: 24px 32px; border-radius: 16px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.08); text-align: center;
+      max-width: 420px; width: 100%; box-sizing: border-box;
+      transition: background 0.3s ease, box-shadow 0.2s ease;
     }
-    h1 {
-      font-size: 16px;
-      margin-bottom: 8px;
-    }
-    .theme-label {
-      font-size: 15px;
-      margin-bottom: 20px;
-    }
+    h1 { font-size: 16px; margin-bottom: 8px; }
+    .theme-label { font-size: 15px; margin-bottom: 20px; }
     .mission-card {
-      margin: 16px 0 0;
-      border-radius: 12px;
-      background: rgba(0,0,0,0.03);
-      transition: background 0.3s;
-      min-height: 80px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      padding: 0 16px;
+      margin: 16px 0 0; border-radius: 12px; background: rgba(0,0,0,0.03);
+      transition: background 0.3s; min-height: 80px;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      text-align: center; padding: 0 16px;
     }
-    .mission-card.has-task {
-      background: rgba(0,0,0,0.04);
-      padding: 14px 16px 12px;
-    }
+    .mission-card.has-task { background: rgba(0,0,0,0.04); padding: 14px 16px 12px; }
     #result {
-      font-size: 18px;
-      font-weight: 700;
-      min-height: unset;
-      padding: 0;
-      margin: 0;
-      background: transparent;
-      width: 100%;
-      text-align: center;
+      font-size: 18px; font-weight: 700; min-height: unset;
+      padding: 0; margin: 0; background: transparent; width: 100%; text-align: center;
     }
     #hint {
-      font-size: 11px;
-      color: #666;
-      margin: 4px 0 0;
-      min-height: unset;
-      padding: 0;
-      background: transparent;
-      width: 100%;
-      text-align: center;
+      font-size: 11px; color: #666; margin: 4px 0 0;
+      padding: 0; background: transparent; width: 100%; text-align: center;
     }
     button.main {
-      padding: 15px 20px;
-      font-size: 17px;
-      border: none;
-      border-radius: 999px;
-      cursor: pointer;
-      background: var(--accent, #4b8cff);
-      color: white;
-      font-weight: 700;
-      width: 100%;
-      letter-spacing: 0.3px;
-      transition: transform 0.08s ease, box-shadow 0.1s ease, background 0.2s ease;
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.18);
+      padding: 15px 20px; font-size: 17px; border: none; border-radius: 999px;
+      cursor: pointer; background: var(--accent, #4b8cff); color: white;
+      font-weight: 700; width: 100%; letter-spacing: 0.3px;
+      transition: transform 0.08s ease, box-shadow 0.1s ease;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.18);
     }
-    button.main:active {
-      transform: scale(0.96);
-      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.18);
-    }
-    button.main:disabled {
-      opacity: 0.5;
-      cursor: default;
-      background: var(--accent-soft, #8faefc);
-      box-shadow: none;
-    }
-    .action-buttons {
-      display: flex;
-      gap: 8px;
-      justify-content: center;
-      margin-top: 10px;
-      margin-bottom: 6px;
-    }
+    button.main:active { transform: scale(0.96); box-shadow: 0 3px 8px rgba(0,0,0,0.18); }
+    button.main:disabled { opacity: 0.5; cursor: default; background: var(--accent-soft,#8faefc); box-shadow: none; }
+    .action-buttons { display: flex; gap: 8px; justify-content: center; margin-top: 10px; margin-bottom: 6px; }
     .complete-btn {
-      flex: 3;
-      padding: 12px 0;
-      border-radius: 999px;
-      border: none;
-      font-size: 15px;
-      font-weight: 700;
-      cursor: pointer;
-      background: #2ecc71;
-      color: white;
-      box-shadow: 0 4px 12px rgba(46,204,113,0.3);
+      flex: 3; padding: 12px 0; border-radius: 999px; border: none;
+      font-size: 15px; font-weight: 700; cursor: pointer;
+      background: #2ecc71; color: white; box-shadow: 0 4px 12px rgba(46,204,113,0.3);
       transition: transform 0.08s, box-shadow 0.1s;
     }
-    .complete-btn:active {
-      transform: scale(0.97);
-      box-shadow: 0 2px 6px rgba(46,204,113,0.2);
-    }
+    .complete-btn:active { transform: scale(0.97); }
     .pending-btn {
-      flex: 1;
-      padding: 12px 0;
-      border-radius: 999px;
-      border: 1.5px solid #ccc;
-      font-size: 13px;
-      font-weight: 600;
-      cursor: pointer;
-      background: transparent;
-      color: #999;
-      transition: transform 0.08s;
+      flex: 1; padding: 12px 0; border-radius: 999px; border: 1.5px solid #ccc;
+      font-size: 13px; font-weight: 600; cursor: pointer; background: transparent; color: #999;
     }
-    .pending-btn:active {
-      transform: scale(0.97);
-    }
-
+    .pending-btn:active { transform: scale(0.97); }
     .tung-btn {
-      border: none;
-      border-radius: 999px;
-      padding: 3px 7px;
-      font-size: 16px;
-      background: transparent;
-      cursor: pointer;
-      line-height: 1;
-      transition: transform 0.1s;
+      border: none; border-radius: 999px; padding: 3px 7px; font-size: 16px;
+      background: transparent; cursor: pointer; line-height: 1; transition: transform 0.1s;
     }
-    .tung-btn:active {
-      transform: scale(0.88);
-    }
-
-    .progress-box {
-      margin-top: 12px;
-      text-align: left;
-      font-size: 14px;
-    }
-    .status-summary {
-      display: flex;
-      justify-content: flex-end;
-      gap: 6px;
-      margin-bottom: 10px;
-    }
+    .tung-btn:active { transform: scale(0.88); }
+    .progress-box { margin-top: 12px; text-align: left; font-size: 14px; }
+    .status-summary { display: flex; justify-content: flex-end; gap: 6px; margin-bottom: 10px; }
     .badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      font-size: 12px;
-      font-weight: 600;
-      padding: 4px 10px;
-      border-radius: 999px;
-      background: rgba(0,0,0,0.06);
-      color: #444;
+      display: inline-flex; align-items: center; gap: 4px; font-size: 12px;
+      font-weight: 600; padding: 4px 10px; border-radius: 999px;
+      background: rgba(0,0,0,0.06); color: #444;
     }
     .badge-coin { background: rgba(241,196,15,0.15); color: #b7860b; }
-    .badge-lv   { background: rgba(75,140,255,0.13); color: var(--accent, #4b8cff); }
-
-    .checkbox-list {
-      margin-top: 10px;
-      font-size: 13px;
-    }
-    .checkbox-list div {
-      margin-bottom: 5px;
-      transition: opacity 0.2s;
-    }
-    .checkbox-list div.done {
-      opacity: 0.38;
-      text-decoration: line-through;
-      color: #888;
-    }
-    .streak-box {
-      margin-top: 14px;
-    }
+    .badge-lv   { background: rgba(75,140,255,0.13); color: var(--accent,#4b8cff); }
+    .checkbox-list { margin-top: 10px; font-size: 13px; }
+    .checkbox-list div { margin-bottom: 5px; transition: opacity 0.2s; }
+    .checkbox-list div.done { opacity: 0.38; text-decoration: line-through; color: #888; }
+    .streak-box { margin-top: 14px; }
     .streak-label {
-      font-size: 11px;
-      font-weight: 600;
-      color: #aaa;
-      letter-spacing: 0.3px;
-      text-transform: uppercase;
-      margin-bottom: 5px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
+      font-size: 11px; font-weight: 600; color: #aaa; letter-spacing: 0.3px;
+      text-transform: uppercase; margin-bottom: 5px;
+      display: flex; justify-content: space-between; align-items: center;
     }
-    .streak-label span {
-      font-size: 12px;
-      font-weight: 700;
-      color: #555;
-      letter-spacing: 0;
-      text-transform: none;
-    }
-    .streak-bar {
-      margin-top: 5px;
-      width: 100%;
-      height: 14px;
-      border-radius: 999px;
-      background: #e0e0e0;
-      overflow: hidden;
-    }
-    .streak-fill {
-      height: 100%;
-      width: 0%;
-      background: linear-gradient(90deg, var(--accent, #4b8cff), #2ecc71);
-      transition: width 0.3s ease;
-    }
-    #triviaCard .trivia-text {
-      font-size: 12px;
-      line-height: 1.6;
-    }
-    #reportContainer {
-      font-size: 12px;
-    }
-    .report-section {
-      margin-bottom: 10px;
-    }
-    .report-title {
-      font-size: 10px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      color: #aaa;
-      margin-bottom: 6px;
-    }
+    .streak-label span { font-size: 12px; font-weight: 700; color: #555; letter-spacing: 0; text-transform: none; }
+    .streak-bar { margin-top: 5px; width: 100%; height: 14px; border-radius: 999px; background: #e0e0e0; overflow: hidden; }
+    .streak-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--accent,#4b8cff), #2ecc71); transition: width 0.3s; }
+    #reportContainer { font-size: 12px; }
+    .report-section { margin-bottom: 10px; }
+    .report-title { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: #aaa; margin-bottom: 6px; }
     .report-item {
-      display: flex;
-      align-items: flex-start;
-      gap: 6px;
-      padding: 6px 10px;
-      border-radius: 8px;
-      background: rgba(0,0,0,0.03);
-      margin-bottom: 4px;
-      font-size: 12px;
-      line-height: 1.4;
-      color: #444;
+      display: flex; align-items: flex-start; gap: 6px; padding: 6px 10px;
+      border-radius: 8px; background: rgba(0,0,0,0.03); margin-bottom: 4px;
+      font-size: 12px; line-height: 1.4; color: #444;
     }
     .report-item .ri-icon { font-size: 13px; flex-shrink: 0; margin-top: 1px; }
     #eventText {
-      margin-top: 18px;
-      font-size: 12px;
-      font-weight: 600;
-      padding: 8px 12px;
-      border-radius: 10px;
-      background: rgba(0,0,0,0.04);
-      display: flex;
-      align-items: center;
-      gap: 6px;
+      margin-top: 18px; font-size: 12px; font-weight: 600; padding: 8px 12px;
+      border-radius: 10px; background: rgba(0,0,0,0.04); display: flex; align-items: center; gap: 6px;
     }
     #eventText.event-buff    { background: rgba(46,204,113,0.12); color: #1a7a45; }
     #eventText.event-debuff  { background: rgba(231,76,60,0.12);  color: #b03030; }
     #eventText.event-special { background: rgba(243,156,18,0.13); color: #9a6200; }
-    .s-glow {
-      color: #e67e22;
-      text-shadow: 0 0 8px rgba(255, 215, 0, 0.9);
-      animation: sPulse 0.8s ease-in-out 2;
-    }
-    .mission-card.has-task:has(#result.s-glow) {
-      background: rgba(255, 200, 0, 0.09) !important;
-    }
-    @keyframes sPulse {
-      0% { transform: scale(1); }
-      50% { transform: scale(1.06); }
-      100% { transform: scale(1); }
-    }
+    .s-glow { color: #e67e22; text-shadow: 0 0 8px rgba(255,215,0,0.9); animation: sPulse 0.8s ease-in-out 2; }
+    .mission-card.has-task:has(#result.s-glow) { background: rgba(255,200,0,0.09) !important; }
+    @keyframes sPulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.06); } }
     .tier-label {
-      display: inline-block;
-      font-size: 11px;
-      font-weight: 600;
-      color: #999;
-      border: 1px solid #ddd;
-      padding: 2px 6px;
-      border-radius: 999px;
-      margin-right: 6px;
-      vertical-align: middle;
+      display: inline-block; font-size: 11px; font-weight: 600; color: #999;
+      border: 1px solid #ddd; padding: 2px 6px; border-radius: 999px; margin-right: 6px; vertical-align: middle;
     }
-
     .modal-overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.35);
-      display: none;
-      align-items: center;
-      justify-content: center;
-      z-index: 999;
+      position: fixed; inset: 0; background: rgba(0,0,0,0.35);
+      display: none; align-items: center; justify-content: center; z-index: 999;
     }
     .modal-content {
-      background: #ffffff;
-      border-radius: 16px;
-      padding: 20px 18px 16px;
-      width: 90%;
-      max-width: 360px;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
-      font-size: 13px;
-      box-sizing: border-box;
-      color: #222;
+      background: #ffffff; border-radius: 16px; padding: 20px 18px 16px;
+      width: 90%; max-width: 360px; box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+      font-size: 13px; box-sizing: border-box; color: #222;
     }
-
-    .modal-title {
-      font-size: 15px;
-      font-weight: 700;
-      margin-bottom: 10px;
-      text-align: center;
-    }
-    .weekly-row {
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 4px;
-      font-size: 12px;
-    }
-    .weekly-label {
-      color: #555;
-    }
-    .weekly-bar {
-      font-family: system-ui, -apple-system, BlinkMacSystemFont;
-      letter-spacing: 1px;
-    }
+    .modal-title { font-size: 15px; font-weight: 700; margin-bottom: 10px; text-align: center; }
+    .weekly-row { display: flex; justify-content: space-between; margin-bottom: 4px; font-size: 12px; }
+    .weekly-label { color: #555; }
+    .weekly-bar { font-family: system-ui; letter-spacing: 1px; }
     .modal-close-btn {
-      margin-top: 10px;
-      width: 100%;
-      border-radius: 999px;
-      border: none;
-      padding: 8px 0;
-      font-size: 13px;
-      font-weight: 600;
-      cursor: pointer;
-      background: var(--accent, #4b8cff);
-      color: #fff;
+      margin-top: 10px; width: 100%; border-radius: 999px; border: none;
+      padding: 8px 0; font-size: 13px; font-weight: 600; cursor: pointer;
+      background: var(--accent,#4b8cff); color: #fff;
     }
-
-    .tung-modal-content {
-      padding-top: 16px;
+    .tung-modal-content { padding-top: 16px; }
+    .tung-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+    .tung-title { font-size: 14px; font-weight: 700; }
+    .tung-close { border: none; background: transparent; font-size: 18px; line-height: 1; cursor: pointer; }
+    .tung-options { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
+    .tung-option-btn { flex: 1 1 calc(50% - 6px); padding: 8px 6px; font-size: 12px; border-radius: 10px; border: 1px solid #eee; background: #f9fafb; cursor: pointer; }
+    .tung-option-btn:active { transform: scale(0.97); background: #e5e7eb; }
+    .tung-subtext { margin-top: 8px; font-size: 11px; color: #666; text-align: right; }
+    .tung-coin-actions { margin-top: 10px; display: flex; flex-direction: column; gap: 6px; }
+    .tung-coin-btn { width: 100%; padding: 8px 6px; font-size: 12px; border-radius: 999px; border: 1px solid #e5e7eb; background: #f9fafb; cursor: pointer; }
+    .tung-coin-btn:active { transform: scale(0.97); background: #e5e7eb; }
+    .toggle-btn {
+      font-size: 12px; font-weight: 600; padding: 7px 14px; border-radius: 999px;
+      border: 1.5px solid var(--accent,#4b8cff); background: transparent;
+      color: var(--accent,#4b8cff); cursor: pointer; transition: background 0.15s, color 0.15s;
+      width: 100%; margin-top: 0;
     }
-    .tung-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 10px;
-    }
-    .tung-title {
-      font-size: 14px;
-      font-weight: 700;
-    }
-    .tung-close {
-      border: none;
-      background: transparent;
-      font-size: 18px;
-      line-height: 1;
-      cursor: pointer;
-    }
-    .tung-options {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-      margin-top: 4px;
-    }
-    .tung-option-btn {
-      flex: 1 1 calc(50% - 6px);
-      padding: 8px 6px;
-      font-size: 12px;
-      border-radius: 10px;
-      border: 1px solid #eee;
-      background: #f9fafb;
-      cursor: pointer;
-    }
-    .tung-option-btn:active {
-      transform: scale(0.97);
-      background: #e5e7eb;
-    }
-    .tung-subtext {
-      margin-top: 8px;
-      font-size: 11px;
-      color: #666;
-      text-align: right;
-    }
-    .tung-coin-actions {
-      margin-top: 10px;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-    .tung-coin-btn {
-      width: 100%;
-      padding: 8px 6px;
-      font-size: 12px;
-      border-radius: 999px;
-      border: 1px solid #e5e7eb;
-      background: #f9fafb;
-      cursor: pointer;
-    }
-    .tung-coin-btn:active {
-      transform: scale(0.97);
-      background: #e5e7eb;
-    }
-
-    #toggleCalendarButton {
-      margin-top: 0;
-      font-size: 12px;
-      font-weight: 600;
-      padding: 7px 14px;
-      border-radius: 999px;
-      border: 1.5px solid var(--accent, #4b8cff);
-      background: transparent;
-      color: var(--accent, #4b8cff);
-      cursor: pointer;
-      transition: background 0.15s, color 0.15s;
-      display: block;
-      width: 100%;
-    }
-    #toggleCalendarButton:active {
-      background: var(--accent, #4b8cff);
-      color: #fff;
-    }
-    #toggleReportButton {
-      font-size: 12px;
-      font-weight: 600;
-      padding: 7px 14px;
-      border-radius: 999px;
-      border: 1.5px solid var(--accent, #4b8cff);
-      background: transparent;
-      color: var(--accent, #4b8cff);
-      cursor: pointer;
-      transition: background 0.15s, color 0.15s;
-      display: block;
-      width: 100%;
-    }
-    #toggleReportButton:active {
-      background: var(--accent, #4b8cff);
-      color: #fff;
-    }
-    #calendarContainer {
-      margin-top: 10px;
-      font-size: 11px;
-    }
-    .calendar-title {
-      font-size: 12px;
-      font-weight: 600;
-      margin-bottom: 4px;
-      text-align: center;
-    }
-    .calendar-table {
-      width: 100%;
-      border-collapse: collapse;
-    }
-    .calendar-table th,
-    .calendar-table td {
-      border: 1px solid #eee;
-      text-align: center;
-      padding: 4px 2px;
-      vertical-align: top;
-      min-width: 32px;
-    }
-    .calendar-table th {
-      background: #f8f8f8;
-      font-weight: 600;
-    }
-    .cal-day-number {
-      font-weight: 600;
-      margin-bottom: 2px;
-    }
-    .cal-day-tasks {
-      color: #555;
-    }
-    .cal-today {
-      background: rgba(75, 140, 255, 0.15);
-    }
-
-    .api-key-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      font-size: 11px;
-      padding: 2px 8px;
-      border-radius: 999px;
-      font-weight: 600;
-    }
+    .toggle-btn:active { background: var(--accent,#4b8cff); color: #fff; }
+    #calendarContainer { margin-top: 10px; font-size: 11px; }
+    .calendar-table { width: 100%; border-collapse: collapse; }
+    .calendar-table th, .calendar-table td { border: 1px solid #eee; text-align: center; padding: 4px 2px; vertical-align: top; min-width: 32px; }
+    .calendar-table th { background: #f8f8f8; font-weight: 600; }
+    .cal-day-number { font-weight: 600; margin-bottom: 2px; }
+    .cal-day-tasks { color: #555; }
+    .cal-today { background: rgba(75,140,255,0.15); }
+    .api-key-badge { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; padding: 2px 8px; border-radius: 999px; font-weight: 600; }
     .api-key-badge.set   { background: rgba(46,204,113,0.15); color: #1a7a45; }
-    .api-key-badge.unset { background: rgba(0,0,0,0.06);      color: #999; }
+    .api-key-badge.unset { background: rgba(0,0,0,0.06); color: #999; }
+
+    /* ─── Year Goals (intensity plan) ─────────────────────────── */
+    #goalsContainer { margin-top: 12px; display: none; }
+    .goals-section-title {
+      font-size: 10px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.5px; color: #aaa; margin-bottom: 12px;
+    }
+    .goals-timeline { display: flex; flex-direction: column; gap: 0; position: relative; }
+    /* 세로 연결선 */
+    .goals-timeline::before {
+      content: ""; position: absolute; left: 28px; top: 6px;
+      bottom: 6px; width: 2px; background: #e8e8e8; z-index: 0;
+    }
+    .goal-row {
+      display: flex; align-items: flex-start; gap: 10px;
+      padding: 6px 0; position: relative; z-index: 1;
+    }
+    .goal-dot-wrap { width: 20px; flex-shrink: 0; display: flex; flex-direction: column; align-items: center; padding-top: 2px; }
+    .goal-dot {
+      width: 10px; height: 10px; border-radius: 50%;
+      border: 2px solid #ddd; background: #fff;
+      flex-shrink: 0; transition: all 0.2s;
+    }
+    .goal-dot.past    { background: #2ecc71; border-color: #2ecc71; }
+    .goal-dot.current { background: var(--accent,#4b8cff); border-color: var(--accent,#4b8cff); box-shadow: 0 0 0 3px rgba(75,140,255,0.2); }
+    .goal-dot.future  { background: #fff; border-color: #ddd; }
+    .goal-dot.empty   { background: #f5f5f5; border-color: #eee; }
+    .goal-body { flex: 1; min-width: 0; }
+    .goal-month-header {
+      display: flex; align-items: center; gap: 6px; margin-bottom: 2px;
+    }
+    .goal-month-name {
+      font-size: 11px; font-weight: 700; color: #bbb; flex-shrink: 0;
+    }
+    .goal-month-name.past    { color: #2ecc71; }
+    .goal-month-name.current { color: var(--accent,#4b8cff); }
+    .goal-month-name.future  { color: #ccc; }
+    .goal-month-badge {
+      font-size: 9px; font-weight: 700; padding: 1px 6px; border-radius: 999px;
+      background: rgba(75,140,255,0.12); color: var(--accent,#4b8cff);
+      display: none;
+    }
+    .goal-month-badge.show { display: inline-block; }
+    .goal-plan-text {
+      font-size: 12px; color: #555; line-height: 1.5;
+      white-space: pre-wrap; word-break: break-word;
+    }
+    .goal-plan-text.empty-hint { color: #ccc; font-style: italic; font-size: 11px; }
+    .goal-edit-inline {
+      margin-top: 4px; font-size: 11px; color: var(--accent,#4b8cff);
+      cursor: pointer; opacity: 0; transition: opacity 0.15s;
+      background: none; border: none; padding: 0; font-family: inherit;
+    }
+    .goal-row:hover .goal-edit-inline { opacity: 1; }
+
+    /* Goals 편집 모달 */
+    .goals-edit-row { margin-bottom: 12px; }
+    .goals-edit-month-label { font-size: 12px; font-weight: 700; color: var(--accent,#4b8cff); margin-bottom: 4px; }
+    .goals-edit-textarea {
+      width: 100%; box-sizing: border-box; border: 1px solid #e5e7eb;
+      border-radius: 8px; padding: 8px 10px; font-size: 12px; color: #444;
+      font-family: inherit; resize: none; line-height: 1.5;
+      min-height: 52px;
+    }
+    .goals-edit-textarea:focus { outline: none; border-color: var(--accent,#4b8cff); }
 
     @media (max-width: 480px) {
-      body {
-        padding-top: 24px;
-      }
-      .card {
-        padding: 20px 18px;
-        border-radius: 14px;
-        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
-      }
-      h1 {
-        font-size: 15px;
-      }
-      #result {
-        font-size: 17px;
-      }
-      button.main {
-        font-size: 14px;
-        padding: 12px 16px;
-      }
-      .checkbox-list {
-        font-size: 13px;
-      }
-      .modal-overlay {
-        align-items: flex-end;
-      }
-      .modal-content {
-        max-width: 480px;
-        width: 100%;
-        border-radius: 16px 16px 0 0;
-      }
-      .calendar-table th,
-      .calendar-table td {
-        padding: 3px 1px;
-      }
+      body { padding-top: 24px; }
+      .card { padding: 20px 18px; border-radius: 14px; box-shadow: 0 4px 14px rgba(0,0,0,0.08); }
+      h1 { font-size: 15px; } #result { font-size: 17px; }
+      button.main { font-size: 14px; padding: 12px 16px; }
+      .modal-overlay { align-items: flex-end; }
+      .modal-content { max-width: 480px; width: 100%; border-radius: 16px 16px 0 0; }
+      .calendar-table th, .calendar-table td { padding: 3px 1px; }
     }
   </style>
 </head>
@@ -546,11 +240,9 @@
       <h1 style="margin:0;">Random Task Picker</h1>
       <div style="display:flex; gap:6px; align-items:center;">
         <button onclick="openApiKeyModal()" id="apiKeyHeaderBtn"
-          style="border:none; background:transparent; font-size:18px; cursor:pointer; padding:4px;"
-          title="API Key 설정">🔑</button>
+          style="border:none; background:transparent; font-size:18px; cursor:pointer; padding:4px;" title="API Key 설정">🔑</button>
         <button onclick="openSettingsModal()"
-          style="border:none; background:transparent; font-size:20px; cursor:pointer; padding:4px;"
-          title="설정">⚙️</button>
+          style="border:none; background:transparent; font-size:20px; cursor:pointer; padding:4px;" title="설정">⚙️</button>
       </div>
     </div>
     <div class="theme-label" id="themeLabel"></div>
@@ -568,7 +260,7 @@
     </div>
 
     <div class="progress-box" id="progressContainer" style="display:none;">
-      <div class="status-summary" id="statusSummary">
+      <div class="status-summary">
         <span class="badge badge-coin" id="badgeCoin">🪙 0</span>
         <span class="badge badge-lv" id="badgeLv">⚡ LV 1</span>
         <button id="tungContainer" onclick="openTungModal()" class="tung-btn" style="display:none;">💭</button>
@@ -579,30 +271,28 @@
 
       <div class="streak-box">
         <div class="streak-label">Full days this year <span id="streakText">0 / 351 (0.0%)</span></div>
-        <div class="streak-bar">
-          <div class="streak-fill" id="streakFill"></div>
-        </div>
+        <div class="streak-bar"><div class="streak-fill" id="streakFill"></div></div>
       </div>
-
       <div class="streak-box">
         <div class="streak-label">Total tasks this year <span id="taskStreakText">0 / 2457 (0.0%)</span></div>
-        <div class="streak-bar">
-          <div class="streak-fill" id="taskStreakFill"></div>
-        </div>
+        <div class="streak-bar"><div class="streak-fill" id="taskStreakFill"></div></div>
       </div>
 
       <div id="eventText"></div>
 
-      <div style="display:flex; gap:8px; margin-top:18px;">
-        <button id="toggleCalendarButton" onclick="toggleCalendar()" style="flex:1;">📅 Calendar</button>
-        <button id="toggleReportButton" onclick="toggleReport()" style="flex:1; margin-top:0;">📊 Report</button>
+      <div style="display:flex; gap:6px; margin-top:18px;">
+        <button class="toggle-btn" id="toggleCalendarButton" onclick="toggleCalendar()" style="flex:1;">📅 Calendar</button>
+        <button class="toggle-btn" id="toggleReportButton"   onclick="toggleReport()"   style="flex:1;">📊 Report</button>
+        <button class="toggle-btn" id="toggleGoalsButton"    onclick="toggleGoals()"    style="flex:1;">🎯 Goals</button>
       </div>
+
       <div id="reportContainer" style="display:none; margin-top:12px;"></div>
+
       <div id="calendarContainer" style="display:none;">
-        <div id="calendarNav" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; margin-top:10px;">
           <button onclick="changeMonth(-1)" style="border:none; background:transparent; font-size:20px; cursor:pointer; padding:4px 8px;">◀</button>
           <span id="calendarMonthTitle" style="font-size:15px; font-weight:700;"></span>
-          <button onclick="changeMonth(1)" style="border:none; background:transparent; font-size:20px; cursor:pointer; padding:4px 8px;">▶</button>
+          <button onclick="changeMonth(1)"  style="border:none; background:transparent; font-size:20px; cursor:pointer; padding:4px 8px;">▶</button>
         </div>
         <div id="calendarTableContainer"></div>
       </div>
@@ -610,16 +300,27 @@
         <span id="perfectDaysCount" style="font-size:13px; font-weight:600; color:#e74c3c;"></span>
       </div>
 
+      <!-- ── Year Goals: 강도 플랜 타임라인 ── -->
+      <div id="goalsContainer">
+        <div class="goals-section-title" style="margin-top:2px;">🎯 2026 Intensity Plan</div>
+        <div class="goals-timeline" id="goalsTimeline"></div>
+        <button onclick="openGoalsEditModal()"
+          style="margin-top:12px; width:100%; padding:8px 0; border-radius:999px;
+            border:1.5px dashed var(--accent,#4b8cff); background:transparent;
+            color:var(--accent,#4b8cff); font-size:12px; font-weight:600; cursor:pointer;">
+          ✏️ Edit plan
+        </button>
+      </div>
+
       <a href="https://bethej2love-lab.github.io/narang-mandart-chart/mandart" target="_blank"
-        style="display:block; margin-top:14px; padding:10px 0; text-align:center; background:var(--accent, #4b8cff); color:#fff; font-size:13px; font-weight:600; border-radius:999px; text-decoration:none;">
+        style="display:block; margin-top:14px; padding:10px 0; text-align:center; background:var(--accent,#4b8cff); color:#fff; font-size:13px; font-weight:600; border-radius:999px; text-decoration:none;">
         🗺️ Go to Mandart
       </a>
       <a href="https://www.notion.so/dashboard-2f5139841f3c806ab733fa8e408225ee" target="_blank"
-        style="display:block; margin-top:8px; padding:10px 0; text-align:center; background:transparent; color:var(--accent, #4b8cff); font-size:13px; font-weight:600; border-radius:999px; text-decoration:none; border:1.5px solid var(--accent, #4b8cff);">
+        style="display:block; margin-top:8px; padding:10px 0; text-align:center; background:transparent; color:var(--accent,#4b8cff); font-size:13px; font-weight:600; border-radius:999px; text-decoration:none; border:1.5px solid var(--accent,#4b8cff);">
         📝 Go to Notion
       </a>
 
-      <!-- 오늘의 상식 카드 -->
       <div id="triviaCard" style="margin-top:14px; display:none;">
         <div style="font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; color:#aaa; margin-bottom:6px;">💡 Today's Trivia</div>
         <div id="triviaContent" style="font-size:12px; line-height:1.6; padding:12px 14px; border-radius:12px; background:rgba(0,0,0,0.03); color:#444;"></div>
@@ -633,7 +334,7 @@
     </div>
   </div>
 
-  <!-- 전체 완료 축하 모달 -->
+  <!-- 모달들 -->
   <div class="modal-overlay" id="allDoneModal">
     <div class="modal-content" style="text-align:center;">
       <div style="font-size:48px; margin-bottom:8px;">🎉</div>
@@ -643,7 +344,6 @@
     </div>
   </div>
 
-  <!-- 최근 7일 통계 모달 -->
   <div class="modal-overlay" id="weeklyModal">
     <div class="modal-content">
       <div class="modal-title">Last 7 Days</div>
@@ -652,7 +352,6 @@
     </div>
   </div>
 
-  <!-- 퉁치기 모달 -->
   <div class="modal-overlay" id="tungModal">
     <div class="modal-content tung-modal-content">
       <div class="tung-header">
@@ -660,33 +359,24 @@
         <button class="tung-close" onclick="closeTungModal()">×</button>
       </div>
       <div class="tung-options" id="tungOptionsList"></div>
-      <div class="tung-subtext">
-        First skip is free. Use coins for extra skips.
-      </div>
-
+      <div class="tung-subtext">First skip is free. Use coins for extra skips.</div>
       <div class="tung-coin-actions">
-        <button class="tung-coin-btn" onclick="useTungCoins(1, 20)">20 coins → +1 done</button>
-        <button class="tung-coin-btn" onclick="useTungCoins(2, 30)">30 coins → +2 done</button>
-        <button class="tung-coin-btn" onclick="useTungCoins(3, 50)">50 coins → +3 done</button>
+        <button class="tung-coin-btn" onclick="useTungCoins(1,20)">20 coins → +1 done</button>
+        <button class="tung-coin-btn" onclick="useTungCoins(2,30)">30 coins → +2 done</button>
+        <button class="tung-coin-btn" onclick="useTungCoins(3,50)">50 coins → +3 done</button>
       </div>
     </div>
   </div>
 
-  <!-- API 키 전용 모달 -->
   <div class="modal-overlay" id="apiKeyModal">
     <div class="modal-content">
       <div class="modal-title">🔑 Claude API Key</div>
-
       <div id="apiKeyStatus" style="text-align:center; margin-bottom:12px;"></div>
-
       <input id="apiKeyModalInput" type="password" placeholder="sk-ant-..."
         style="width:100%; box-sizing:border-box; border:1px solid #ddd; border-radius:8px; padding:9px 12px; font-size:13px; font-family:monospace; margin-bottom:6px;">
-
       <div style="font-size:10px; color:#aaa; margin-bottom:14px; line-height:1.5;">
-        이 기기의 localStorage에만 저장돼요. GitHub에 올라가지 않아요.<br>
-        Trivia 기능에 사용됩니다.
+        이 기기의 localStorage에만 저장돼요. GitHub에 올라가지 않아요.<br>Trivia 기능에 사용됩니다.
       </div>
-
       <div style="display:flex; gap:8px;">
         <button class="modal-close-btn" style="background:#e0e0e0; color:#333;" onclick="closeApiKeyModal()">Cancel</button>
         <button class="modal-close-btn" style="background:#e74c3c;" onclick="clearApiKey()">Clear</button>
@@ -695,22 +385,17 @@
     </div>
   </div>
 
-  <!-- 설정 모달 -->
   <div class="modal-overlay" id="settingsModal">
     <div class="modal-content" style="max-height:80vh; overflow-y:auto;">
       <div class="modal-title">⚙️ Settings</div>
-
       <div style="font-size:12px; font-weight:700; margin-bottom:6px; color:#888;">Missions</div>
       <div id="settingsMissionList" style="display:flex; flex-direction:column; gap:8px; margin-bottom:14px;"></div>
-
       <div style="font-size:12px; font-weight:700; margin-bottom:6px; color:#888;">Skip Options</div>
       <div id="settingsTungList" style="display:flex; flex-direction:column; gap:6px; margin-bottom:6px;"></div>
       <button onclick="addTungOption()" style="width:100%; padding:7px; border-radius:8px; border:1px dashed #ccc; background:transparent; font-size:12px; cursor:pointer; margin-bottom:14px;">+ Add option</button>
-
       <div style="font-size:11px; color:#aaa; padding:8px 12px; border-radius:8px; background:rgba(0,0,0,0.04); margin-bottom:14px; display:flex; align-items:center; gap:6px;">
         🔑 API Key는 상단 <strong>🔑 버튼</strong>에서 따로 관리할 수 있어요.
       </div>
-
       <div style="display:flex; gap:8px;">
         <button class="modal-close-btn" style="background:#e0e0e0; color:#333;" onclick="closeSettingsModal()">Cancel</button>
         <button class="modal-close-btn" onclick="saveSettings()">Save</button>
@@ -718,1239 +403,520 @@
     </div>
   </div>
 
+  <!-- Goals 편집 모달 -->
+  <div class="modal-overlay" id="goalsEditModal">
+    <div class="modal-content" style="max-height:85vh; overflow-y:auto;">
+      <div class="modal-title">🎯 Intensity Plan 편집</div>
+      <div style="font-size:11px; color:#aaa; margin-bottom:14px; text-align:center; line-height:1.6;">
+        이번 달부터 뭘 바꿀지, 어떤 미션을 강화할지<br>자유롭게 메모해두세요.
+      </div>
+      <div id="goalsEditList"></div>
+      <div style="display:flex; gap:8px; margin-top:4px;">
+        <button class="modal-close-btn" style="background:#e0e0e0; color:#333;" onclick="closeGoalsEditModal()">Cancel</button>
+        <button class="modal-close-btn" onclick="saveGoals()">Save</button>
+      </div>
+    </div>
+  </div>
+
   <script>
-    // 기본 미션 데이터
+    // ── 미션 데이터 ───────────────────────────────────────────────
     const defaultMissions = [
-      { name: "듀오링고",              hint: "→ 딱 2개만 !",                                                                                                    tier: "B" },
-      { name: "Brilliant",             hint: "→ 3개 이상 푸십쇼",                                                                                               tier: "B" },
-      { name: "책 읽기",               hint: "→ 3페이지는 읽자..",                                                                                              tier: "A" },
-      { name: "플랭크 1분+간단 스트레칭", hint: "→ 몸을 움직여라!",                                                                                             tier: "B" },
-      { name: "부기스/블로그",          hint: "→ 책 등록/블로그 업로드/인스타 업로드/리뷰 답글 뭐든 제발!",                                                      tier: "S" },
-      { name: "달리기",                hint: "→ 5분이라도! (만보 대체 가능ㅎ)",                                                                                  tier: "S" },
-      { name: "자격증 공부",            hint: "→ 컴활 2급 / 임상심리사 2급 / 청소년상담사 3급 / 투자자산운용사 / 정보처리기사 / 공인중개사 / 사회조사분석사",       tier: "A" }
+      { name:"듀오링고",               hint:"→ 딱 2개만 !",                                                                                                    tier:"B" },
+      { name:"Brilliant",              hint:"→ 3개 이상 푸십쇼",                                                                                               tier:"B" },
+      { name:"책 읽기",                hint:"→ 3페이지는 읽자..",                                                                                              tier:"A" },
+      { name:"플랭크 1분+간단 스트레칭", hint:"→ 몸을 움직여라!",                                                                                              tier:"B" },
+      { name:"부기스/블로그",           hint:"→ 책 등록/블로그 업로드/인스타 업로드/리뷰 답글 뭐든 제발!",                                                      tier:"S" },
+      { name:"달리기",                 hint:"→ 5분이라도! (만보 대체 가능ㅎ)",                                                                                  tier:"S" },
+      { name:"자격증 공부",             hint:"→ 컴활 2급 / 임상심리사 2급 / 청소년상담사 3급 / 투자자산운용사 / 정보처리기사 / 공인중개사 / 사회조사분석사",       tier:"A" }
     ];
+    const defaultTungOptions = ["영화","전시","우쿨렐레","뜨개질","요리","청소","벌떡 기상"];
 
-    const defaultTungOptions = ["영화", "전시", "우쿨렐레", "뜨개질", "요리", "청소", "벌떡 기상"];
-
-    function loadCustomMissions() {
-      const raw = localStorage.getItem("customMissions");
-      if (!raw) return defaultMissions;
-      try { return JSON.parse(raw); } catch(e) { return defaultMissions; }
-    }
-
-    function loadCustomTungOptions() {
-      const raw = localStorage.getItem("customTungOptions");
-      if (!raw) return defaultTungOptions;
-      try { return JSON.parse(raw); } catch(e) { return defaultTungOptions; }
-    }
+    function loadCustomMissions()    { try { return JSON.parse(localStorage.getItem("customMissions"))    || defaultMissions;    } catch(e) { return defaultMissions;    } }
+    function loadCustomTungOptions() { try { return JSON.parse(localStorage.getItem("customTungOptions")) || defaultTungOptions; } catch(e) { return defaultTungOptions; } }
 
     let missionData = loadCustomMissions();
-    let tungOptions = loadCustomTungOptions();
-
-    const tasks = missionData.map(m => m.name);
-    const hints = Object.fromEntries(missionData.map(m => [m.name, m.hint]));
+    let tungOptions  = loadCustomTungOptions();
+    const tasks    = missionData.map(m => m.name);
+    const hints    = Object.fromEntries(missionData.map(m => [m.name, m.hint]));
     const taskTier = Object.fromEntries(missionData.map(m => [m.name, m.tier]));
-
-    const tierLabel = { "S": "S-Tier", "A": "A-Tier", "B": "B-Tier" };
-    const baseReward = { "S": 3, "A": 2, "B": 1, "BONUS": 0 };
-
+    const tierLabel  = { S:"S-Tier", A:"A-Tier", B:"B-Tier" };
+    const baseReward = { S:3, A:2, B:1, BONUS:0 };
     const YEAR_TOTAL_DAYS = 351;
 
     function getKSTDate() {
-      const now = new Date();
-      const year = now.getFullYear();
-      const month = String(now.getMonth() + 1).padStart(2, "0");
-      const day = String(now.getDate()).padStart(2, "0");
-      return `${year}-${month}-${day}`;
+      const n = new Date();
+      return `${n.getFullYear()}-${String(n.getMonth()+1).padStart(2,"0")}-${String(n.getDate()).padStart(2,"0")}`;
     }
-
     const today = getKSTDate();
 
+    // ── Daily Events ──────────────────────────────────────────────
     const dailyEvents = [
-      { id: "buff_all_plus1",  label: "Today's Buff: All missions +1 coin!", type: "buff" },
-      { id: "buff_s_plus1",    label: "Today's Buff: S-tier +1 coin!", type: "buff" },
-      { id: "nerf_s_minus1",   label: "Today's Debuff: S-tier -1 coin…", type: "debuff" },
-      { id: "half_day_full",   label: "Today's Special: 4 missions = full day!", type: "special" },
-      { id: "buff_b_plus2",    label: "Today's Buff: B-tier +2 coins!", type: "buff" },
-      { id: "nerf_all_minus1", label: "Today's Debuff: All missions -1 coin…", type: "debuff" },
-      { id: "lucky_day",       label: "Today's Special: First mission = +3 bonus coins!", type: "special" },
-      { id: "buff_a_plus2",    label: "Today's Buff: A-tier +2 coins!", type: "buff" },
-      { id: "double_first",    label: "Today's Buff: First mission coins x2!", type: "buff" },
-      { id: "nerf_b_zero",     label: "Today's Debuff: B-tier earns no coins… sorry", type: "debuff" },
-      { id: "special_5done",   label: "Today's Special: 5 missions = +5 bonus coins!", type: "special" },
-      { id: "buff_last_plus3", label: "Today's Buff: Last mission +3 coins!", type: "buff" }
+      { id:"buff_all_plus1",  label:"Today's Buff: All missions +1 coin!",              type:"buff"    },
+      { id:"buff_s_plus1",    label:"Today's Buff: S-tier +1 coin!",                    type:"buff"    },
+      { id:"nerf_s_minus1",   label:"Today's Debuff: S-tier -1 coin…",                  type:"debuff"  },
+      { id:"half_day_full",   label:"Today's Special: 4 missions = full day!",          type:"special" },
+      { id:"buff_b_plus2",    label:"Today's Buff: B-tier +2 coins!",                   type:"buff"    },
+      { id:"nerf_all_minus1", label:"Today's Debuff: All missions -1 coin…",            type:"debuff"  },
+      { id:"lucky_day",       label:"Today's Special: First mission = +3 bonus coins!", type:"special" },
+      { id:"buff_a_plus2",    label:"Today's Buff: A-tier +2 coins!",                   type:"buff"    },
+      { id:"double_first",    label:"Today's Buff: First mission coins x2!",            type:"buff"    },
+      { id:"nerf_b_zero",     label:"Today's Debuff: B-tier earns no coins… sorry",     type:"debuff"  },
+      { id:"special_5done",   label:"Today's Special: 5 missions = +5 bonus coins!",    type:"special" },
+      { id:"buff_last_plus3", label:"Today's Buff: Last mission +3 coins!",             type:"buff"    }
     ];
 
+    // ── Storage helpers ───────────────────────────────────────────
+    const ls = {
+      get:  (k) => { try { return JSON.parse(localStorage.getItem(k)); } catch(e) { return null; } },
+      set:  (k,v) => localStorage.setItem(k, JSON.stringify(v)),
+      str:  (k) => localStorage.getItem(k),
+      setStr:(k,v) => localStorage.setItem(k, v),
+      rm:   (k) => localStorage.removeItem(k)
+    };
+
     function loadTaskStatus() {
-      const stored = JSON.parse(localStorage.getItem("taskStatus"));
-      const storedDate = localStorage.getItem("taskDate");
-
-      if (!stored || storedDate !== today) {
-        const reset = {};
-        tasks.forEach(t => reset[t] = false);
-        localStorage.setItem("taskStatus", JSON.stringify(reset));
-        localStorage.setItem("taskDate", today);
-        return reset;
-      }
-      return stored;
+      const s=ls.get("taskStatus"), d=ls.str("taskDate");
+      if(!s||d!==today){const r={};tasks.forEach(t=>r[t]=false);ls.set("taskStatus",r);ls.setStr("taskDate",today);return r;}
+      return s;
     }
-
-    function loadFullDays() {
-      const count = parseInt(localStorage.getItem("fullCompleteCount") || "0", 10);
-      const lastDate = localStorage.getItem("fullCompleteDate") || "";
-      return { count, lastDate };
-    }
-
-    function loadCoins() {
-      return parseInt(localStorage.getItem("coinCount") || "0", 10);
-    }
-
+    function loadFullDays()   { return { count:parseInt(ls.str("fullCompleteCount")||"0",10), lastDate:ls.str("fullCompleteDate")||"" }; }
+    function loadCoins()      { return parseInt(ls.str("coinCount")||"0",10); }
     function loadDailyEvent() {
-      const storedId = localStorage.getItem("dailyEventId");
-      const storedDate = localStorage.getItem("dailyEventDate");
+      const id=ls.str("dailyEventId"), dt=ls.str("dailyEventDate");
+      if(!id||dt!==today){const e=dailyEvents[Math.floor(Math.random()*dailyEvents.length)];ls.setStr("dailyEventId",e.id);ls.setStr("dailyEventDate",today);return e;}
+      return dailyEvents.find(e=>e.id===id)||dailyEvents[0];
+    }
+    function loadDailyStats()  { return ls.get("dailyStats")||{}; }
+    function saveDailyStats(s) { ls.set("dailyStats",s); }
+    function loadMissionLog()  { return ls.get("missionLog")||{}; }
+    function saveMissionLog(l) { ls.set("missionLog",l); }
+    function recordMissionDone(t) { const l=loadMissionLog();if(!l[today])l[today]={};l[today][t]=(l[today][t]||0)+1;saveMissionLog(l); }
+    function loadSkipLog()     { return ls.get("skipLog")||{}; }
+    function saveSkipLog(l)    { ls.set("skipLog",l); }
+    function recordSkip()      { const l=loadSkipLog();l[today]=(l[today]||0)+1;saveSkipLog(l); }
+    function loadWeeklyPopup() { return ls.get("weeklyPopupStatus")||{}; }
+    function saveWeeklyPopup(s){ ls.set("weeklyPopupStatus",s); }
 
-      if (!storedId || storedDate !== today) {
-        const event = dailyEvents[Math.floor(Math.random() * dailyEvents.length)];
-        localStorage.setItem("dailyEventId", event.id);
-        localStorage.setItem("dailyEventDate", today);
-        return event;
-      } else {
-        const found = dailyEvents.find(e => e.id === storedId);
-        return found || dailyEvents[0];
-      }
-    }
-
-    function loadDailyStats() {
-      const raw = localStorage.getItem("dailyStats");
-      if (!raw) return {};
-      try { return JSON.parse(raw); } catch (e) { return {}; }
-    }
-
-    function saveDailyStats(stats) {
-      localStorage.setItem("dailyStats", JSON.stringify(stats));
-    }
-
-    function loadMissionLog() {
-      const raw = localStorage.getItem("missionLog");
-      if (!raw) return {};
-      try { return JSON.parse(raw); } catch(e) { return {}; }
-    }
-    function saveMissionLog(log) {
-      localStorage.setItem("missionLog", JSON.stringify(log));
-    }
-    function recordMissionDone(taskName) {
-      const log = loadMissionLog();
-      if (!log[today]) log[today] = {};
-      log[today][taskName] = (log[today][taskName] || 0) + 1;
-      saveMissionLog(log);
-    }
-
-    function loadSkipLog() {
-      const raw = localStorage.getItem("skipLog");
-      if (!raw) return {};
-      try { return JSON.parse(raw); } catch(e) { return {}; }
-    }
-    function saveSkipLog(log) {
-      localStorage.setItem("skipLog", JSON.stringify(log));
-    }
-    function recordSkip() {
-      const log = loadSkipLog();
-      log[today] = (log[today] || 0) + 1;
-      saveSkipLog(log);
-    }
-
-    function loadWeeklyPopupStatus() {
-      const raw = localStorage.getItem("weeklyPopupStatus");
-      if (!raw) return {};
-      try { return JSON.parse(raw); } catch (e) { return {}; }
-    }
-
-    function saveWeeklyPopupStatus(status) {
-      localStorage.setItem("weeklyPopupStatus", JSON.stringify(status));
-    }
-
-    // ── Trivia 히스토리 관리 ─────────────────────────────────────
-    function loadTriviaHistory() {
-      const raw = localStorage.getItem("triviaHistory");
-      if (!raw) return [];
-      try { return JSON.parse(raw); } catch(e) { return []; }
-    }
-
-    function saveTriviaHistory(entry) {
-      const history = loadTriviaHistory();
-      history.push(entry);
-      // 최근 30개만 보관
-      if (history.length > 30) history.splice(0, history.length - 30);
-      localStorage.setItem("triviaHistory", JSON.stringify(history));
-    }
-
+    // ── Trivia history ────────────────────────────────────────────
+    function loadTriviaHistory()  { return ls.get("triviaHistory")||[]; }
+    function saveTriviaHistory(e) { const h=loadTriviaHistory();h.push(e);if(h.length>30)h.splice(0,h.length-30);ls.set("triviaHistory",h); }
     function pickTriviaCategory() {
-      // 최근 5회 사용한 카테고리 제외
-      const history = loadTriviaHistory();
-      const recentCats = history.slice(-5).map(h => h.category);
-      const available = triviaCategories.filter(c => !recentCats.includes(c));
-      const pool = available.length > 0 ? available : triviaCategories;
-      return pool[Math.floor(Math.random() * pool.length)];
-    }
-    // ─────────────────────────────────────────────────────────────
-
-    let { count: tungCount, freeUsed: tungFreeUsed } = loadTungState();
-
-    let taskStatus = loadTaskStatus();
-    let { count: fullCompleteCount, lastDate: fullCompleteDate } = loadFullDays();
-    let coinCount = loadCoins();
-    let dailyEvent = loadDailyEvent();
-    let isPicking = false;
-    let hasShownProgress = false;
-    let currentTask = null;
-    let currentTier = null;
-    let skippedTasks = {};
-
-    // ─── API 키 모달 ───────────────────────────────────────────────
-    function openApiKeyModal() {
-      const existingKey = localStorage.getItem("mandart_api_key") || "";
-      const statusEl = document.getElementById("apiKeyStatus");
-      const inputEl  = document.getElementById("apiKeyModalInput");
-
-      if (existingKey) {
-        statusEl.innerHTML = `<span class="api-key-badge set">✅ 저장됨</span>`;
-        inputEl.value = "";
-        inputEl.placeholder = "새 키를 입력하면 교체돼요";
-      } else {
-        statusEl.innerHTML = `<span class="api-key-badge unset">미설정</span>`;
-        inputEl.value = "";
-        inputEl.placeholder = "sk-ant-...";
-      }
-
-      document.getElementById("apiKeyModal").style.display = "flex";
+      const recent=loadTriviaHistory().slice(-5).map(h=>h.category);
+      const avail=triviaCategories.filter(c=>!recent.includes(c));
+      const pool=avail.length>0?avail:triviaCategories;
+      return pool[Math.floor(Math.random()*pool.length)];
     }
 
-    function closeApiKeyModal() {
-      document.getElementById("apiKeyModal").style.display = "none";
+    // ── Year Goals: 강도 플랜 ─────────────────────────────────────
+    const MONTH_NAMES = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+
+    function loadYearGoals() {
+      const raw = ls.get("yearGoals2026");
+      // 12개 항목의 배열 { plan: string } 형태
+      if (raw && Array.isArray(raw) && raw.length === 12) return raw;
+      return MONTH_NAMES.map(() => ({ plan: "" }));
     }
+    function saveYearGoals(g) { ls.set("yearGoals2026", g); }
 
-    function saveApiKey() {
-      const val = document.getElementById("apiKeyModalInput").value.trim();
-      if (val) {
-        localStorage.setItem("mandart_api_key", val);
-        closeApiKeyModal();
-        initTriviaCard();
-        alert("API Key 저장 완료! 🔑");
-      } else {
-        closeApiKeyModal();
-      }
-    }
+    function renderGoalsTimeline() {
+      const goals = loadYearGoals();
+      const tl = document.getElementById("goalsTimeline");
+      if (!tl) return;
+      tl.innerHTML = "";
+      const curMonth = parseInt(today.split("-")[1], 10); // 1-based
 
-    function clearApiKey() {
-      if (confirm("API Key를 삭제할까요?")) {
-        localStorage.removeItem("mandart_api_key");
-        closeApiKeyModal();
-        initTriviaCard();
-      }
-    }
-    // ──────────────────────────────────────────────────────────────
+      goals.forEach((g, i) => {
+        const mn = i + 1; // 1-based month
+        const state = mn < curMonth ? "past" : mn === curMonth ? "current" : "future";
+        const hasPlan = g.plan && g.plan.trim().length > 0;
 
-    function getLevel(percent) {
-      const lvl = Math.floor(percent / 5) + 1;
-      return Math.min(20, Math.max(1, lvl));
-    }
+        const row = document.createElement("div");
+        row.className = "goal-row";
 
-    function getRewardForTask(taskName) {
-      const tier = taskTier[taskName] || "B";
-      let reward = baseReward[tier];
+        // 점
+        const dotWrap = document.createElement("div");
+        dotWrap.className = "goal-dot-wrap";
+        const dot = document.createElement("div");
+        dot.className = `goal-dot ${hasPlan ? state : "empty"}`;
+        dotWrap.appendChild(dot);
+        row.appendChild(dotWrap);
 
-      if (tier === "BONUS") return 0;
+        // 내용
+        const body = document.createElement("div");
+        body.className = "goal-body";
 
-      if (dailyEvent.id === "buff_all_plus1" && reward > 0) reward += 1;
-      if (dailyEvent.id === "buff_s_plus1" && tier === "S") reward += 1;
-      if (dailyEvent.id === "nerf_s_minus1" && tier === "S") reward = Math.max(0, reward - 1);
-      if (dailyEvent.id === "buff_b_plus2" && tier === "B") reward += 2;
-      if (dailyEvent.id === "nerf_all_minus1" && reward > 0) reward = Math.max(0, reward - 1);
-      if (dailyEvent.id === "buff_a_plus2" && tier === "A") reward += 2;
-      if (dailyEvent.id === "nerf_b_zero" && tier === "B") reward = 0;
+        const header = document.createElement("div");
+        header.className = "goal-month-header";
 
-      return reward;
-    }
+        const nameLbl = document.createElement("span");
+        nameLbl.className = `goal-month-name ${state}`;
+        nameLbl.textContent = `${MONTH_NAMES[i]} (${mn}월)`;
+        header.appendChild(nameLbl);
 
-    function getCompletedCount() {
-      const base = Object.values(taskStatus).filter(v => v).length;
-      const bonus = tungCount;
-      return Math.min(tasks.length, base + bonus);
-    }
+        if (state === "current") {
+          const badge = document.createElement("span");
+          badge.className = "goal-month-badge show";
+          badge.textContent = "NOW";
+          header.appendChild(badge);
+        }
+        body.appendChild(header);
 
-    function updateUI() {
-      const completed = getCompletedCount();
+        const planEl = document.createElement("div");
+        if (hasPlan) {
+          planEl.className = "goal-plan-text";
+          planEl.textContent = g.plan;
+        } else {
+          planEl.className = "goal-plan-text empty-hint";
+          planEl.textContent = state === "future" ? "계획 없음" : state === "current" ? "아직 플랜 미작성" : "기록 없음";
+        }
+        body.appendChild(planEl);
 
-      let fullNeeded = tasks.length;
-      if (dailyEvent.id === "half_day_full") {
-        fullNeeded = Math.ceil(tasks.length / 2);
-      }
+        // 편집 버튼 (호버 시 표시)
+        const editBtn = document.createElement("button");
+        editBtn.className = "goal-edit-inline";
+        editBtn.textContent = "✏️ edit";
+        editBtn.onclick = () => openGoalsEditModalAt(i);
+        body.appendChild(editBtn);
 
-      const realCompleted = Object.values(taskStatus).filter(v => v).length;
-      let realFullNeeded = tasks.length;
-      if (dailyEvent.id === "half_day_full") realFullNeeded = Math.ceil(tasks.length / 2);
-
-      if (realCompleted >= realFullNeeded && fullCompleteDate !== today) {
-        fullCompleteCount += 1;
-        fullCompleteDate = today;
-        localStorage.setItem("fullCompleteCount", String(fullCompleteCount));
-        localStorage.setItem("fullCompleteDate", fullCompleteDate);
-      }
-
-      const stats = loadDailyStats();
-      stats[today] = completed;
-      saveDailyStats(stats);
-
-      document.getElementById("progressText").textContent =
-        `Today: ${completed} / ${tasks.length}`;
-
-      const listEl = document.getElementById("checkboxList");
-      listEl.innerHTML = "";
-      tasks.forEach(t => {
-        const div = document.createElement("div");
-        div.textContent = (taskStatus[t] ? "✔  " : "○  ") + t;
-        if (taskStatus[t]) div.classList.add("done");
-        listEl.appendChild(div);
+        row.appendChild(body);
+        tl.appendChild(row);
       });
+    }
 
-      const percent = Math.min(100, (fullCompleteCount / YEAR_TOTAL_DAYS) * 100);
-      const level = getLevel(percent);
-
-      document.getElementById("streakText").textContent =
-        `${fullCompleteCount} / ${YEAR_TOTAL_DAYS} (${percent.toFixed(1)}%)`;
-      document.getElementById("streakFill").style.width = `${percent}%`;
-
-      const TASK_TOTAL = YEAR_TOTAL_DAYS * tasks.length;
-      const allStats = loadDailyStats();
-      const totalTasksDone = Object.values(allStats).reduce((sum, v) => sum + v, 0);
-      const taskPercent = Math.min(100, (totalTasksDone / TASK_TOTAL) * 100);
-      const taskStreakEl = document.getElementById("taskStreakText");
-      const taskFillEl = document.getElementById("taskStreakFill");
-      if (taskStreakEl) taskStreakEl.textContent =
-        `${totalTasksDone} / ${TASK_TOTAL} (${taskPercent.toFixed(1)}%)`;
-      if (taskFillEl) taskFillEl.style.width = `${taskPercent}%`;
-
-      const coinBadge = document.getElementById("badgeCoin");
-      const lvBadge = document.getElementById("badgeLv");
-      if (coinBadge) coinBadge.textContent = `🪙 ${coinCount}`;
-      if (lvBadge) lvBadge.textContent = `⚡ LV ${level}`;
-
-      const eventEl = document.getElementById("eventText");
-      eventEl.className = "";
-      const eventIcon = dailyEvent.type === "buff" ? "🟢" : dailyEvent.type === "debuff" ? "🔴" : "🟡";
-      eventEl.innerHTML = `<span>${eventIcon}</span><span>${dailyEvent.label}</span>`;
-      if (dailyEvent.type === "buff") {
-        eventEl.classList.add("event-buff");
-        eventEl.style.color = "";
-      } else if (dailyEvent.type === "debuff") {
-        eventEl.classList.add("event-debuff");
-        eventEl.style.color = "";
+    function toggleGoals() {
+      const c = document.getElementById("goalsContainer");
+      const btn = document.getElementById("toggleGoalsButton");
+      if (!c.style.display || c.style.display === "none") {
+        renderGoalsTimeline(); c.style.display = "block"; btn.textContent = "🎯 Close";
       } else {
-        eventEl.classList.add("event-special");
-        eventEl.style.color = "";
+        c.style.display = "none"; btn.textContent = "🎯 Goals";
       }
+    }
 
+    function openGoalsEditModal()      { openGoalsEditModalAt(null); }
+    function openGoalsEditModalAt(focusIdx) {
+      const goals = loadYearGoals();
+      const list = document.getElementById("goalsEditList");
+      list.innerHTML = "";
+      goals.forEach((g, i) => {
+        const div = document.createElement("div");
+        div.className = "goals-edit-row";
+        const lbl = document.createElement("div");
+        lbl.className = "goals-edit-month-label";
+        lbl.textContent = `${MONTH_NAMES[i]} (${i+1}월)`;
+        const ta = document.createElement("textarea");
+        ta.className = "goals-edit-textarea";
+        ta.id = `gPlan_${i}`;
+        ta.placeholder = "이번 달 강도 업그레이드 계획을 적어보세요\n예) 달리기 10분→20분, 플랭크 1분→2분";
+        ta.value = g.plan || "";
+        // 입력 내용에 따라 높이 자동 조절
+        ta.addEventListener("input", () => {
+          ta.style.height = "auto";
+          ta.style.height = ta.scrollHeight + "px";
+        });
+        div.appendChild(lbl);
+        div.appendChild(ta);
+        list.appendChild(div);
+      });
+      document.getElementById("goalsEditModal").style.display = "flex";
+      // 특정 달 포커스
+      if (focusIdx !== null) {
+        setTimeout(() => {
+          const el = document.getElementById(`gPlan_${focusIdx}`);
+          if (el) { el.focus(); el.scrollIntoView({ behavior:"smooth", block:"center" }); }
+        }, 100);
+      }
+    }
+    function closeGoalsEditModal() { document.getElementById("goalsEditModal").style.display = "none"; }
+    function saveGoals() {
+      const goals = loadYearGoals();
+      goals.forEach((_, i) => {
+        const ta = document.getElementById(`gPlan_${i}`);
+        if (ta) goals[i].plan = ta.value.trim();
+      });
+      saveYearGoals(goals);
+      closeGoalsEditModal();
+      renderGoalsTimeline();
+    }
+
+    // ── State init ────────────────────────────────────────────────
+    function loadTungState() {
+      if(ls.str("tungDate")!==today){ls.setStr("tungDate",today);ls.setStr("tungCount","0");ls.setStr("tungFreeUsed","0");ls.rm("tungChoice");return{count:0,freeUsed:false};}
+      return{count:parseInt(ls.str("tungCount")||"0",10),freeUsed:ls.str("tungFreeUsed")==="1"};
+    }
+    let {count:tungCount,freeUsed:tungFreeUsed}=loadTungState();
+    let taskStatus=loadTaskStatus();
+    let {count:fullCompleteCount,lastDate:fullCompleteDate}=loadFullDays();
+    let coinCount=loadCoins();
+    let dailyEvent=loadDailyEvent();
+    let isPicking=false,hasShownProgress=false,currentTask=null,currentTier=null,skippedTasks={};
+
+    // ── API Key ───────────────────────────────────────────────────
+    function openApiKeyModal(){const k=ls.str("mandart_api_key")||"";document.getElementById("apiKeyStatus").innerHTML=k?`<span class="api-key-badge set">✅ 저장됨</span>`:`<span class="api-key-badge unset">미설정</span>`;const inp=document.getElementById("apiKeyModalInput");inp.value="";inp.placeholder=k?"새 키를 입력하면 교체돼요":"sk-ant-...";document.getElementById("apiKeyModal").style.display="flex";}
+    function closeApiKeyModal(){document.getElementById("apiKeyModal").style.display="none";}
+    function saveApiKey(){const v=document.getElementById("apiKeyModalInput").value.trim();if(v){ls.setStr("mandart_api_key",v);closeApiKeyModal();initTriviaCard();alert("API Key 저장 완료! 🔑");}else closeApiKeyModal();}
+    function clearApiKey(){if(confirm("API Key를 삭제할까요?")){ls.rm("mandart_api_key");closeApiKeyModal();initTriviaCard();}}
+
+    // ── Game logic ────────────────────────────────────────────────
+    function getLevel(p){return Math.min(20,Math.max(1,Math.floor(p/5)+1));}
+    function getRewardForTask(name){
+      const tier=taskTier[name]||"B";let r=baseReward[tier];if(tier==="BONUS")return 0;
+      if(dailyEvent.id==="buff_all_plus1"&&r>0)r+=1;
+      if(dailyEvent.id==="buff_s_plus1"&&tier==="S")r+=1;
+      if(dailyEvent.id==="nerf_s_minus1"&&tier==="S")r=Math.max(0,r-1);
+      if(dailyEvent.id==="buff_b_plus2"&&tier==="B")r+=2;
+      if(dailyEvent.id==="nerf_all_minus1"&&r>0)r=Math.max(0,r-1);
+      if(dailyEvent.id==="buff_a_plus2"&&tier==="A")r+=2;
+      if(dailyEvent.id==="nerf_b_zero"&&tier==="B")r=0;
+      return r;
+    }
+    function getCompletedCount(){return Math.min(tasks.length,Object.values(taskStatus).filter(v=>v).length+tungCount);}
+
+    function updateUI(){
+      const comp=getCompletedCount(),real=Object.values(taskStatus).filter(v=>v).length;
+      let rfn=tasks.length;if(dailyEvent.id==="half_day_full")rfn=Math.ceil(tasks.length/2);
+      if(real>=rfn&&fullCompleteDate!==today){fullCompleteCount++;fullCompleteDate=today;ls.setStr("fullCompleteCount",String(fullCompleteCount));ls.setStr("fullCompleteDate",today);}
+      const stats=loadDailyStats();stats[today]=comp;saveDailyStats(stats);
+      document.getElementById("progressText").textContent=`Today: ${comp} / ${tasks.length}`;
+      const el=document.getElementById("checkboxList");el.innerHTML="";
+      tasks.forEach(t=>{const d=document.createElement("div");d.textContent=(taskStatus[t]?"✔  ":"○  ")+t;if(taskStatus[t])d.classList.add("done");el.appendChild(d);});
+      const pct=Math.min(100,(fullCompleteCount/YEAR_TOTAL_DAYS)*100);
+      document.getElementById("streakText").textContent=`${fullCompleteCount} / ${YEAR_TOTAL_DAYS} (${pct.toFixed(1)}%)`;
+      document.getElementById("streakFill").style.width=`${pct}%`;
+      const TT=YEAR_TOTAL_DAYS*tasks.length,all=loadDailyStats(),done=Object.values(all).reduce((s,v)=>s+v,0),tp=Math.min(100,(done/TT)*100);
+      document.getElementById("taskStreakText").textContent=`${done} / ${TT} (${tp.toFixed(1)}%)`;
+      document.getElementById("taskStreakFill").style.width=`${tp}%`;
+      document.getElementById("badgeCoin").textContent=`🪙 ${coinCount}`;
+      document.getElementById("badgeLv").textContent=`⚡ LV ${getLevel(pct)}`;
+      const ev=document.getElementById("eventText");ev.className="";
+      const ico=dailyEvent.type==="buff"?"🟢":dailyEvent.type==="debuff"?"🔴":"🟡";
+      ev.innerHTML=`<span>${ico}</span><span>${dailyEvent.label}</span>`;
+      ev.classList.add(dailyEvent.type==="buff"?"event-buff":dailyEvent.type==="debuff"?"event-debuff":"event-special");
       updateTungButtonVisibility();
     }
 
-    function showProgressIfNeeded() {
-      if (!hasShownProgress) {
-        document.getElementById("progressContainer").style.display = "block";
-        hasShownProgress = true;
-      }
-    }
+    function showProgressIfNeeded(){if(!hasShownProgress){document.getElementById("progressContainer").style.display="block";hasShownProgress=true;}}
+    function updateTungButtonVisibility(){const c=document.getElementById("tungContainer");if(!c)return;c.style.display=(!currentTask||getCompletedCount()>=tasks.length)?"none":"inline-block";}
 
-    function updateTungButtonVisibility() {
-      const container = document.getElementById("tungContainer");
-      if (!container) return;
-
-      const completed = getCompletedCount();
-
-      if (!currentTask) {
-        container.style.display = "none";
-        return;
-      }
-
-      if (completed >= tasks.length) {
-        container.style.display = "none";
-      } else {
-        container.style.display = "inline-block";
-      }
-    }
-
-    function applyTheme() {
-      const kstStr = getKSTDate();
-      const [y, m, d] = kstStr.split("-").map(Number);
-      const date = new Date(y, m - 1, d);
-      const yearStart = new Date(date.getFullYear(), 0, 1);
-      const diffDays = Math.floor((date - yearStart) / 86400000);
-
-      const themes = [
-        { emoji: "🌅", bodyBg: "#fff5e6", cardBg: "#ffffff", accent: "#ff7b54", accentSoft: "#ffb199", isDark: false },
-        { emoji: "🌊", bodyBg: "#e6f5ff", cardBg: "#ffffff", accent: "#3f8cff", accentSoft: "#9ac3ff", isDark: false },
-        { emoji: "🌿", bodyBg: "#eef8f2", cardBg: "#ffffff", accent: "#2ecc71", accentSoft: "#8be3aa", isDark: false },
-        { emoji: "🌌", bodyBg: "#050816", cardBg: "#111827", accent: "#6366f1", accentSoft: "#a5b4fc", isDark: true },
-        { emoji: "☕️", bodyBg: "#f7f0ea", cardBg: "#ffffff", accent: "#b85c38", accentSoft: "#d19d85", isDark: false },
-        { emoji: "📚", bodyBg: "#f6f4ff", cardBg: "#ffffff", accent: "#7c3aed", accentSoft: "#c4b5fd", isDark: false },
-        { emoji: "🔥", bodyBg: "#fff1f2", cardBg: "#ffffff", accent: "#f97373", accentSoft: "#fecaca", isDark: false },
-        { emoji: "🌈", bodyBg: "linear-gradient(135deg,#fdf2ff,#e0f2fe)", cardBg: "#ffffff", accent: "#ec4899", accentSoft: "#f9a8d4", isDark: false },
-        { emoji: "🧊", bodyBg: "#edf5ff", cardBg: "#ffffff", accent: "#0ea5e9", accentSoft: "#7dd3fc", isDark: false },
-        { emoji: "🍀", bodyBg: "#f1fdf3", cardBg: "#ffffff", accent: "#16a34a", accentSoft: "#6ee7b7", isDark: false },
-        { emoji: "🌙", bodyBg: "#0d0d1a", cardBg: "#13132b", accent: "#a78bfa", accentSoft: "#c4b5fd", isDark: true },
-        { emoji: "🖤", bodyBg: "#0a0a0a", cardBg: "#1a1a1a", accent: "#e5e5e5", accentSoft: "#aaaaaa", isDark: true }
+    // ── Theme ─────────────────────────────────────────────────────
+    function applyTheme(){
+      const[y,m,d]=getKSTDate().split("-").map(Number),date=new Date(y,m-1,d);
+      const diff=Math.floor((date-new Date(date.getFullYear(),0,1))/86400000);
+      const themes=[
+        {e:"🌅",b:"#fff5e6",c:"#ffffff",a:"#ff7b54",s:"#ffb199",dk:false},
+        {e:"🌊",b:"#e6f5ff",c:"#ffffff",a:"#3f8cff",s:"#9ac3ff",dk:false},
+        {e:"🌿",b:"#eef8f2",c:"#ffffff",a:"#2ecc71",s:"#8be3aa",dk:false},
+        {e:"🌌",b:"#050816",c:"#111827",a:"#6366f1",s:"#a5b4fc",dk:true},
+        {e:"☕️",b:"#f7f0ea",c:"#ffffff",a:"#b85c38",s:"#d19d85",dk:false},
+        {e:"📚",b:"#f6f4ff",c:"#ffffff",a:"#7c3aed",s:"#c4b5fd",dk:false},
+        {e:"🔥",b:"#fff1f2",c:"#ffffff",a:"#f97373",s:"#fecaca",dk:false},
+        {e:"🌈",b:"linear-gradient(135deg,#fdf2ff,#e0f2fe)",c:"#ffffff",a:"#ec4899",s:"#f9a8d4",dk:false},
+        {e:"🧊",b:"#edf5ff",c:"#ffffff",a:"#0ea5e9",s:"#7dd3fc",dk:false},
+        {e:"🍀",b:"#f1fdf3",c:"#ffffff",a:"#16a34a",s:"#6ee7b7",dk:false},
+        {e:"🌙",b:"#0d0d1a",c:"#13132b",a:"#a78bfa",s:"#c4b5fd",dk:true},
+        {e:"🖤",b:"#0a0a0a",c:"#1a1a1a",a:"#e5e5e5",s:"#aaaaaa",dk:true}
       ];
-
-      const theme = themes[diffDays % themes.length];
-      document.getElementById("themeLabel").textContent = theme.emoji;
-      document.body.style.setProperty("--accent-bg", theme.bodyBg);
-      document.documentElement.style.setProperty("--accent", theme.accent);
-      document.documentElement.style.setProperty("--accent-soft", theme.accentSoft);
-      document.body.style.background = theme.bodyBg;
-
-      const card = document.getElementById("card");
-      if (card) card.style.background = theme.cardBg;
-
-      window._isDarkTheme = theme.isDark;
-      if (theme.isDark) {
-        document.body.style.color = "#f5f5f5";
-        document.getElementById("card").style.color = "#f5f5f5";
-        document.querySelectorAll(".calendar-title").forEach(el => el.style.color = "#e6e6e6");
-        const ptEl = document.getElementById("progressText");
-        if (ptEl) ptEl.style.color = "var(--accent-soft, #a5b4fc)";
-        document.querySelectorAll(".checkbox-list div:not(.done)").forEach(el => el.style.color = "#e6e6e6");
-        document.querySelectorAll(".streak-label").forEach(el => el.style.color = "#888");
-        document.querySelectorAll(".streak-label span, #streakText, #taskStreakText").forEach(el => el.style.color = "#ccc");
-        document.querySelectorAll(".today-count").forEach(el => el.style.color = "var(--accent-soft, #a5b4fc)");
-        document.getElementById("missionCard").style.background = "rgba(255,255,255,0.05)";
-        document.querySelectorAll(".badge-coin").forEach(el => { el.style.background = "rgba(241,196,15,0.2)"; el.style.color = "#f1c40f"; });
-        document.querySelectorAll(".badge-lv").forEach(el => { el.style.background = "rgba(163,185,252,0.15)"; el.style.color = "#a5b4fc"; });
-        const evEl = document.getElementById("eventText");
-        if (evEl) {
-          if (evEl.classList.contains("event-buff"))    { evEl.style.background = "rgba(46,204,113,0.18)";  evEl.style.color = "#6ee7b7"; }
-          if (evEl.classList.contains("event-debuff"))  { evEl.style.background = "rgba(231,76,60,0.18)";   evEl.style.color = "#fca5a5"; }
-          if (evEl.classList.contains("event-special")) { evEl.style.background = "rgba(243,156,18,0.18)";  evEl.style.color = "#fcd34d"; }
-        }
-        document.querySelectorAll(".cal-day-number, .cal-day-tasks").forEach(el => el.style.color = "#e0e0e0");
-        document.querySelectorAll(".calendar-table th, .calendar-table td").forEach(el => el.style.borderColor = "rgba(255,255,255,0.2)");
-        document.querySelectorAll("button.main").forEach(el => el.style.color = "#ffffff");
-        document.querySelectorAll(".report-item").forEach(el => el.style.color = "#cccccc");
-        document.querySelectorAll(".report-title").forEach(el => el.style.color = "#888888");
-        const tc = document.getElementById("triviaContent");
-        if (tc) tc.style.color = "#cccccc";
-        const tcat = document.getElementById("triviaCategory");
-        if (tcat) tcat.style.color = "#888888";
-        const tcard = document.getElementById("triviaCard");
-        if (tcard) { const inner = tcard.querySelector("div:first-child"); if(inner) inner.style.color = "#888888"; }
-      } else {
-        document.body.style.color = "#000000";
-        document.getElementById("card").style.color = "#000000";
-        document.querySelectorAll(".calendar-title, .checkbox-list div, .streak-label, .streak-label span, #streakText, #taskStreakText").forEach(el => el.style.color = "");
-        const ptElL = document.getElementById("progressText");
-        if (ptElL) ptElL.style.color = "";
-        document.getElementById("missionCard").style.background = "";
-        document.querySelectorAll(".badge-coin").forEach(el => { el.style.background = ""; el.style.color = ""; });
-        document.querySelectorAll(".badge-lv").forEach(el => { el.style.background = ""; el.style.color = ""; });
-        const evElL = document.getElementById("eventText");
-        if (evElL) { evElL.style.background = ""; evElL.style.color = ""; }
-        document.querySelectorAll(".cal-day-number, .cal-day-tasks").forEach(el => el.style.color = "");
-        document.querySelectorAll(".report-item").forEach(el => el.style.color = "");
-        document.querySelectorAll(".report-title").forEach(el => el.style.color = "");
-        const tcL = document.getElementById("triviaContent");
-        if (tcL) tcL.style.color = "";
-        const tcatL = document.getElementById("triviaCategory");
-        if (tcatL) tcatL.style.color = "";
-        document.querySelectorAll(".calendar-table th, .calendar-table td").forEach(el => el.style.borderColor = "");
-        document.querySelectorAll("button.main").forEach(el => el.style.color = "#ffffff");
+      const t=themes[diff%themes.length];
+      document.getElementById("themeLabel").textContent=t.e;
+      document.documentElement.style.setProperty("--accent",t.a);
+      document.documentElement.style.setProperty("--accent-soft",t.s);
+      document.body.style.background=t.b;
+      const card=document.getElementById("card");if(card)card.style.background=t.c;
+      window._isDarkTheme=t.dk;
+      if(t.dk){
+        document.body.style.color="#f5f5f5";if(card)card.style.color="#f5f5f5";
+        document.getElementById("missionCard").style.background="rgba(255,255,255,0.05)";
+        document.querySelectorAll(".badge-coin").forEach(e=>{e.style.background="rgba(241,196,15,0.2)";e.style.color="#f1c40f";});
+        document.querySelectorAll(".badge-lv").forEach(e=>{e.style.background="rgba(163,185,252,0.15)";e.style.color="#a5b4fc";});
+        const pt=document.getElementById("progressText");if(pt)pt.style.color="var(--accent-soft,#a5b4fc)";
+        document.querySelectorAll(".streak-label").forEach(e=>e.style.color="#888");
+        document.querySelectorAll(".streak-label span").forEach(e=>e.style.color="#ccc");
+        document.querySelectorAll("button.main").forEach(e=>e.style.color="#fff");
+      }else{
+        document.body.style.color="#000";if(card)card.style.color="#000";
+        document.getElementById("missionCard").style.background="";
+        document.querySelectorAll(".badge-coin,.badge-lv").forEach(e=>{e.style.background="";e.style.color="";});
+        const pt=document.getElementById("progressText");if(pt)pt.style.color="";
+        document.querySelectorAll(".streak-label,.streak-label span").forEach(e=>e.style.color="");
+        document.querySelectorAll("button.main").forEach(e=>e.style.color="#fff");
       }
     }
 
-    applyTheme();
-    updateUI();
-    renderTungOptions();
-    initTriviaCard();
+    applyTheme(); updateUI(); renderTungOptions(); initTriviaCard();
 
-    function buildLast7DaysData() {
-      const stats = loadDailyStats();
-      const [y, m, d] = today.split("-").map(Number);
-      const base = new Date(y, m - 1, d);
-      const result = [];
+    // ── Weekly stats ──────────────────────────────────────────────
+    function buildLast7DaysData(){
+      const stats=loadDailyStats(),[y,m,d]=today.split("-").map(Number),base=new Date(y,m-1,d),res=[];
+      for(let i=6;i>=0;i--){const dt=new Date(base);dt.setDate(base.getDate()-i);const k=`${dt.getFullYear()}-${String(dt.getMonth()+1).padStart(2,"0")}-${String(dt.getDate()).padStart(2,"0")}`;res.push({key:k,label:k.slice(5).replace("-","/"),count:stats[k]||0});}
+      return res;
+    }
+    function openWeeklyStatsModal(){
+      const body=document.getElementById("weeklyStatsBody");body.innerHTML="";
+      buildLast7DaysData().forEach(item=>{const r=document.createElement("div");r.className="weekly-row";const l=document.createElement("div");l.className="weekly-label";l.textContent=item.label;const b=document.createElement("div");b.className="weekly-bar";b.textContent="●".repeat(item.count)+"○".repeat(tasks.length-item.count)+` (${item.count}/${tasks.length})`;r.appendChild(l);r.appendChild(b);body.appendChild(r);});
+      document.getElementById("weeklyModal").style.display="flex";
+    }
+    function closeWeeklyStats(){document.getElementById("weeklyModal").style.display="none";}
+    function checkAndShowWeeklyStats(){
+      const comp=getCompletedCount();
+      if(comp>=tasks.length){if(ls.str("allDonePopupDate")!==today){ls.setStr("allDonePopupDate",today);setTimeout(()=>showAllDoneModal(),300);return;}}
+      const thr=[2,4,6];if(!thr.includes(comp))return;
+      const s=loadWeeklyPopup(),ts=s[today]||{};if(ts[comp])return;
+      ts[comp]=true;s[today]=ts;saveWeeklyPopup(s);openWeeklyStatsModal();
+    }
+    function showAllDoneModal(){const msgs=["Another full day! Amazing 🌟","All 7 done! What a great day ✨","Perfect day! Keep it up tomorrow 💪","Full clear! Knew you could do it 🔥","Crushed every task today! 👏"];document.getElementById("allDoneSubtext").textContent=msgs[Math.floor(Math.random()*msgs.length)];document.getElementById("allDoneModal").style.display="flex";}
+    function closeAllDoneModal(){document.getElementById("allDoneModal").style.display="none";}
 
-      for (let i = 6; i >= 0; i--) {
-        const dt = new Date(base);
-        dt.setDate(base.getDate() - i);
-        const yy = dt.getFullYear();
-        const mm = String(dt.getMonth() + 1).padStart(2, "0");
-        const dd = String(dt.getDate()).padStart(2, "0");
-        const key = `${yy}-${mm}-${dd}`;
-        const cnt = stats[key] || 0;
-        result.push({ key, label: `${mm}/${dd}`, count: cnt });
+    // ── Settings ──────────────────────────────────────────────────
+    function renderTungOptions(){const list=document.getElementById("tungOptionsList");if(!list)return;list.innerHTML="";tungOptions.forEach(name=>{const btn=document.createElement("button");btn.className="tung-option-btn";btn.textContent=name;btn.onclick=()=>pickTungOption(name);list.appendChild(btn);});}
+    function openSettingsModal(){
+      const ml=document.getElementById("settingsMissionList");ml.innerHTML="";
+      missionData.forEach((m,i)=>{const r=document.createElement("div");r.style.cssText="border:1px solid #eee;border-radius:10px;padding:8px 10px;";r.innerHTML=`<div style="display:flex;gap:6px;margin-bottom:5px;"><input id="mName_${i}" value="${m.name}" style="flex:1;border:1px solid #ddd;border-radius:6px;padding:4px 8px;font-size:12px;"><select id="mTier_${i}" style="border:1px solid #ddd;border-radius:6px;padding:4px 6px;font-size:12px;"><option value="S" ${m.tier==="S"?"selected":""}>S-Tier</option><option value="A" ${m.tier==="A"?"selected":""}>A-Tier</option><option value="B" ${m.tier==="B"?"selected":""}>B-Tier</option></select></div><input id="mHint_${i}" value="${m.hint}" style="width:100%;box-sizing:border-box;border:1px solid #ddd;border-radius:6px;padding:4px 8px;font-size:11px;color:#555;">`;ml.appendChild(r);});
+      const tl=document.getElementById("settingsTungList");tl.innerHTML="";
+      tungOptions.forEach((opt,i)=>{const r=document.createElement("div");r.style.cssText="display:flex;gap:6px;align-items:center;";r.innerHTML=`<input id="tung_${i}" value="${opt}" style="flex:1;border:1px solid #ddd;border-radius:6px;padding:4px 8px;font-size:12px;"><button onclick="removeTungOption(${i})" style="border:none;background:transparent;font-size:16px;cursor:pointer;color:#aaa;padding:0 4px;">×</button>`;tl.appendChild(r);});
+      document.getElementById("settingsModal").style.display="flex";
+    }
+    function addTungOption(){const l=document.getElementById("settingsTungList"),i=l.children.length,r=document.createElement("div");r.style.cssText="display:flex;gap:6px;align-items:center;";r.innerHTML=`<input id="tung_${i}" value="" style="flex:1;border:1px solid #ddd;border-radius:6px;padding:4px 8px;font-size:12px;"><button onclick="removeTungOption(${i})" style="border:none;background:transparent;font-size:16px;cursor:pointer;color:#aaa;padding:0 4px;">×</button>`;l.appendChild(r);}
+    function removeTungOption(i){const l=document.getElementById("settingsTungList");if(l.children[i])l.children[i].remove();Array.from(l.children).forEach((r,idx)=>{const inp=r.querySelector("input"),btn=r.querySelector("button");if(inp)inp.id=`tung_${idx}`;if(btn)btn.setAttribute("onclick",`removeTungOption(${idx})`);});}
+    function saveSettings(){ls.set("customMissions",missionData.map((_,i)=>({name:document.getElementById(`mName_${i}`)?.value.trim()||missionData[i].name,hint:document.getElementById(`mHint_${i}`)?.value.trim()||missionData[i].hint,tier:document.getElementById(`mTier_${i}`)?.value||missionData[i].tier})));ls.set("customTungOptions",Array.from(document.getElementById("settingsTungList").querySelectorAll("input")).map(e=>e.value.trim()).filter(v=>v));closeSettingsModal();alert("Saved! Refresh to apply changes 🙂");}
+    function closeSettingsModal(){document.getElementById("settingsModal").style.display="none";}
+
+    // ── Trivia ────────────────────────────────────────────────────
+    const triviaCategories=["World Geography","Science Formulas","Math Facts","Football (Soccer)","Computer Science","AI Knowledge","Investment Tips","Skincare Tips","Movie Recommendation","World History"];
+    function initTriviaCard(){
+      const k=ls.str("mandart_api_key");const hb=document.getElementById("apiKeyHeaderBtn");if(hb)hb.title=k?"API Key: 설정됨 ✅":"API Key 설정";
+      if(!k){document.getElementById("triviaNoKey").style.display="block";document.getElementById("triviaBtn").style.display="none";document.getElementById("triviaCard").style.display="none";return;}
+      document.getElementById("triviaNoKey").style.display="none";
+      if(ls.str("triviaDate")===today&&ls.str("triviaText")){document.getElementById("triviaContent").textContent=ls.str("triviaText");document.getElementById("triviaCategory").textContent=`# ${ls.str("triviaCategory")}`;document.getElementById("triviaCard").style.display="block";document.getElementById("triviaBtn").style.display="none";return;}
+      document.getElementById("triviaBtn").style.display="block";
+    }
+    async function loadTodayTrivia(){
+      const k=ls.str("mandart_api_key");
+      document.getElementById("triviaBtn").style.display="none";document.getElementById("triviaLoading").style.display="block";
+      const cat=pickTriviaCategory();
+      const hist=loadTriviaHistory();const recent=hist.slice(-10).map(h=>`[${h.category}] ${h.summary}`).join("\n");
+      const avoid=recent?`\n\n아래는 최근에 이미 다룬 내용이니 겹치지 않게 해줘:\n${recent}`:"";
+      const prompt=cat==="Movie Recommendation"
+        ?`오늘 볼 만한 영화 한 편을 추천해줘. 제목(개봉연도), 장르, 추천 이유 1~2문장을 포함해서 구체적으로 말해줘. 너무 유명한 영화(타이타닉, 인셉션 등)보다는 덜 알려진 명작이나 숨은 걸작 위주로 골라줘.${avoid}`
+        :`"${cat}"에 대한 흥미롭고 구체적인 상식 한 가지를 2~3문장으로 말해줘. "알고 계셨나요?" 같은 서두 없이 바로 본론으로 시작해. 최대한 구체적인 수치나 사례를 포함해서 생생하게.${avoid}`;
+      try{
+        const res=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json","x-api-key":k,"anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:300,messages:[{role:"user",content:prompt}]})});
+        if(!res.ok){const e=await res.json().catch(()=>({}));throw new Error(e?.error?.message||`HTTP ${res.status}`);}
+        const data=await res.json();
+        if(data.content?.[0]?.text){const text=data.content[0].text.trim();ls.setStr("triviaDate",today);ls.setStr("triviaText",text);ls.setStr("triviaCategory",cat);saveTriviaHistory({date:today,category:cat,summary:text.slice(0,60)});document.getElementById("triviaContent").textContent=text;document.getElementById("triviaCategory").textContent=`# ${cat}`;document.getElementById("triviaLoading").style.display="none";document.getElementById("triviaCard").style.display="block";}
+        else throw new Error("No content");
+      }catch(e){document.getElementById("triviaLoading").style.display="none";document.getElementById("triviaContent").textContent=`Failed: ${e.message}`;document.getElementById("triviaCategory").textContent="";document.getElementById("triviaCard").style.display="block";}
+    }
+
+    // ── Calendar ──────────────────────────────────────────────────
+    let currentViewYear=parseInt(today.split("-")[0]),currentViewMonth=parseInt(today.split("-")[1]);
+    function buildMonthlyCalendar(year,month){
+      const stats=loadDailyStats(),cont=document.getElementById("calendarTableContainer");cont.innerHTML="";
+      document.getElementById("calendarMonthTitle").textContent=`${year}년 ${month}월`;
+      let perf=0;for(const k in stats){if(stats[k]===tasks.length)perf++;}const pe=document.getElementById("perfectDaysCount");if(pe)pe.textContent=`♥ ${perf} ♥`;
+      const fd=new Date(year,month-1,1).getDay(),ld=new Date(year,month,0).getDate();
+      const table=document.createElement("table");table.className="calendar-table";
+      const thead=document.createElement("thead"),hr=document.createElement("tr");
+      ["일","월","화","수","목","금","토"].forEach(w=>{const th=document.createElement("th");th.textContent=w;hr.appendChild(th);});thead.appendChild(hr);table.appendChild(thead);
+      const tbody=document.createElement("tbody");let row=document.createElement("tr"),cc=0;
+      for(let i=0;i<fd;i++){row.appendChild(document.createElement("td"));cc++;}
+      for(let day=1;day<=ld;day++){
+        if(cc===7){tbody.appendChild(row);row=document.createElement("tr");cc=0;}
+        const td=document.createElement("td"),key=`${year}-${String(month).padStart(2,"0")}-${String(day).padStart(2,"0")}`,cnt=stats[key]||0;
+        const num=document.createElement("div");num.className="cal-day-number";num.textContent=day;
+        const info=document.createElement("div");info.className="cal-day-tasks";info.textContent=`${cnt}/${tasks.length}`;
+        td.appendChild(num);td.appendChild(info);
+        if(cnt===tasks.length)td.style.background="rgba(46,204,113,0.25)";else if(cnt>=Math.ceil(tasks.length/2))td.style.background="rgba(241,196,15,0.2)";
+        if(key===today)td.classList.add("cal-today");
+        row.appendChild(td);cc++;
       }
-      return result;
+      if(cc>0){for(let i=cc;i<7;i++)row.appendChild(document.createElement("td"));tbody.appendChild(row);}
+      table.appendChild(tbody);cont.appendChild(table);
     }
-
-    function openWeeklyStatsModal() {
-      const data = buildLast7DaysData();
-      const body = document.getElementById("weeklyStatsBody");
-      body.innerHTML = "";
-
-      data.forEach(item => {
-        const row = document.createElement("div");
-        row.className = "weekly-row";
-
-        const label = document.createElement("div");
-        label.className = "weekly-label";
-        label.textContent = item.label;
-
-        const bar = document.createElement("div");
-        bar.className = "weekly-bar";
-        const filled = "●".repeat(item.count);
-        const empty = "○".repeat(tasks.length - item.count);
-        bar.textContent = `${filled}${empty} (${item.count}/${tasks.length})`;
-
-        row.appendChild(label);
-        row.appendChild(bar);
-        body.appendChild(row);
-      });
-
-      document.getElementById("weeklyModal").style.display = "flex";
-    }
-
-    function closeWeeklyStats() {
-      document.getElementById("weeklyModal").style.display = "none";
-    }
-
-    function checkAndShowWeeklyStats() {
-      const completed = getCompletedCount();
-
-      if (completed >= tasks.length) {
-        const shownToday = localStorage.getItem("allDonePopupDate");
-        if (shownToday !== today) {
-          localStorage.setItem("allDonePopupDate", today);
-          setTimeout(() => showAllDoneModal(), 300);
-          return;
-        }
-      }
-
-      const thresholds = [2, 4, 6];
-      if (!thresholds.includes(completed)) return;
-
-      const status = loadWeeklyPopupStatus();
-      const todayStatus = status[today] || {};
-      if (todayStatus[completed]) return;
-
-      todayStatus[completed] = true;
-      status[today] = todayStatus;
-      saveWeeklyPopupStatus(status);
-      openWeeklyStatsModal();
-    }
-
-    function showAllDoneModal() {
-      const messages = [
-        "Another full day! Amazing 🌟",
-        "All 7 done! What a great day ✨",
-        "Perfect day! Keep it up tomorrow 💪",
-        "Full clear! Knew you could do it 🔥",
-        "Crushed every task today! 👏"
-      ];
-      const msg = messages[Math.floor(Math.random() * messages.length)];
-      document.getElementById("allDoneSubtext").textContent = msg;
-      document.getElementById("allDoneModal").style.display = "flex";
-    }
-
-    function closeAllDoneModal() {
-      document.getElementById("allDoneModal").style.display = "none";
-    }
-
-    function renderTungOptions() {
-      const list = document.getElementById("tungOptionsList");
-      if (!list) return;
-      list.innerHTML = "";
-      tungOptions.forEach(name => {
-        const btn = document.createElement("button");
-        btn.className = "tung-option-btn";
-        btn.textContent = name;
-        btn.onclick = () => pickTungOption(name);
-        list.appendChild(btn);
-      });
-    }
-
-    function openSettingsModal() {
-      const missionList = document.getElementById("settingsMissionList");
-      missionList.innerHTML = "";
-      missionData.forEach((m, i) => {
-        const row = document.createElement("div");
-        row.style.cssText = "border:1px solid #eee; border-radius:10px; padding:8px 10px;";
-        row.innerHTML = `
-          <div style="display:flex; gap:6px; margin-bottom:5px;">
-            <input id="mName_${i}" value="${m.name}" placeholder="미션 이름"
-              style="flex:1; border:1px solid #ddd; border-radius:6px; padding:4px 8px; font-size:12px;">
-            <select id="mTier_${i}" style="border:1px solid #ddd; border-radius:6px; padding:4px 6px; font-size:12px;">
-              <option value="S" ${m.tier==="S"?"selected":""}>S-Tier</option>
-              <option value="A" ${m.tier==="A"?"selected":""}>A-Tier</option>
-              <option value="B" ${m.tier==="B"?"selected":""}>B-Tier</option>
-            </select>
-          </div>
-          <input id="mHint_${i}" value="${m.hint}" placeholder="힌트 코멘트"
-            style="width:100%; box-sizing:border-box; border:1px solid #ddd; border-radius:6px; padding:4px 8px; font-size:11px; color:#555;">
-        `;
-        missionList.appendChild(row);
-      });
-
-      const tungList = document.getElementById("settingsTungList");
-      tungList.innerHTML = "";
-      tungOptions.forEach((opt, i) => {
-        const row = document.createElement("div");
-        row.style.cssText = "display:flex; gap:6px; align-items:center;";
-        row.innerHTML = `
-          <input id="tung_${i}" value="${opt}"
-            style="flex:1; border:1px solid #ddd; border-radius:6px; padding:4px 8px; font-size:12px;">
-          <button onclick="removeTungOption(${i})"
-            style="border:none; background:transparent; font-size:16px; cursor:pointer; color:#aaa; padding:0 4px;">×</button>
-        `;
-        tungList.appendChild(row);
-      });
-
-      document.getElementById("settingsModal").style.display = "flex";
-    }
-
-    function addTungOption() {
-      const list = document.getElementById("settingsTungList");
-      const i = list.children.length;
-      const row = document.createElement("div");
-      row.style.cssText = "display:flex; gap:6px; align-items:center;";
-      row.innerHTML = `
-        <input id="tung_${i}" value=""
-          style="flex:1; border:1px solid #ddd; border-radius:6px; padding:4px 8px; font-size:12px;">
-        <button onclick="removeTungOption(${i})"
-          style="border:none; background:transparent; font-size:16px; cursor:pointer; color:#aaa; padding:0 4px;">×</button>
-      `;
-      list.appendChild(row);
-    }
-
-    function removeTungOption(i) {
-      const list = document.getElementById("settingsTungList");
-      if (list.children[i]) list.children[i].remove();
-      Array.from(list.children).forEach((row, idx) => {
-        const inp = row.querySelector("input");
-        const btn = row.querySelector("button");
-        if (inp) inp.id = `tung_${idx}`;
-        if (btn) btn.setAttribute("onclick", `removeTungOption(${idx})`);
-      });
-    }
-
-    function saveSettings() {
-      const newMissions = missionData.map((m, i) => ({
-        name: document.getElementById(`mName_${i}`)?.value.trim() || m.name,
-        hint: document.getElementById(`mHint_${i}`)?.value.trim() || m.hint,
-        tier: document.getElementById(`mTier_${i}`)?.value || m.tier
-      }));
-      localStorage.setItem("customMissions", JSON.stringify(newMissions));
-
-      const tungList = document.getElementById("settingsTungList");
-      const newTung = Array.from(tungList.querySelectorAll("input"))
-        .map(inp => inp.value.trim()).filter(v => v);
-      localStorage.setItem("customTungOptions", JSON.stringify(newTung));
-
-      closeSettingsModal();
-      alert("Saved! Refresh to apply changes 🙂");
-    }
-
-    function closeSettingsModal() {
-      document.getElementById("settingsModal").style.display = "none";
-    }
-
-    const triviaCategories = [
-      "World Geography", "Science Formulas", "Math Facts",
-      "Football (Soccer)", "Computer Science", "AI Knowledge",
-      "Investment Tips", "Skincare Tips", "Movie Recommendation", "World History"
-    ];
-
-    function initTriviaCard() {
-      const apiKey = localStorage.getItem("mandart_api_key");
-      const triviaCard = document.getElementById("triviaCard");
-      const triviaNoKey = document.getElementById("triviaNoKey");
-      const triviaBtn = document.getElementById("triviaBtn");
-      const triviaContent = document.getElementById("triviaContent");
-      const triviaCategory = document.getElementById("triviaCategory");
-
-      const headerBtn = document.getElementById("apiKeyHeaderBtn");
-      if (headerBtn) headerBtn.title = apiKey ? "API Key: 설정됨 ✅" : "API Key 설정";
-
-      if (!apiKey) {
-        triviaNoKey.style.display = "block";
-        triviaBtn.style.display = "none";
-        triviaCard.style.display = "none";
-        return;
-      }
-
-      triviaNoKey.style.display = "none";
-
-      const cached = localStorage.getItem("triviaDate");
-      const cachedText = localStorage.getItem("triviaText");
-      const cachedCat = localStorage.getItem("triviaCategory");
-      if (cached === today && cachedText) {
-        triviaContent.textContent = cachedText;
-        triviaCategory.textContent = `# ${cachedCat}`;
-        triviaCard.style.display = "block";
-        triviaBtn.style.display = "none";
-        return;
-      }
-
-      triviaBtn.style.display = "block";
-    }
-
-    async function loadTodayTrivia() {
-      const apiKey = localStorage.getItem("mandart_api_key");
-      const triviaCard = document.getElementById("triviaCard");
-      const triviaLoading = document.getElementById("triviaLoading");
-      const triviaBtn = document.getElementById("triviaBtn");
-      const triviaContent = document.getElementById("triviaContent");
-      const triviaCategory = document.getElementById("triviaCategory");
-
-      triviaBtn.style.display = "none";
-      triviaLoading.style.display = "block";
-
-      // 최근 사용 카테고리 제외하고 뽑기
-      const cat = pickTriviaCategory();
-
-      // 최근 10개 히스토리를 프롬프트에 포함
-      const history = loadTriviaHistory();
-      const recentSummaries = history.slice(-10)
-        .map(h => `[${h.category}] ${h.summary}`)
-        .join("\n");
-      const avoidClause = recentSummaries
-        ? `\n\n아래는 최근에 이미 다룬 내용이니 겹치지 않게 해줘:\n${recentSummaries}`
-        : "";
-
-      // 카테고리별 프롬프트 분기
-      const prompt = cat === "Movie Recommendation"
-        ? `오늘 볼 만한 영화 한 편을 추천해줘. 제목(개봉연도), 장르, 추천 이유 1~2문장을 포함해서 구체적으로 말해줘. 너무 유명한 영화(타이타닉, 인셉션 등)보다는 덜 알려진 명작이나 숨은 걸작 위주로 골라줘.${avoidClause}`
-        : `"${cat}"에 대한 흥미롭고 구체적인 상식 한 가지를 2~3문장으로 말해줘. "알고 계셨나요?" 같은 서두 없이 바로 본론으로 시작해. 최대한 구체적인 수치나 사례를 포함해서 생생하게.${avoidClause}`;
-
-      try {
-        const res = await fetch("https://api.anthropic.com/v1/messages", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "x-api-key": apiKey,
-            "anthropic-version": "2023-06-01",
-            "anthropic-dangerous-direct-browser-access": "true"
-          },
-          body: JSON.stringify({
-            model: "claude-sonnet-4-20250514",
-            max_tokens: 300,
-            messages: [{ role: "user", content: prompt }]
-          })
-        });
-
-        if (!res.ok) {
-          const err = await res.json().catch(() => ({}));
-          throw new Error(err?.error?.message || `HTTP ${res.status}`);
-        }
-
-        const data = await res.json();
-        if (data.content?.[0]?.text) {
-          const text = data.content[0].text.trim();
-
-          // 오늘 캐시 저장
-          localStorage.setItem("triviaDate", today);
-          localStorage.setItem("triviaText", text);
-          localStorage.setItem("triviaCategory", cat);
-
-          // 히스토리에 기록 (앞 60자를 요약으로)
-          saveTriviaHistory({
-            date: today,
-            category: cat,
-            summary: text.slice(0, 60)
-          });
-
-          triviaContent.textContent = text;
-          triviaCategory.textContent = `# ${cat}`;
-          triviaLoading.style.display = "none";
-          triviaCard.style.display = "block";
-        } else {
-          throw new Error("No content in response");
-        }
-      } catch(e) {
-        triviaLoading.style.display = "none";
-        const msg = e.name === "AbortError"
-          ? "Request timed out. Please try refreshing."
-          : `Failed to load trivia: ${e.message}`;
-        triviaContent.textContent = msg;
-        triviaCategory.textContent = "";
-        triviaCard.style.display = "block";
-      }
-    }
-
-    function loadTungState() {
-      const storedDate = localStorage.getItem("tungDate");
-      if (storedDate !== today) {
-        localStorage.setItem("tungDate", today);
-        localStorage.setItem("tungCount", "0");
-        localStorage.setItem("tungFreeUsed", "0");
-        localStorage.removeItem("tungChoice");
-        return { count: 0, freeUsed: false };
-      } else {
-        const count = parseInt(localStorage.getItem("tungCount") || "0", 10);
-        const freeUsed = localStorage.getItem("tungFreeUsed") === "1";
-        return { count, freeUsed };
-      }
-    }
-
-    let currentViewYear = 2026;
-    let currentViewMonth = 2;
-
-    function buildMonthlyCalendar(year, month) {
-      const stats = loadDailyStats();
-      const container = document.getElementById("calendarTableContainer");
-      container.innerHTML = "";
-
-      const firstDay = new Date(year, month - 1, 1).getDay();
-      const lastDate = new Date(year, month, 0).getDate();
-
-      document.getElementById("calendarMonthTitle").textContent = `${year}년 ${month}월`;
-
-      let perfectDaysCount = 0;
-      for (const dateKey in stats) {
-        if (stats[dateKey] === tasks.length) perfectDaysCount++;
-      }
-
-      const perfectDaysEl = document.getElementById("perfectDaysCount");
-      if (perfectDaysEl) perfectDaysEl.textContent = `♥ ${perfectDaysCount} ♥`;
-
-      const table = document.createElement("table");
-      table.className = "calendar-table";
-
-      const thead = document.createElement("thead");
-      const headRow = document.createElement("tr");
-      ["일", "월", "화", "수", "목", "금", "토"].forEach(w => {
-        const th = document.createElement("th");
-        th.textContent = w;
-        headRow.appendChild(th);
-      });
-      thead.appendChild(headRow);
-      table.appendChild(thead);
-
-      const tbody = document.createElement("tbody");
-      let row = document.createElement("tr");
-      let cellCount = 0;
-
-      for (let i = 0; i < firstDay; i++) {
-        row.appendChild(document.createElement("td"));
-        cellCount++;
-      }
-
-      for (let day = 1; day <= lastDate; day++) {
-        if (cellCount === 7) {
-          tbody.appendChild(row);
-          row = document.createElement("tr");
-          cellCount = 0;
-        }
-
-        const td = document.createElement("td");
-        const dd = String(day).padStart(2, "0");
-        const mm = String(month).padStart(2, "0");
-        const key = `${year}-${mm}-${dd}`;
-        const cnt = stats[key] || 0;
-
-        const num = document.createElement("div");
-        num.className = "cal-day-number";
-        num.textContent = day;
-
-        const info = document.createElement("div");
-        info.className = "cal-day-tasks";
-        info.textContent = `${cnt}/${tasks.length}`;
-
-        td.appendChild(num);
-        td.appendChild(info);
-        if (window._isDarkTheme) {
-          num.style.color = "#e0e0e0";
-          info.style.color = "#e0e0e0";
-        }
-        if (cnt === tasks.length) {
-          td.style.background = "rgba(46, 204, 113, 0.25)";
-        } else if (cnt >= Math.ceil(tasks.length / 2)) {
-          td.style.background = "rgba(241, 196, 15, 0.2)";
-        }
-        if (key === today) td.classList.add("cal-today");
-
-        row.appendChild(td);
-        cellCount++;
-      }
-
-      if (cellCount > 0 && cellCount < 7) {
-        for (let i = cellCount; i < 7; i++) row.appendChild(document.createElement("td"));
-        tbody.appendChild(row);
-      } else if (cellCount === 7) {
-        tbody.appendChild(row);
-      }
-
-      table.appendChild(tbody);
-      container.appendChild(table);
-    }
-
-    function toggleReport() {
-      const rc = document.getElementById("reportContainer");
-      const btn = document.getElementById("toggleReportButton");
-      if (rc.style.display === "none" || !rc.style.display) {
-        const [y, m] = today.split("-").map(Number);
-        buildReport(currentViewYear || y, currentViewMonth || m);
-        rc.style.display = "block";
-        btn.textContent = "📊 Close";
-      } else {
-        rc.style.display = "none";
-        btn.textContent = "📊 Report";
-      }
-    }
-
-    function changeMonth(delta) {
-      currentViewMonth += delta;
-      if (currentViewMonth > 12) { currentViewMonth = 1; currentViewYear++; }
-      else if (currentViewMonth < 1) { currentViewMonth = 12; currentViewYear--; }
-      buildMonthlyCalendar(currentViewYear, currentViewMonth);
-      buildReport(currentViewYear, currentViewMonth);
-    }
-
-    function buildReport(year, month) {
-      const container = document.getElementById("reportContainer");
-      if (!container) return;
-
-      const stats = loadDailyStats();
-      const missionLog = loadMissionLog();
-      const skipLog = loadSkipLog();
-
-      const lastDate = new Date(year, month, 0).getDate();
-      const monthDays = [];
-      for (let d = 1; d <= lastDate; d++) {
-        const mm = String(month).padStart(2,"0");
-        const dd = String(d).padStart(2,"0");
-        monthDays.push(`${year}-${mm}-${dd}`);
-      }
-
-      const todayDate = new Date(...today.split("-").map((v,i)=>i===1?v-1:+v));
-      const dow = todayDate.getDay();
-      const weekStart = new Date(todayDate); weekStart.setDate(todayDate.getDate() - (dow === 0 ? 6 : dow - 1));
-      const weekDays = [];
-      for (let i = 0; i < 7; i++) {
-        const d = new Date(weekStart); d.setDate(weekStart.getDate() + i);
-        const yy = d.getFullYear();
-        const mm = String(d.getMonth()+1).padStart(2,"0");
-        const dd = String(d.getDate()).padStart(2,"0");
-        weekDays.push(`${yy}-${mm}-${dd}`);
-      }
-
-      function makeItems(days, label) {
-        const items = [];
-        const totalDays = days.filter(d => d <= today).length;
-        if (totalDays === 0) return items;
-
-        const doneDays = days.filter(d => stats[d] === tasks.length).length;
-        const doneRate = Math.round(doneDays / totalDays * 100);
-        if (doneRate === 100) items.push({ icon:"🏆", text:`Perfect! All ${totalDays} days fully completed.` });
-        else if (doneRate >= 70) items.push({ icon:"✅", text:`Great job! ${doneRate}% full completion rate this ${label}.` });
-        else if (doneRate >= 40) items.push({ icon:"📈", text:`${doneRate}% full days this ${label}. Room to grow!` });
-        else items.push({ icon:"💪", text:`Only ${doneRate}% full days this ${label}. Let's push harder!` });
-
-        const skipTotal = days.reduce((s, d) => s + (skipLog[d] || 0), 0);
-        if (skipTotal >= 5) items.push({ icon:"😅", text:`Skipped ${skipTotal} times this ${label}. Maybe a bit too many?` });
-        else if (skipTotal >= 3) items.push({ icon:"🙈", text:`${skipTotal} skips this ${label}. Try to cut it down!` });
-        else if (skipTotal === 0 && totalDays >= 3) items.push({ icon:"🔥", text:`Zero skips this ${label}! Amazing discipline.` });
-
-        const missionCount = {};
-        tasks.forEach(t => { missionCount[t] = 0; });
-        days.forEach(d => {
-          if (missionLog[d]) {
-            Object.entries(missionLog[d]).forEach(([t, c]) => {
-              if (missionCount[t] !== undefined) missionCount[t] += c;
-            });
-          }
-        });
-        const sorted = Object.entries(missionCount).sort((a,b) => b[1]-a[1]);
-        const maxDone = sorted[0];
-        const minDone = sorted[sorted.length-1];
-        const activeDays = days.filter(d => d <= today).length;
-
-        if (maxDone && maxDone[1] >= Math.round(activeDays * 0.7)) {
-          items.push({ icon:"⭐", text:`"${maxDone[0]}" is your strongest mission this ${label}!` });
-        }
-        if (minDone && minDone[1] === 0 && activeDays >= 3) {
-          items.push({ icon:"😬", text:`"${minDone[0]}" — not done once this ${label}. Don't forget it!` });
-        } else if (minDone && minDone[1] <= Math.round(activeDays * 0.2) && activeDays >= 5) {
-          items.push({ icon:"⚠️", text:`"${minDone[0]}" is being neglected this ${label}. Only ${minDone[1]} time(s).` });
-        }
-
+    function toggleCalendar(){const c=document.getElementById("calendarContainer"),btn=document.getElementById("toggleCalendarButton");if(!c.style.display||c.style.display==="none"){currentViewYear=parseInt(today.split("-")[0]);currentViewMonth=parseInt(today.split("-")[1]);buildMonthlyCalendar(currentViewYear,currentViewMonth);c.style.display="block";btn.textContent="📅 Close";document.getElementById("perfectDaysWrap").style.display="block";}else{c.style.display="none";btn.textContent="📅 Calendar";document.getElementById("perfectDaysWrap").style.display="none";}}
+    function changeMonth(delta){currentViewMonth+=delta;if(currentViewMonth>12){currentViewMonth=1;currentViewYear++;}else if(currentViewMonth<1){currentViewMonth=12;currentViewYear--;}buildMonthlyCalendar(currentViewYear,currentViewMonth);const rc=document.getElementById("reportContainer");if(rc&&rc.style.display!=="none")buildReport(currentViewYear,currentViewMonth);}
+
+    // ── Report ────────────────────────────────────────────────────
+    function toggleReport(){const rc=document.getElementById("reportContainer"),btn=document.getElementById("toggleReportButton");if(!rc.style.display||rc.style.display==="none"){buildReport(currentViewYear,currentViewMonth);rc.style.display="block";btn.textContent="📊 Close";}else{rc.style.display="none";btn.textContent="📊 Report";}}
+    function buildReport(year,month){
+      const cont=document.getElementById("reportContainer");if(!cont)return;
+      const stats=loadDailyStats(),ml=loadMissionLog(),sl=loadSkipLog();
+      const ld=new Date(year,month,0).getDate(),mdays=[];for(let d=1;d<=ld;d++)mdays.push(`${year}-${String(month).padStart(2,"0")}-${String(d).padStart(2,"0")}`);
+      const td2=new Date(...today.split("-").map((v,i)=>i===1?v-1:+v)),dow=td2.getDay();
+      const ws=new Date(td2);ws.setDate(td2.getDate()-(dow===0?6:dow-1));
+      const wdays=[];for(let i=0;i<7;i++){const dd=new Date(ws);dd.setDate(ws.getDate()+i);wdays.push(`${dd.getFullYear()}-${String(dd.getMonth()+1).padStart(2,"0")}-${String(dd.getDate()).padStart(2,"0")}`);}
+      function makeItems(days,label){
+        const items=[],td=days.filter(d=>d<=today).length;if(td===0)return items;
+        const dd=days.filter(d=>stats[d]===tasks.length).length,dr=Math.round(dd/td*100);
+        if(dr===100)items.push({i:"🏆",t:`Perfect! All ${td} days fully completed.`});else if(dr>=70)items.push({i:"✅",t:`Great job! ${dr}% full completion rate this ${label}.`});else if(dr>=40)items.push({i:"📈",t:`${dr}% full days this ${label}. Room to grow!`});else items.push({i:"💪",t:`Only ${dr}% full days this ${label}. Let's push harder!`});
+        const st=days.reduce((s,d)=>s+(sl[d]||0),0);if(st>=5)items.push({i:"😅",t:`Skipped ${st} times this ${label}. Maybe a bit too many?`});else if(st>=3)items.push({i:"🙈",t:`${st} skips this ${label}. Try to cut it down!`});else if(st===0&&td>=3)items.push({i:"🔥",t:`Zero skips this ${label}! Amazing discipline.`});
+        const mc={};tasks.forEach(t=>mc[t]=0);days.forEach(d=>{if(ml[d])Object.entries(ml[d]).forEach(([t,c])=>{if(mc[t]!=null)mc[t]+=c;});});
+        const sorted=Object.entries(mc).sort((a,b)=>b[1]-a[1]),mx=sorted[0],mn=sorted[sorted.length-1],act=days.filter(d=>d<=today).length;
+        if(mx&&mx[1]>=Math.round(act*0.7))items.push({i:"⭐",t:`"${mx[0]}" is your strongest mission this ${label}!`});
+        if(mn&&mn[1]===0&&act>=3)items.push({i:"😬",t:`"${mn[0]}" — not done once this ${label}. Don't forget it!`});else if(mn&&mn[1]<=Math.round(act*0.2)&&act>=5)items.push({i:"⚠️",t:`"${mn[0]}" is being neglected this ${label}. Only ${mn[1]} time(s).`});
         return items;
       }
-
-      const weekItems = makeItems(weekDays, "week");
-      const monthItems = makeItems(monthDays, "month");
-
-      let html = "";
-
-      if (weekItems.length > 0) {
-        html += `<div class="report-section">
-          <div class="report-title">📊 This Week</div>
-          ${weekItems.map(i => `<div class="report-item" style="${window._isDarkTheme ? 'color:#d0d0d0;background:rgba(255,255,255,0.06)' : ''}"><span class="ri-icon">${i.icon}</span><span>${i.text}</span></div>`).join("")}
-        </div>`;
-      }
-      if (monthItems.length > 0) {
-        html += `<div class="report-section">
-          <div class="report-title">📅 ${year}.${String(month).padStart(2,"0")} Monthly</div>
-          ${monthItems.map(i => `<div class="report-item" style="${window._isDarkTheme ? 'color:#d0d0d0;background:rgba(255,255,255,0.06)' : ''}"><span class="ri-icon">${i.icon}</span><span>${i.text}</span></div>`).join("")}
-        </div>`;
-      }
-
-      if (!html) html = `<div class="report-item" style="${window._isDarkTheme ? 'color:#d0d0d0;background:rgba(255,255,255,0.06)' : ''}"><span class="ri-icon">🌱</span><span>Not enough data yet. Keep going!</span></div>`;
-      container.innerHTML = html;
+      const dk=window._isDarkTheme?'color:#d0d0d0;background:rgba(255,255,255,0.06)':'';
+      const wi=makeItems(wdays,"week"),mi=makeItems(mdays,"month");let html="";
+      if(wi.length)html+=`<div class="report-section"><div class="report-title">📊 This Week</div>${wi.map(x=>`<div class="report-item" style="${dk}"><span class="ri-icon">${x.i}</span><span>${x.t}</span></div>`).join("")}</div>`;
+      if(mi.length)html+=`<div class="report-section"><div class="report-title">📅 ${year}.${String(month).padStart(2,"0")} Monthly</div>${mi.map(x=>`<div class="report-item" style="${dk}"><span class="ri-icon">${x.i}</span><span>${x.t}</span></div>`).join("")}</div>`;
+      if(!html)html=`<div class="report-item" style="${dk}"><span class="ri-icon">🌱</span><span>Not enough data yet. Keep going!</span></div>`;
+      cont.innerHTML=html;
     }
 
-    function toggleCalendar() {
-      const container = document.getElementById("calendarContainer");
-      const btn = document.getElementById("toggleCalendarButton");
-
-      if (container.style.display === "none" || !container.style.display) {
-        const [y, m] = today.split("-").map(Number);
-        currentViewYear = y;
-        currentViewMonth = m;
-        buildMonthlyCalendar(currentViewYear, currentViewMonth);
-        container.style.display = "block";
-        btn.textContent = "📅 Close";
-        document.getElementById("perfectDaysWrap").style.display = "block";
-      } else {
-        container.style.display = "none";
-        btn.textContent = "📅 Calendar";
-        document.getElementById("perfectDaysWrap").style.display = "none";
-      }
-    }
-
-    function pickRandom() {
-      if (isPicking) return;
-      isPicking = true;
-
-      const pickBtn = document.getElementById("pickButton");
-      const resultEl = document.getElementById("result");
-      const hintEl = document.getElementById("hint");
-
-      pickBtn.disabled = true;
-      pickBtn.textContent = "Picking…";
-
-      document.getElementById("actionButtons").style.display = "none";
-      resultEl.classList.remove("s-glow");
-      resultEl.classList.remove("has-task");
-      document.getElementById("missionCard").classList.remove("has-task");
-
-      const available = tasks.filter(t => !taskStatus[t] && !skippedTasks[t]);
-
-      if (available.length === 0) {
-        const remaining = tasks.filter(t => !taskStatus[t]);
-
-        if (remaining.length === 0) {
-          resultEl.textContent = "All done today!";
-          hintEl.textContent = "";
-        } else {
-          resultEl.textContent = "Only skipped missions left. That's it for today!";
-          hintEl.textContent = "Refresh to reset skipped missions.";
-        }
-
-        pickBtn.disabled = false;
-        pickBtn.textContent = "Pick one now!";
-        isPicking = false;
-        showProgressIfNeeded();
-        updateTungButtonVisibility();
-        return;
-      }
-
-      let dots = 0;
-      resultEl.textContent = "Thinking";
-      hintEl.textContent = "Just a sec…";
-      const loading = setInterval(() => {
-        dots = (dots + 1) % 4;
-        resultEl.textContent = "Thinking" + ".".repeat(dots);
-      }, 400);
-
-      setTimeout(() => {
+    // ── Pick random ───────────────────────────────────────────────
+    function pickRandom(){
+      if(isPicking)return;isPicking=true;
+      const pb=document.getElementById("pickButton"),re=document.getElementById("result"),he=document.getElementById("hint");
+      pb.disabled=true;pb.textContent="Picking…";
+      document.getElementById("actionButtons").style.display="none";re.classList.remove("s-glow","has-task");document.getElementById("missionCard").classList.remove("has-task");
+      const avail=tasks.filter(t=>!taskStatus[t]&&!skippedTasks[t]);
+      if(avail.length===0){const rem=tasks.filter(t=>!taskStatus[t]);re.textContent=rem.length===0?"All done today!":"Only skipped missions left. That's it for today!";he.textContent=rem.length===0?"":"Refresh to reset skipped missions.";pb.disabled=false;pb.textContent="Pick one now!";isPicking=false;showProgressIfNeeded();updateTungButtonVisibility();return;}
+      let dots=0;re.textContent="Thinking";he.textContent="Just a sec…";
+      const loading=setInterval(()=>{dots=(dots+1)%4;re.textContent="Thinking"+".".repeat(dots);},400);
+      setTimeout(()=>{
         clearInterval(loading);
-
-        const finalChoice = available[Math.floor(Math.random() * available.length)];
-        const finalTier = taskTier[finalChoice] || "B";
-
-        currentTask = finalChoice;
-        currentTier = finalTier;
-
-        const label = tierLabel[finalTier] || "B-Tier";
-        const badge = `<span class="tier-label">${label}</span>`;
-        const safeText = finalChoice.replace(/</g, "&lt;").replace(/>/g, "&gt;");
-        resultEl.innerHTML = `${badge}${safeText}`;
-        resultEl.classList.add("has-task");
-        document.getElementById("missionCard").classList.add("has-task");
-
-        const baseHint = hints[finalChoice] || "";
-        if (finalTier === "S") {
-          resultEl.classList.add("s-glow");
-          hintEl.textContent = `✨ S-tier mission! ✨ ${baseHint}`;
-        } else {
-          hintEl.textContent = baseHint;
-        }
-
-        document.getElementById("actionButtons").style.display = "flex";
-
-        pickBtn.disabled = false;
-        pickBtn.textContent = "Pick one now!";
-        isPicking = false;
-
-        showProgressIfNeeded();
-        updateTungButtonVisibility();
-      }, 2000);
+        const fc=avail[Math.floor(Math.random()*avail.length)],ft=taskTier[fc]||"B";
+        currentTask=fc;currentTier=ft;
+        re.innerHTML=`<span class="tier-label">${tierLabel[ft]||"B-Tier"}</span>${fc.replace(/</g,"&lt;").replace(/>/g,"&gt;")}`;
+        re.classList.add("has-task");document.getElementById("missionCard").classList.add("has-task");
+        if(ft==="S"){re.classList.add("s-glow");he.textContent=`✨ S-tier mission! ✨ ${hints[fc]||""}`;}else he.textContent=hints[fc]||"";
+        document.getElementById("actionButtons").style.display="flex";
+        pb.disabled=false;pb.textContent="Pick one now!";isPicking=false;showProgressIfNeeded();updateTungButtonVisibility();
+      },2000);
     }
 
-    function markComplete() {
-      if (!currentTask || !tasks.includes(currentTask)) return;
-
-      if (taskStatus[currentTask]) {
-        document.getElementById("hint").textContent = "Already done!";
-        hideButtons();
-        return;
-      }
-
-      taskStatus[currentTask] = true;
-      localStorage.setItem("taskStatus", JSON.stringify(taskStatus));
-      recordMissionDone(currentTask);
-
-      let reward = getRewardForTask(currentTask);
-
-      const completedCount = Object.values(taskStatus).filter(v => v).length;
-
-      if (dailyEvent.id === "lucky_day" && completedCount === 1) {
-        reward += 3;
-        document.getElementById("hint").textContent =
-          `Done! (+${reward} coins, first mission bonus +3!)`;
-      } else if (dailyEvent.id === "double_first" && completedCount === 1) {
-        reward = reward * 2;
-        document.getElementById("hint").textContent =
-          `Done! (+${reward} coins, first mission x2!)`;
-      } else if (dailyEvent.id === "special_5done" && completedCount === 5) {
-        reward += 5;
-        document.getElementById("hint").textContent =
-          `Done! (+${reward} coins, 5 missions bonus +5!)`;
-      } else if (dailyEvent.id === "buff_last_plus3" && completedCount === tasks.length) {
-        reward += 3;
-        document.getElementById("hint").textContent =
-          `Done! (+${reward} coins, last mission bonus +3!)`;
-      } else if (reward > 0) {
-        document.getElementById("hint").textContent =
-          `Done! (+${reward} coins)`;
-      } else {
-        document.getElementById("hint").textContent = "Done!";
-      }
-
-      if (reward > 0) {
-        coinCount += reward;
-        localStorage.setItem("coinCount", String(coinCount));
-      }
-
-      hideButtons();
-      updateUI();
-      checkAndShowWeeklyStats();
+    // ── Complete / Skip ───────────────────────────────────────────
+    function markComplete(){
+      if(!currentTask||!tasks.includes(currentTask))return;
+      if(taskStatus[currentTask]){document.getElementById("hint").textContent="Already done!";hideButtons();return;}
+      taskStatus[currentTask]=true;ls.set("taskStatus",taskStatus);recordMissionDone(currentTask);
+      let r=getRewardForTask(currentTask);const cnt=Object.values(taskStatus).filter(v=>v).length;
+      const h=document.getElementById("hint");
+      if(dailyEvent.id==="lucky_day"&&cnt===1){r+=3;h.textContent=`Done! (+${r} coins, first mission bonus +3!)`;}
+      else if(dailyEvent.id==="double_first"&&cnt===1){r*=2;h.textContent=`Done! (+${r} coins, first mission x2!)`;}
+      else if(dailyEvent.id==="special_5done"&&cnt===5){r+=5;h.textContent=`Done! (+${r} coins, 5 missions bonus +5!)`;}
+      else if(dailyEvent.id==="buff_last_plus3"&&cnt===tasks.length){r+=3;h.textContent=`Done! (+${r} coins, last mission bonus +3!)`;}
+      else if(r>0)h.textContent=`Done! (+${r} coins)`;else h.textContent="Done!";
+      if(r>0){coinCount+=r;ls.setStr("coinCount",String(coinCount));}
+      hideButtons();updateUI();checkAndShowWeeklyStats();
     }
+    function hideButtons(){document.getElementById("actionButtons").style.display="none";}
+    function markPending(){if(!currentTask||!tasks.includes(currentTask)){hideButtons();return;}skippedTasks[currentTask]=true;document.getElementById("hint").textContent="Skipped!";hideButtons();}
 
-    function hideButtons() {
-      document.getElementById("actionButtons").style.display = "none";
+    // ── Tung ─────────────────────────────────────────────────────
+    function openTungModal(){if(getCompletedCount()>=tasks.length){document.getElementById("hint").textContent="Already cleared ⚡";return;}document.getElementById("tungModal").style.display="flex";}
+    function closeTungModal(){document.getElementById("tungModal").style.display="none";}
+    function pickTungOption(name){
+      const comp=getCompletedCount();if(comp>=tasks.length){document.getElementById("hint").textContent="All done today!";closeTungModal();return;}
+      if(!tungFreeUsed){tungFreeUsed=true;tungCount++;ls.setStr("tungFreeUsed","1");ls.setStr("tungCount",String(tungCount));ls.setStr("tungDate",today);ls.setStr("tungChoice",name);recordSkip();document.getElementById("hint").textContent=`Skipped with '${name}'! (free skip, +1 done)`;}
+      else{if(coinCount<5){document.getElementById("hint").textContent="Not enough coins for extra skip. (need: 5 coins)";closeTungModal();return;}coinCount-=5;tungCount++;ls.setStr("coinCount",String(coinCount));ls.setStr("tungCount",String(tungCount));ls.setStr("tungDate",today);ls.setStr("tungChoice",name);recordSkip();document.getElementById("hint").textContent=`Skipped with '${name}'! (5 coins used, +1 done)`;}
+      closeTungModal();updateUI();checkAndShowWeeklyStats();
     }
-
-    function markPending() {
-      if (!currentTask || !tasks.includes(currentTask)) {
-        hideButtons();
-        return;
-      }
-      skippedTasks[currentTask] = true;
-      document.getElementById("hint").textContent = "Skipped!";
-      hideButtons();
-    }
-
-    function openTungModal() {
-      const completed = getCompletedCount();
-      if (completed >= tasks.length) {
-        document.getElementById("hint").textContent = "Already cleared ⚡";
-        return;
-      }
-      document.getElementById("tungModal").style.display = "flex";
-    }
-
-    function closeTungModal() {
-      document.getElementById("tungModal").style.display = "none";
-    }
-
-    function pickTungOption(name) {
-      const completed = getCompletedCount();
-      if (completed >= tasks.length) {
-        document.getElementById("hint").textContent = "All done today!";
-        closeTungModal();
-        return;
-      }
-
-      if (!tungFreeUsed) {
-        tungFreeUsed = true;
-        tungCount += 1;
-        localStorage.setItem("tungFreeUsed", "1");
-        localStorage.setItem("tungCount", String(tungCount));
-        localStorage.setItem("tungDate", today);
-        localStorage.setItem("tungChoice", name);
-        recordSkip();
-        document.getElementById("hint").textContent =
-          `Skipped with '${name}'! (free skip, +1 done)`;
-      } else {
-        if (coinCount < 5) {
-          document.getElementById("hint").textContent =
-            "Not enough coins for extra skip. (need: 5 coins)";
-          closeTungModal();
-          return;
-        }
-        coinCount -= 5;
-        tungCount += 1;
-        localStorage.setItem("coinCount", String(coinCount));
-        localStorage.setItem("tungCount", String(tungCount));
-        localStorage.setItem("tungDate", today);
-        localStorage.setItem("tungChoice", name);
-        recordSkip();
-        document.getElementById("hint").textContent =
-          `Skipped with '${name}'! (5 coins used, +1 done)`;
-      }
-
-      closeTungModal();
-      updateUI();
-      checkAndShowWeeklyStats();
-    }
-
-    function useTungCoins(addCount, cost) {
-      if (coinCount < cost) {
-        document.getElementById("hint").textContent = `Not enough coins. (need: ${cost})`;
-        return;
-      }
-
-      const completed = getCompletedCount();
-      const remaining = tasks.length - completed;
-
-      if (remaining <= 0) {
-        document.getElementById("hint").textContent = "All tasks already done today!";
-        closeTungModal();
-        return;
-      }
-
-      const actualAdd = Math.min(addCount, remaining);
-      coinCount -= cost;
-      tungCount += actualAdd;
-
-      localStorage.setItem("coinCount", String(coinCount));
-      localStorage.setItem("tungCount", String(tungCount));
-      localStorage.setItem("tungDate", today);
-      for (let i = 0; i < actualAdd; i++) recordSkip();
-
-      document.getElementById("hint").textContent =
-        `Used ${cost} coins to skip ${actualAdd} task(s)!`;
-
-      closeTungModal();
-      updateUI();
-      checkAndShowWeeklyStats();
+    function useTungCoins(add,cost){
+      if(coinCount<cost){document.getElementById("hint").textContent=`Not enough coins. (need: ${cost})`;return;}
+      const rem=tasks.length-getCompletedCount();if(rem<=0){document.getElementById("hint").textContent="All tasks already done today!";closeTungModal();return;}
+      const actual=Math.min(add,rem);coinCount-=cost;tungCount+=actual;ls.setStr("coinCount",String(coinCount));ls.setStr("tungCount",String(tungCount));ls.setStr("tungDate",today);for(let i=0;i<actual;i++)recordSkip();
+      document.getElementById("hint").textContent=`Used ${cost} coins to skip ${actual} task(s)!`;closeTungModal();updateUI();checkAndShowWeeklyStats();
     }
   </script>
 </body>
