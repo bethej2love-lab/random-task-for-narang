@@ -195,6 +195,10 @@
     .goal-month-badge.show { display: inline-block; }
     .goal-plan-text { font-size: 12px; color: #555; line-height: 1.5; white-space: pre-wrap; word-break: break-word; }
     .goal-plan-text.empty-hint { color: #ccc; font-style: italic; font-size: 11px; }
+    /* 다크 테마용 */
+    .goal-plan-text.dark { color: #ccc; }
+    .goal-plan-text.empty-hint.dark { color: #555; }
+    .goals-section-title.dark { color: #666; }
     .goal-edit-inline {
       margin-top: 4px; font-size: 11px; color: var(--accent,#4b8cff);
       cursor: pointer; opacity: 0; transition: opacity 0.15s;
@@ -207,6 +211,7 @@
       width: 100%; box-sizing: border-box; border: 1px solid #e5e7eb;
       border-radius: 8px; padding: 8px 10px; font-size: 12px; color: #444;
       font-family: inherit; resize: none; line-height: 1.5; min-height: 52px;
+      overflow: hidden;
     }
     .goals-edit-textarea:focus { outline: none; border-color: var(--accent,#4b8cff); }
 
@@ -289,7 +294,7 @@
 
       <!-- ── Year Goals ── -->
       <div id="goalsContainer">
-        <div class="goals-section-title" style="margin-top:2px;">🎯 2026 Intensity Plan</div>
+        <div class="goals-section-title" id="goalsSectionTitle" style="margin-top:2px;">🎯 2026 Intensity Plan</div>
         <div class="goals-timeline" id="goalsTimeline"></div>
         <button onclick="openGoalsEditModal()"
           style="margin-top:12px; width:100%; padding:8px 0; border-radius:999px;
@@ -399,7 +404,6 @@
   </div>
 
   <script>
-    // ── 미션 데이터 ───────────────────────────────────────────────
     const defaultMissions = [
       { name:"듀오링고",               hint:"→ 딱 2개만 !",                                                                                                    tier:"B" },
       { name:"Brilliant",              hint:"→ 3개 이상 푸십쇼",                                                                                               tier:"B" },
@@ -474,7 +478,6 @@
     function recordSkip()      { const l=loadSkipLog();l[today]=(l[today]||0)+1;saveSkipLog(l); }
     function loadWeeklyPopup() { return ls.get("weeklyPopupStatus")||{}; }
     function saveWeeklyPopup(s){ ls.set("weeklyPopupStatus",s); }
-
     function loadTriviaHistory()  { return ls.get("triviaHistory")||[]; }
     function saveTriviaHistory(e) { const h=loadTriviaHistory();h.push(e);if(h.length>30)h.splice(0,h.length-30);ls.set("triviaHistory",h); }
     function pickTriviaCategory() {
@@ -487,29 +490,19 @@
     // ── Year Goals ────────────────────────────────────────────────
     const MONTH_NAMES = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 
-    // localStorage에 저장된 게 없을 때만 쓰이는 기본 플랜
     const DEFAULT_GOALS = [
-      { plan: "" }, // 1월 - 소급 입력 가능
-      { plan: "" }, // 2월
-      { plan: "" }, // 3월
-      // 4월
+      { plan: "" },
+      { plan: "" },
+      { plan: "" },
       { plan: "플랭크 50초\n독서 15p\n브릴리언트 5개\n말해보카 50개\n달리기 2km or 만보\n퀴즈 서술형 or 객관식 80\n부기스 인스타/블로그+스토어" },
-      // 5월
-      { plan: "플랭크 1분\n독서 20p\n브릴리언트 6개\n말해보카 55개\n달리기 2.5km\n퀴즈 서술형 or 객관식 90\n부기스 주 2회 이상" },
-      // 6월
-      { plan: "플랭크 1분 15초\n독서 25p\n브릴리언트 6개\n말해보카 60개\n달리기 3km\n퀴즈 서술형 or 객관식 100\n부기스 블로그 주 3회 고정" },
-      // 7월
-      { plan: "플랭크 1분 30초\n독서 30p\n브릴리언트 7개\n말해보카 65개\n달리기 3.5km\n퀴즈 서술형 or 객관식 110\n부기스 스토어 월매출 목표 설정" },
-      // 8월
-      { plan: "플랭크 1분 45초\n독서 35p\n브릴리언트 7개\n말해보카 70개\n달리기 4km\n퀴즈 서술형 or 객관식 120\n부기스 콘텐츠 루틴화" },
-      // 9월
-      { plan: "플랭크 2분\n독서 40p\n브릴리언트 8개\n말해보카 80개\n달리기 4.5km\n퀴즈 서술형 or 객관식 130\n부기스 블로그+인스타 동시 운영" },
-      // 10월
-      { plan: "플랭크 2분 30초\n독서 45p\n브릴리언트 8개\n말해보카 85개\n달리기 5km\n퀴즈 서술형 or 객관식 140\n부기스 스토어 주 1회 신제품" },
-      // 11월
-      { plan: "플랭크 3분 × 1세트\n독서 50p\n브릴리언트 9개\n말해보카 90개\n달리기 5.5km\n퀴즈 서술형 or 객관식 150\n부기스 전 채널 주 3회 이상" },
-      // 12월
-      { plan: "🏆 플랭크 3분 × 2세트\n독서 50p\n브릴리언트 10개\n말해보카 100개\n달리기 6km\n퀴즈 서술형 or 객관식 160\n부기스 전채널 + 스토어 루틴" }
+      { plan: "플랭크 1분 15초\n독서 25p\n브릴리언트 6개\n말해보카 60개\n달리기 3km\n퀴즈 서술형 or 객관식 100\n부기스 주 2회 이상" },
+      { plan: "플랭크 1분 45초\n독서 30p\n브릴리언트 7개\n말해보카 70개\n달리기 4km\n퀴즈 서술형 or 객관식 120\n부기스 블로그 주 3회 고정" },
+      { plan: "플랭크 2분 30초\n독서 35p\n브릴리언트 8개\n말해보카 80개\n달리기 5km\n퀴즈 서술형 or 객관식 140\n부기스 스토어 월매출 목표 설정" },
+      { plan: "플랭크 3분 × 1세트\n독서 45p\n브릴리언트 9개\n말해보카 90개\n달리기 5.5km\n퀴즈 서술형 or 객관식 150\n부기스 콘텐츠 루틴화" },
+      { plan: "🎯 플랭크 3분 × 2세트\n독서 50p\n브릴리언트 10개\n말해보카 100개\n달리기 6km\n퀴즈 서술형 or 객관식 160\n부기스 블로그+인스타 동시 운영" },
+      { plan: "유지 + 새 챌린지 추가" },
+      { plan: "유지 + 새 챌린지 추가" },
+      { plan: "유지 + 새 챌린지 추가" }
     ];
 
     function loadYearGoals() {
@@ -525,6 +518,11 @@
       if (!tl) return;
       tl.innerHTML = "";
       const curMonth = parseInt(today.split("-")[1], 10);
+      const dk = window._isDarkTheme;
+
+      // 섹션 타이틀 다크 처리
+      const titleEl = document.getElementById("goalsSectionTitle");
+      if (titleEl) { titleEl.classList.toggle("dark", dk); }
 
       goals.forEach((g, i) => {
         const mn = i + 1;
@@ -555,10 +553,10 @@
 
         const planEl = document.createElement("div");
         if (hasPlan) {
-          planEl.className = "goal-plan-text";
+          planEl.className = "goal-plan-text" + (dk ? " dark" : "");
           planEl.textContent = g.plan;
         } else {
-          planEl.className = "goal-plan-text empty-hint";
+          planEl.className = "goal-plan-text empty-hint" + (dk ? " dark" : "");
           planEl.textContent = state === "current" ? "아직 플랜 미작성" : state === "future" ? "계획 없음" : "기록 없음";
         }
         body.appendChild(planEl);
@@ -583,7 +581,7 @@
       }
     }
 
-    function openGoalsEditModal()         { openGoalsEditModalAt(null); }
+    function openGoalsEditModal() { openGoalsEditModalAt(null); }
     function openGoalsEditModalAt(focusIdx) {
       const goals = loadYearGoals();
       const list = document.getElementById("goalsEditList"); list.innerHTML = "";
@@ -596,6 +594,8 @@
         ta.placeholder = "이번 달 강도 플랜을 적어보세요";
         ta.addEventListener("input", () => { ta.style.height = "auto"; ta.style.height = ta.scrollHeight + "px"; });
         div.appendChild(lbl); div.appendChild(ta); list.appendChild(div);
+        // ── 수정 1: 모달 열릴 때 이미 채워진 textarea 높이 자동 맞추기
+        setTimeout(() => { ta.style.height = "auto"; ta.style.height = ta.scrollHeight + "px"; }, 0);
       });
       document.getElementById("goalsEditModal").style.display = "flex";
       if (focusIdx !== null) {
@@ -667,6 +667,7 @@
     function showProgressIfNeeded(){if(!hasShownProgress){document.getElementById("progressContainer").style.display="block";hasShownProgress=true;}}
     function updateTungButtonVisibility(){const c=document.getElementById("tungContainer");if(!c)return;c.style.display=(!currentTask||getCompletedCount()>=tasks.length)?"none":"inline-block";}
 
+    // ── Theme ─────────────────────────────────────────────────────
     function applyTheme(){
       const[y,m,d]=getKSTDate().split("-").map(Number),date=new Date(y,m-1,d);
       const diff=Math.floor((date-new Date(date.getFullYear(),0,1))/86400000);
@@ -691,8 +692,28 @@
       document.body.style.background=t.b;
       const card=document.getElementById("card");if(card)card.style.background=t.c;
       window._isDarkTheme=t.dk;
-      if(t.dk){document.body.style.color="#f5f5f5";if(card)card.style.color="#f5f5f5";document.getElementById("missionCard").style.background="rgba(255,255,255,0.05)";document.querySelectorAll(".badge-coin").forEach(e=>{e.style.background="rgba(241,196,15,0.2)";e.style.color="#f1c40f";});document.querySelectorAll(".badge-lv").forEach(e=>{e.style.background="rgba(163,185,252,0.15)";e.style.color="#a5b4fc";});const pt=document.getElementById("progressText");if(pt)pt.style.color="var(--accent-soft,#a5b4fc)";document.querySelectorAll(".streak-label").forEach(e=>e.style.color="#888");document.querySelectorAll(".streak-label span").forEach(e=>e.style.color="#ccc");document.querySelectorAll("button.main").forEach(e=>e.style.color="#fff");}
-      else{document.body.style.color="#000";if(card)card.style.color="#000";document.getElementById("missionCard").style.background="";document.querySelectorAll(".badge-coin,.badge-lv").forEach(e=>{e.style.background="";e.style.color="";});const pt=document.getElementById("progressText");if(pt)pt.style.color="";document.querySelectorAll(".streak-label,.streak-label span").forEach(e=>e.style.color="");document.querySelectorAll("button.main").forEach(e=>e.style.color="#fff");}
+      if(t.dk){
+        document.body.style.color="#f5f5f5";if(card)card.style.color="#f5f5f5";
+        document.getElementById("missionCard").style.background="rgba(255,255,255,0.05)";
+        document.querySelectorAll(".badge-coin").forEach(e=>{e.style.background="rgba(241,196,15,0.2)";e.style.color="#f1c40f";});
+        document.querySelectorAll(".badge-lv").forEach(e=>{e.style.background="rgba(163,185,252,0.15)";e.style.color="#a5b4fc";});
+        const pt=document.getElementById("progressText");if(pt)pt.style.color="var(--accent-soft,#a5b4fc)";
+        document.querySelectorAll(".streak-label").forEach(e=>e.style.color="#888");
+        document.querySelectorAll(".streak-label span").forEach(e=>e.style.color="#ccc");
+        document.querySelectorAll("button.main").forEach(e=>e.style.color="#fff");
+        // ── 수정 2: 다크 테마 Goals 텍스트
+        const gt=document.getElementById("goalsSectionTitle");if(gt)gt.classList.add("dark");
+        document.querySelectorAll(".goal-plan-text").forEach(e=>e.classList.add("dark"));
+      } else {
+        document.body.style.color="#000";if(card)card.style.color="#000";
+        document.getElementById("missionCard").style.background="";
+        document.querySelectorAll(".badge-coin,.badge-lv").forEach(e=>{e.style.background="";e.style.color="";});
+        const pt=document.getElementById("progressText");if(pt)pt.style.color="";
+        document.querySelectorAll(".streak-label,.streak-label span").forEach(e=>e.style.color="");
+        document.querySelectorAll("button.main").forEach(e=>e.style.color="#fff");
+        const gt=document.getElementById("goalsSectionTitle");if(gt)gt.classList.remove("dark");
+        document.querySelectorAll(".goal-plan-text").forEach(e=>e.classList.remove("dark"));
+      }
     }
 
     applyTheme(); updateUI(); renderTungOptions(); initTriviaCard();
