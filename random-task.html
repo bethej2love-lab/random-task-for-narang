@@ -157,8 +157,6 @@
     .api-key-badge { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; padding: 2px 8px; border-radius: 999px; font-weight: 600; }
     .api-key-badge.set   { background: rgba(46,204,113,0.15); color: #1a7a45; }
     .api-key-badge.unset { background: rgba(0,0,0,0.06); color: #999; }
-
-    /* ─── Year Goals ─────────────────────────────────────── */
     #goalsContainer { margin-top: 12px; display: none; }
     .goals-section-title {
       font-size: 10px; font-weight: 700; text-transform: uppercase;
@@ -169,15 +167,9 @@
       content: ""; position: absolute; left: 28px; top: 6px;
       bottom: 6px; width: 2px; background: #e8e8e8; z-index: 0;
     }
-    .goal-row {
-      display: flex; align-items: flex-start; gap: 10px;
-      padding: 6px 0; position: relative; z-index: 1;
-    }
+    .goal-row { display: flex; align-items: flex-start; gap: 10px; padding: 6px 0; position: relative; z-index: 1; }
     .goal-dot-wrap { width: 20px; flex-shrink: 0; display: flex; flex-direction: column; align-items: center; padding-top: 2px; }
-    .goal-dot {
-      width: 10px; height: 10px; border-radius: 50%;
-      border: 2px solid #ddd; background: #fff; flex-shrink: 0; transition: all 0.2s;
-    }
+    .goal-dot { width: 10px; height: 10px; border-radius: 50%; border: 2px solid #ddd; background: #fff; flex-shrink: 0; transition: all 0.2s; }
     .goal-dot.past    { background: #2ecc71; border-color: #2ecc71; }
     .goal-dot.current { background: var(--accent,#4b8cff); border-color: var(--accent,#4b8cff); box-shadow: 0 0 0 3px rgba(75,140,255,0.2); }
     .goal-dot.future  { background: #fff; border-color: #ddd; }
@@ -188,32 +180,19 @@
     .goal-month-name.past    { color: #2ecc71; }
     .goal-month-name.current { color: var(--accent,#4b8cff); }
     .goal-month-name.future  { color: #ccc; }
-    .goal-month-badge {
-      font-size: 9px; font-weight: 700; padding: 1px 6px; border-radius: 999px;
-      background: rgba(75,140,255,0.12); color: var(--accent,#4b8cff); display: none;
-    }
+    .goal-month-badge { font-size: 9px; font-weight: 700; padding: 1px 6px; border-radius: 999px; background: rgba(75,140,255,0.12); color: var(--accent,#4b8cff); display: none; }
     .goal-month-badge.show { display: inline-block; }
     .goal-plan-text { font-size: 12px; color: #555; line-height: 1.5; white-space: pre-wrap; word-break: break-word; }
     .goal-plan-text.empty-hint { color: #ccc; font-style: italic; font-size: 11px; }
     .goal-plan-text.dark { color: #ccc; }
     .goal-plan-text.empty-hint.dark { color: #555; }
     .goals-section-title.dark { color: #666; }
-    .goal-edit-inline {
-      margin-top: 4px; font-size: 11px; color: var(--accent,#4b8cff);
-      cursor: pointer; opacity: 0; transition: opacity 0.15s;
-      background: none; border: none; padding: 0; font-family: inherit;
-    }
+    .goal-edit-inline { margin-top: 4px; font-size: 11px; color: var(--accent,#4b8cff); cursor: pointer; opacity: 0; transition: opacity 0.15s; background: none; border: none; padding: 0; font-family: inherit; }
     .goal-row:hover .goal-edit-inline { opacity: 1; }
     .goals-edit-row { margin-bottom: 12px; }
     .goals-edit-month-label { font-size: 12px; font-weight: 700; color: var(--accent,#4b8cff); margin-bottom: 4px; }
-    .goals-edit-textarea {
-      width: 100%; box-sizing: border-box; border: 1px solid #e5e7eb;
-      border-radius: 8px; padding: 8px 10px; font-size: 12px; color: #444;
-      font-family: inherit; resize: none; line-height: 1.5; min-height: 52px;
-      overflow: hidden;
-    }
+    .goals-edit-textarea { width: 100%; box-sizing: border-box; border: 1px solid #e5e7eb; border-radius: 8px; padding: 8px 10px; font-size: 12px; color: #444; font-family: inherit; resize: none; line-height: 1.5; min-height: 52px; overflow: hidden; }
     .goals-edit-textarea:focus { outline: none; border-color: var(--accent,#4b8cff); }
-
     @media (max-width: 480px) {
       body { padding-top: 24px; }
       .card { padding: 20px 18px; border-radius: 14px; box-shadow: 0 4px 14px rgba(0,0,0,0.08); }
@@ -237,29 +216,23 @@
       </div>
     </div>
     <div class="theme-label" id="themeLabel"></div>
-
     <button class="main" id="pickButton" onclick="pickRandom()">Pick one now!</button>
-
     <div class="mission-card" id="missionCard">
       <div id="result">Press the button to start!</div>
       <div id="hint"></div>
     </div>
-
     <div class="action-buttons" style="display:none;" id="actionButtons">
       <button class="complete-btn" onclick="markComplete()">Done</button>
       <button class="pending-btn" onclick="markPending()">Skip</button>
     </div>
-
     <div class="progress-box" id="progressContainer" style="display:none;">
       <div class="status-summary">
         <span class="badge badge-coin" id="badgeCoin">🪙 0</span>
         <span class="badge badge-lv" id="badgeLv">⚡ LV 1</span>
         <button id="tungContainer" onclick="openTungModal()" class="tung-btn" style="display:none;">💭</button>
       </div>
-
       <div style="font-size:12px; font-weight:700; color:var(--accent,#4b8cff); margin-bottom:4px;" id="progressText">Today: 0 / 7</div>
       <div class="checkbox-list" id="checkboxList"></div>
-
       <div class="streak-box">
         <div class="streak-label">Full days this year <span id="streakText">0 / 351 (0.0%)</span></div>
         <div class="streak-bar"><div class="streak-fill" id="streakFill"></div></div>
@@ -268,17 +241,13 @@
         <div class="streak-label">Total tasks this year <span id="taskStreakText">0 / 2457 (0.0%)</span></div>
         <div class="streak-bar"><div class="streak-fill" id="taskStreakFill"></div></div>
       </div>
-
       <div id="eventText"></div>
-
       <div style="display:flex; gap:6px; margin-top:18px;">
         <button class="toggle-btn" id="toggleCalendarButton" onclick="toggleCalendar()" style="flex:1;">📅 Calendar</button>
         <button class="toggle-btn" id="toggleReportButton"   onclick="toggleReport()"   style="flex:1;">📊 Report</button>
         <button class="toggle-btn" id="toggleGoalsButton"    onclick="toggleGoals()"    style="flex:1;">🎯 Goals</button>
       </div>
-
       <div id="reportContainer" style="display:none; margin-top:12px;"></div>
-
       <div id="calendarContainer" style="display:none;">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; margin-top:10px;">
           <button onclick="changeMonth(-1)" style="border:none; background:transparent; font-size:20px; cursor:pointer; padding:4px 8px;">◀</button>
@@ -287,8 +256,6 @@
         </div>
         <div id="calendarTableContainer"></div>
       </div>
-
-      <!-- ── Year Goals ── -->
       <div id="goalsContainer">
         <div class="goals-section-title" id="goalsSectionTitle" style="margin-top:2px;">🎯 2026 Intensity Plan</div>
         <div class="goals-timeline" id="goalsTimeline"></div>
@@ -299,7 +266,6 @@
           ✏️ Edit plan
         </button>
       </div>
-
       <a href="https://bethej2love-lab.github.io/narang-mandart-chart/mandart" target="_blank"
         style="display:block; margin-top:14px; padding:10px 0; text-align:center; background:var(--accent,#4b8cff); color:#fff; font-size:13px; font-weight:600; border-radius:999px; text-decoration:none;">
         🗺️ Go to Mandart
@@ -308,7 +274,6 @@
         style="display:block; margin-top:8px; padding:10px 0; text-align:center; background:transparent; color:var(--accent,#4b8cff); font-size:13px; font-weight:600; border-radius:999px; text-decoration:none; border:1.5px solid var(--accent,#4b8cff);">
         📝 Go to Notion
       </a>
-
       <div id="triviaCard" style="margin-top:14px; display:none;">
         <div style="font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; color:#aaa; margin-bottom:6px;">💡 Today's Trivia</div>
         <div id="triviaContent" style="font-size:12px; line-height:1.6; padding:12px 14px; border-radius:12px; background:rgba(0,0,0,0.03); color:#444;"></div>
@@ -457,7 +422,15 @@
       if(!s||d!==today){const r={};tasks.forEach(t=>r[t]=false);ls.set("taskStatus",r);ls.setStr("taskDate",today);return r;}
       return s;
     }
-    function loadFullDays()   { return { count:parseInt(ls.str("fullCompleteCount")||"0",10), lastDate:ls.str("fullCompleteDate")||"" }; }
+
+    // ✅ dailyStats 기반으로 풀데이 재계산 — 저장된 카운터 무시하고 항상 실제 기록에서 산출
+    function loadFullDays() {
+      const stats = loadDailyStats();
+      const count = Object.values(stats).filter(v => v >= tasks.length).length;
+      ls.setStr("fullCompleteCount", String(count));
+      return { count, lastDate: ls.str("fullCompleteDate") || "" };
+    }
+
     function loadCoins()      { return parseInt(ls.str("coinCount")||"0",10); }
     function loadDailyEvent() {
       const id=ls.str("dailyEventId"), dt=ls.str("dailyEventDate");
@@ -483,22 +456,16 @@
       return pool[Math.floor(Math.random()*pool.length)];
     }
 
-    // ── Year Goals ────────────────────────────────────────────────
     const MONTH_NAMES = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
-
     const DEFAULT_GOALS = [
-      { plan: "" },
-      { plan: "" },
-      { plan: "" },
+      { plan: "" }, { plan: "" }, { plan: "" },
       { plan: "플랭크 50초\n독서 15p\n브릴리언트 5개\n말해보카 50개\n달리기 2km or 만보\n퀴즈 서술형 or 객관식 80\n부기스 인스타/블로그+스토어" },
       { plan: "플랭크 1분 15초\n독서 25p\n브릴리언트 6개\n말해보카 60개\n달리기 3km\n퀴즈 서술형 or 객관식 100\n부기스 주 2회 이상" },
       { plan: "플랭크 1분 45초\n독서 30p\n브릴리언트 7개\n말해보카 70개\n달리기 4km\n퀴즈 서술형 or 객관식 120\n부기스 블로그 주 3회 고정" },
       { plan: "플랭크 2분 30초\n독서 35p\n브릴리언트 8개\n말해보카 80개\n달리기 5km\n퀴즈 서술형 or 객관식 140\n부기스 스토어 월매출 목표 설정" },
       { plan: "플랭크 3분 × 1세트\n독서 45p\n브릴리언트 9개\n말해보카 90개\n달리기 5.5km\n퀴즈 서술형 or 객관식 150\n부기스 콘텐츠 루틴화" },
       { plan: "🎯 플랭크 3분 × 2세트\n독서 50p\n브릴리언트 10개\n말해보카 100개\n달리기 6km\n퀴즈 서술형 or 객관식 160\n부기스 블로그+인스타 동시 운영" },
-      { plan: "유지 + 새 챌린지 추가" },
-      { plan: "유지 + 새 챌린지 추가" },
-      { plan: "유지 + 새 챌린지 추가" }
+      { plan: "유지 + 새 챌린지 추가" }, { plan: "유지 + 새 챌린지 추가" }, { plan: "유지 + 새 챌린지 추가" }
     ];
 
     function loadYearGoals() {
@@ -509,95 +476,54 @@
     function saveYearGoals(g) { ls.set("yearGoals2026", g); }
 
     function renderGoalsTimeline() {
-      const goals = loadYearGoals();
-      const tl = document.getElementById("goalsTimeline");
+      const goals = loadYearGoals(), tl = document.getElementById("goalsTimeline");
       if (!tl) return;
       tl.innerHTML = "";
-      const curMonth = parseInt(today.split("-")[1], 10);
-      const dk = window._isDarkTheme;
-
+      const curMonth = parseInt(today.split("-")[1], 10), dk = window._isDarkTheme;
       const titleEl = document.getElementById("goalsSectionTitle");
-      if (titleEl) { titleEl.classList.toggle("dark", dk); }
-
+      if (titleEl) titleEl.classList.toggle("dark", dk);
       goals.forEach((g, i) => {
-        const mn = i + 1;
-        const state = mn < curMonth ? "past" : mn === curMonth ? "current" : "future";
+        const mn = i+1, state = mn < curMonth ? "past" : mn === curMonth ? "current" : "future";
         const hasPlan = g.plan && g.plan.trim().length > 0;
-
         const row = document.createElement("div"); row.className = "goal-row";
-
         const dotWrap = document.createElement("div"); dotWrap.className = "goal-dot-wrap";
-        const dot = document.createElement("div");
-        dot.className = `goal-dot ${hasPlan ? state : "empty"}`;
+        const dot = document.createElement("div"); dot.className = `goal-dot ${hasPlan ? state : "empty"}`;
         dotWrap.appendChild(dot); row.appendChild(dotWrap);
-
         const body = document.createElement("div"); body.className = "goal-body";
         const header = document.createElement("div"); header.className = "goal-month-header";
-
-        const nameLbl = document.createElement("span");
-        nameLbl.className = `goal-month-name ${state}`;
-        nameLbl.textContent = `${MONTH_NAMES[i]} (${mn}월)`;
-        header.appendChild(nameLbl);
-
-        if (state === "current") {
-          const badge = document.createElement("span");
-          badge.className = "goal-month-badge show"; badge.textContent = "NOW";
-          header.appendChild(badge);
-        }
+        const nameLbl = document.createElement("span"); nameLbl.className = `goal-month-name ${state}`;
+        nameLbl.textContent = `${MONTH_NAMES[i]} (${mn}월)`; header.appendChild(nameLbl);
+        if (state === "current") { const badge = document.createElement("span"); badge.className = "goal-month-badge show"; badge.textContent = "NOW"; header.appendChild(badge); }
         body.appendChild(header);
-
         const planEl = document.createElement("div");
-        if (hasPlan) {
-          planEl.className = "goal-plan-text" + (dk ? " dark" : "");
-          planEl.textContent = g.plan;
-        } else {
-          planEl.className = "goal-plan-text empty-hint" + (dk ? " dark" : "");
-          planEl.textContent = state === "current" ? "아직 플랜 미작성" : state === "future" ? "계획 없음" : "기록 없음";
-        }
+        if (hasPlan) { planEl.className = "goal-plan-text" + (dk ? " dark" : ""); planEl.textContent = g.plan; }
+        else { planEl.className = "goal-plan-text empty-hint" + (dk ? " dark" : ""); planEl.textContent = state === "current" ? "아직 플랜 미작성" : state === "future" ? "계획 없음" : "기록 없음"; }
         body.appendChild(planEl);
-
-        const editBtn = document.createElement("button");
-        editBtn.className = "goal-edit-inline"; editBtn.textContent = "✏️ edit";
-        editBtn.onclick = () => openGoalsEditModalAt(i);
-        body.appendChild(editBtn);
-
-        row.appendChild(body);
-        tl.appendChild(row);
+        const editBtn = document.createElement("button"); editBtn.className = "goal-edit-inline"; editBtn.textContent = "✏️ edit";
+        editBtn.onclick = () => openGoalsEditModalAt(i); body.appendChild(editBtn);
+        row.appendChild(body); tl.appendChild(row);
       });
     }
 
     function toggleGoals() {
-      const c = document.getElementById("goalsContainer");
-      const btn = document.getElementById("toggleGoalsButton");
-      if (!c.style.display || c.style.display === "none") {
-        renderGoalsTimeline(); c.style.display = "block"; btn.textContent = "🎯 Close";
-      } else {
-        c.style.display = "none"; btn.textContent = "🎯 Goals";
-      }
+      const c = document.getElementById("goalsContainer"), btn = document.getElementById("toggleGoalsButton");
+      if (!c.style.display || c.style.display === "none") { renderGoalsTimeline(); c.style.display = "block"; btn.textContent = "🎯 Close"; }
+      else { c.style.display = "none"; btn.textContent = "🎯 Goals"; }
     }
-
     function openGoalsEditModal() { openGoalsEditModalAt(null); }
     function openGoalsEditModalAt(focusIdx) {
-      const goals = loadYearGoals();
-      const list = document.getElementById("goalsEditList"); list.innerHTML = "";
+      const goals = loadYearGoals(), list = document.getElementById("goalsEditList"); list.innerHTML = "";
       goals.forEach((g, i) => {
         const div = document.createElement("div"); div.className = "goals-edit-row";
-        const lbl = document.createElement("div"); lbl.className = "goals-edit-month-label";
-        lbl.textContent = `${MONTH_NAMES[i]} (${i+1}월)`;
+        const lbl = document.createElement("div"); lbl.className = "goals-edit-month-label"; lbl.textContent = `${MONTH_NAMES[i]} (${i+1}월)`;
         const ta = document.createElement("textarea"); ta.className = "goals-edit-textarea";
-        ta.id = `gPlan_${i}`; ta.value = g.plan || "";
-        ta.placeholder = "이번 달 강도 플랜을 적어보세요";
+        ta.id = `gPlan_${i}`; ta.value = g.plan || ""; ta.placeholder = "이번 달 강도 플랜을 적어보세요";
         ta.addEventListener("input", () => { ta.style.height = "auto"; ta.style.height = ta.scrollHeight + "px"; });
         div.appendChild(lbl); div.appendChild(ta); list.appendChild(div);
         setTimeout(() => { ta.style.height = "auto"; ta.style.height = ta.scrollHeight + "px"; }, 0);
       });
       document.getElementById("goalsEditModal").style.display = "flex";
-      if (focusIdx !== null) {
-        setTimeout(() => {
-          const el = document.getElementById(`gPlan_${focusIdx}`);
-          if (el) { el.focus(); el.scrollIntoView({ behavior:"smooth", block:"center" }); }
-        }, 100);
-      }
+      if (focusIdx !== null) setTimeout(() => { const el = document.getElementById(`gPlan_${focusIdx}`); if (el) { el.focus(); el.scrollIntoView({ behavior:"smooth", block:"center" }); } }, 100);
     }
     function closeGoalsEditModal() { document.getElementById("goalsEditModal").style.display = "none"; }
     function saveGoals() {
@@ -606,7 +532,6 @@
       saveYearGoals(goals); closeGoalsEditModal(); renderGoalsTimeline();
     }
 
-    // ── State ─────────────────────────────────────────────────────
     function loadTungState() {
       if(ls.str("tungDate")!==today){ls.setStr("tungDate",today);ls.setStr("tungCount","0");ls.setStr("tungFreeUsed","0");ls.rm("tungChoice");return{count:0,freeUsed:false};}
       return{count:parseInt(ls.str("tungCount")||"0",10),freeUsed:ls.str("tungFreeUsed")==="1"};
@@ -637,11 +562,19 @@
     function getCompletedCount(){return Math.min(tasks.length,Object.values(taskStatus).filter(v=>v).length+tungCount);}
 
     function updateUI(){
-      // ✅ FIX: comp(퉁/코인 포함)으로 풀데이 판정
-      const comp=getCompletedCount(),real=Object.values(taskStatus).filter(v=>v).length;
-      let rfn=tasks.length;if(dailyEvent.id==="half_day_full")rfn=Math.ceil(tasks.length/2);
-      if(comp>=rfn&&fullCompleteDate!==today){fullCompleteCount++;fullCompleteDate=today;ls.setStr("fullCompleteCount",String(fullCompleteCount));ls.setStr("fullCompleteDate",today);}
-      const stats=loadDailyStats();stats[today]=comp;saveDailyStats(stats);
+      const comp = getCompletedCount();
+
+      // ✅ 오늘 stats 저장 후 전체 기록 기반으로 fullCompleteCount 재계산
+      const stats = loadDailyStats();
+      stats[today] = comp;
+      saveDailyStats(stats);
+
+      let rfn = tasks.length;
+      if (dailyEvent.id === "half_day_full") rfn = Math.ceil(tasks.length / 2);
+      fullCompleteCount = Object.values(stats).filter(v => v >= rfn).length;
+      ls.setStr("fullCompleteCount", String(fullCompleteCount));
+      if (comp >= rfn) { fullCompleteDate = today; ls.setStr("fullCompleteDate", today); }
+
       document.getElementById("progressText").textContent=`Today: ${comp} / ${tasks.length}`;
       const el=document.getElementById("checkboxList");el.innerHTML="";
       tasks.forEach(t=>{const d=document.createElement("div");d.textContent=(taskStatus[t]?"✔  ":"○  ")+t;if(taskStatus[t])d.classList.add("done");el.appendChild(d);});
@@ -662,7 +595,6 @@
     function showProgressIfNeeded(){if(!hasShownProgress){document.getElementById("progressContainer").style.display="block";hasShownProgress=true;}}
     function updateTungButtonVisibility(){const c=document.getElementById("tungContainer");if(!c)return;c.style.display=(!currentTask||getCompletedCount()>=tasks.length)?"none":"inline-block";}
 
-    // ── Theme ─────────────────────────────────────────────────────
     function applyTheme(){
       const[y,m,d]=getKSTDate().split("-").map(Number),date=new Date(y,m-1,d);
       const diff=Math.floor((date-new Date(date.getFullYear(),0,1))/86400000);
@@ -738,7 +670,6 @@
 
     let currentViewYear=parseInt(today.split("-")[0]),currentViewMonth=parseInt(today.split("-")[1]);
 
-    // ✅ FIX: 하트(perfectDays) 관련 코드 제거
     function buildMonthlyCalendar(year,month){
       const stats=loadDailyStats(),cont=document.getElementById("calendarTableContainer");
       cont.innerHTML="";
@@ -756,7 +687,7 @@
         const num=document.createElement("div");num.className="cal-day-number";num.textContent=day;
         const info=document.createElement("div");info.className="cal-day-tasks";info.textContent=`${cnt}/${tasks.length}`;
         td.appendChild(num);td.appendChild(info);
-        if(cnt===tasks.length)td.style.background="rgba(46,204,113,0.25)";
+        if(cnt>=tasks.length)td.style.background="rgba(46,204,113,0.25)";
         else if(cnt>=Math.ceil(tasks.length/2))td.style.background="rgba(241,196,15,0.2)";
         if(key===today)td.classList.add("cal-today");
         row.appendChild(td);cc++;
@@ -765,21 +696,16 @@
       table.appendChild(tbody);cont.appendChild(table);
     }
 
-    // ✅ FIX: perfectDaysWrap show/hide 제거
     function toggleCalendar(){
       const c=document.getElementById("calendarContainer"),btn=document.getElementById("toggleCalendarButton");
       if(!c.style.display||c.style.display==="none"){
         currentViewYear=parseInt(today.split("-")[0]);currentViewMonth=parseInt(today.split("-")[1]);
-        buildMonthlyCalendar(currentViewYear,currentViewMonth);
-        c.style.display="block";btn.textContent="📅 Close";
-      }else{
-        c.style.display="none";btn.textContent="📅 Calendar";
-      }
+        buildMonthlyCalendar(currentViewYear,currentViewMonth);c.style.display="block";btn.textContent="📅 Close";
+      }else{c.style.display="none";btn.textContent="📅 Calendar";}
     }
-
     function changeMonth(delta){currentViewMonth+=delta;if(currentViewMonth>12){currentViewMonth=1;currentViewYear++;}else if(currentViewMonth<1){currentViewMonth=12;currentViewYear--;}buildMonthlyCalendar(currentViewYear,currentViewMonth);const rc=document.getElementById("reportContainer");if(rc&&rc.style.display!=="none")buildReport(currentViewYear,currentViewMonth);}
     function toggleReport(){const rc=document.getElementById("reportContainer"),btn=document.getElementById("toggleReportButton");if(!rc.style.display||rc.style.display==="none"){buildReport(currentViewYear,currentViewMonth);rc.style.display="block";btn.textContent="📊 Close";}else{rc.style.display="none";btn.textContent="📊 Report";}}
-    function buildReport(year,month){const cont=document.getElementById("reportContainer");if(!cont)return;const stats=loadDailyStats(),ml=loadMissionLog(),sl=loadSkipLog();const ld=new Date(year,month,0).getDate(),mdays=[];for(let d=1;d<=ld;d++)mdays.push(`${year}-${String(month).padStart(2,"0")}-${String(d).padStart(2,"0")}`);const td2=new Date(...today.split("-").map((v,i)=>i===1?v-1:+v)),dow=td2.getDay();const ws=new Date(td2);ws.setDate(td2.getDate()-(dow===0?6:dow-1));const wdays=[];for(let i=0;i<7;i++){const dd=new Date(ws);dd.setDate(ws.getDate()+i);wdays.push(`${dd.getFullYear()}-${String(dd.getMonth()+1).padStart(2,"0")}-${String(dd.getDate()).padStart(2,"0")}`);}function makeItems(days,label){const items=[],td=days.filter(d=>d<=today).length;if(td===0)return items;const dd=days.filter(d=>stats[d]===tasks.length).length,dr=Math.round(dd/td*100);if(dr===100)items.push({i:"🏆",t:`Perfect! All ${td} days fully completed.`});else if(dr>=70)items.push({i:"✅",t:`Great job! ${dr}% full completion rate this ${label}.`});else if(dr>=40)items.push({i:"📈",t:`${dr}% full days this ${label}. Room to grow!`});else items.push({i:"💪",t:`Only ${dr}% full days this ${label}. Let's push harder!`});const st=days.reduce((s,d)=>s+(sl[d]||0),0);if(st>=5)items.push({i:"😅",t:`Skipped ${st} times this ${label}. Maybe a bit too many?`});else if(st>=3)items.push({i:"🙈",t:`${st} skips this ${label}. Try to cut it down!`});else if(st===0&&td>=3)items.push({i:"🔥",t:`Zero skips this ${label}! Amazing discipline.`});const mc={};tasks.forEach(t=>mc[t]=0);days.forEach(d=>{if(ml[d])Object.entries(ml[d]).forEach(([t,c])=>{if(mc[t]!=null)mc[t]+=c;});});const sorted=Object.entries(mc).sort((a,b)=>b[1]-a[1]),mx=sorted[0],mn=sorted[sorted.length-1],act=days.filter(d=>d<=today).length;if(mx&&mx[1]>=Math.round(act*0.7))items.push({i:"⭐",t:`"${mx[0]}" is your strongest mission this ${label}!`});if(mn&&mn[1]===0&&act>=3)items.push({i:"😬",t:`"${mn[0]}" — not done once this ${label}. Don't forget it!`});else if(mn&&mn[1]<=Math.round(act*0.2)&&act>=5)items.push({i:"⚠️",t:`"${mn[0]}" is being neglected this ${label}. Only ${mn[1]} time(s).`});return items;}const dk=window._isDarkTheme?'color:#d0d0d0;background:rgba(255,255,255,0.06)':'';const wi=makeItems(wdays,"week"),mi=makeItems(mdays,"month");let html="";if(wi.length)html+=`<div class="report-section"><div class="report-title">📊 This Week</div>${wi.map(x=>`<div class="report-item" style="${dk}"><span class="ri-icon">${x.i}</span><span>${x.t}</span></div>`).join("")}</div>`;if(mi.length)html+=`<div class="report-section"><div class="report-title">📅 ${year}.${String(month).padStart(2,"0")} Monthly</div>${mi.map(x=>`<div class="report-item" style="${dk}"><span class="ri-icon">${x.i}</span><span>${x.t}</span></div>`).join("")}</div>`;if(!html)html=`<div class="report-item" style="${dk}"><span class="ri-icon">🌱</span><span>Not enough data yet. Keep going!</span></div>`;cont.innerHTML=html;}
+    function buildReport(year,month){const cont=document.getElementById("reportContainer");if(!cont)return;const stats=loadDailyStats(),ml=loadMissionLog(),sl=loadSkipLog();const ld=new Date(year,month,0).getDate(),mdays=[];for(let d=1;d<=ld;d++)mdays.push(`${year}-${String(month).padStart(2,"0")}-${String(d).padStart(2,"0")}`);const td2=new Date(...today.split("-").map((v,i)=>i===1?v-1:+v)),dow=td2.getDay();const ws=new Date(td2);ws.setDate(td2.getDate()-(dow===0?6:dow-1));const wdays=[];for(let i=0;i<7;i++){const dd=new Date(ws);dd.setDate(ws.getDate()+i);wdays.push(`${dd.getFullYear()}-${String(dd.getMonth()+1).padStart(2,"0")}-${String(dd.getDate()).padStart(2,"0")}`);}function makeItems(days,label){const items=[],td=days.filter(d=>d<=today).length;if(td===0)return items;const dd=days.filter(d=>stats[d]>=tasks.length).length,dr=Math.round(dd/td*100);if(dr===100)items.push({i:"🏆",t:`Perfect! All ${td} days fully completed.`});else if(dr>=70)items.push({i:"✅",t:`Great job! ${dr}% full completion rate this ${label}.`});else if(dr>=40)items.push({i:"📈",t:`${dr}% full days this ${label}. Room to grow!`});else items.push({i:"💪",t:`Only ${dr}% full days this ${label}. Let's push harder!`});const st=days.reduce((s,d)=>s+(sl[d]||0),0);if(st>=5)items.push({i:"😅",t:`Skipped ${st} times this ${label}. Maybe a bit too many?`});else if(st>=3)items.push({i:"🙈",t:`${st} skips this ${label}. Try to cut it down!`});else if(st===0&&td>=3)items.push({i:"🔥",t:`Zero skips this ${label}! Amazing discipline.`});const mc={};tasks.forEach(t=>mc[t]=0);days.forEach(d=>{if(ml[d])Object.entries(ml[d]).forEach(([t,c])=>{if(mc[t]!=null)mc[t]+=c;});});const sorted=Object.entries(mc).sort((a,b)=>b[1]-a[1]),mx=sorted[0],mn=sorted[sorted.length-1],act=days.filter(d=>d<=today).length;if(mx&&mx[1]>=Math.round(act*0.7))items.push({i:"⭐",t:`"${mx[0]}" is your strongest mission this ${label}!`});if(mn&&mn[1]===0&&act>=3)items.push({i:"😬",t:`"${mn[0]}" — not done once this ${label}. Don't forget it!`});else if(mn&&mn[1]<=Math.round(act*0.2)&&act>=5)items.push({i:"⚠️",t:`"${mn[0]}" is being neglected this ${label}. Only ${mn[1]} time(s).`});return items;}const dk=window._isDarkTheme?'color:#d0d0d0;background:rgba(255,255,255,0.06)':'';const wi=makeItems(wdays,"week"),mi=makeItems(mdays,"month");let html="";if(wi.length)html+=`<div class="report-section"><div class="report-title">📊 This Week</div>${wi.map(x=>`<div class="report-item" style="${dk}"><span class="ri-icon">${x.i}</span><span>${x.t}</span></div>`).join("")}</div>`;if(mi.length)html+=`<div class="report-section"><div class="report-title">📅 ${year}.${String(month).padStart(2,"0")} Monthly</div>${mi.map(x=>`<div class="report-item" style="${dk}"><span class="ri-icon">${x.i}</span><span>${x.t}</span></div>`).join("")}</div>`;if(!html)html=`<div class="report-item" style="${dk}"><span class="ri-icon">🌱</span><span>Not enough data yet. Keep going!</span></div>`;cont.innerHTML=html;}
 
     function pickRandom(){if(isPicking)return;isPicking=true;const pb=document.getElementById("pickButton"),re=document.getElementById("result"),he=document.getElementById("hint");pb.disabled=true;pb.textContent="Picking…";document.getElementById("actionButtons").style.display="none";re.classList.remove("s-glow","has-task");document.getElementById("missionCard").classList.remove("has-task");const avail=tasks.filter(t=>!taskStatus[t]&&!skippedTasks[t]);if(avail.length===0){const rem=tasks.filter(t=>!taskStatus[t]);re.textContent=rem.length===0?"All done today!":"Only skipped missions left. That's it for today!";he.textContent=rem.length===0?"":"Refresh to reset skipped missions.";pb.disabled=false;pb.textContent="Pick one now!";isPicking=false;showProgressIfNeeded();updateTungButtonVisibility();return;}let dots=0;re.textContent="Thinking";he.textContent="Just a sec…";const loading=setInterval(()=>{dots=(dots+1)%4;re.textContent="Thinking"+".".repeat(dots);},400);setTimeout(()=>{clearInterval(loading);const fc=avail[Math.floor(Math.random()*avail.length)],ft=taskTier[fc]||"B";currentTask=fc;currentTier=ft;re.innerHTML=`<span class="tier-label">${tierLabel[ft]||"B-Tier"}</span>${fc.replace(/</g,"&lt;").replace(/>/g,"&gt;")}`;re.classList.add("has-task");document.getElementById("missionCard").classList.add("has-task");if(ft==="S"){re.classList.add("s-glow");he.textContent=`✨ S-tier mission! ✨ ${hints[fc]||""}`;}else he.textContent=hints[fc]||"";document.getElementById("actionButtons").style.display="flex";pb.disabled=false;pb.textContent="Pick one now!";isPicking=false;showProgressIfNeeded();updateTungButtonVisibility();},2000);}
 
