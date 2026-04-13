@@ -195,7 +195,6 @@
     .goal-month-badge.show { display: inline-block; }
     .goal-plan-text { font-size: 12px; color: #555; line-height: 1.5; white-space: pre-wrap; word-break: break-word; }
     .goal-plan-text.empty-hint { color: #ccc; font-style: italic; font-size: 11px; }
-    /* 다크 테마용 */
     .goal-plan-text.dark { color: #ccc; }
     .goal-plan-text.empty-hint.dark { color: #555; }
     .goals-section-title.dark { color: #666; }
@@ -287,9 +286,6 @@
           <button onclick="changeMonth(1)"  style="border:none; background:transparent; font-size:20px; cursor:pointer; padding:4px 8px;">▶</button>
         </div>
         <div id="calendarTableContainer"></div>
-      </div>
-      <div id="perfectDaysWrap" style="display:none; text-align:right; margin-top:6px;">
-        <span id="perfectDaysCount" style="font-size:13px; font-weight:600; color:#e74c3c;"></span>
       </div>
 
       <!-- ── Year Goals ── -->
@@ -520,7 +516,6 @@
       const curMonth = parseInt(today.split("-")[1], 10);
       const dk = window._isDarkTheme;
 
-      // 섹션 타이틀 다크 처리
       const titleEl = document.getElementById("goalsSectionTitle");
       if (titleEl) { titleEl.classList.toggle("dark", dk); }
 
@@ -594,7 +589,6 @@
         ta.placeholder = "이번 달 강도 플랜을 적어보세요";
         ta.addEventListener("input", () => { ta.style.height = "auto"; ta.style.height = ta.scrollHeight + "px"; });
         div.appendChild(lbl); div.appendChild(ta); list.appendChild(div);
-        // ── 수정 1: 모달 열릴 때 이미 채워진 textarea 높이 자동 맞추기
         setTimeout(() => { ta.style.height = "auto"; ta.style.height = ta.scrollHeight + "px"; }, 0);
       });
       document.getElementById("goalsEditModal").style.display = "flex";
@@ -643,9 +637,10 @@
     function getCompletedCount(){return Math.min(tasks.length,Object.values(taskStatus).filter(v=>v).length+tungCount);}
 
     function updateUI(){
+      // ✅ FIX: comp(퉁/코인 포함)으로 풀데이 판정
       const comp=getCompletedCount(),real=Object.values(taskStatus).filter(v=>v).length;
       let rfn=tasks.length;if(dailyEvent.id==="half_day_full")rfn=Math.ceil(tasks.length/2);
-      if(real>=rfn&&fullCompleteDate!==today){fullCompleteCount++;fullCompleteDate=today;ls.setStr("fullCompleteCount",String(fullCompleteCount));ls.setStr("fullCompleteDate",today);}
+      if(comp>=rfn&&fullCompleteDate!==today){fullCompleteCount++;fullCompleteDate=today;ls.setStr("fullCompleteCount",String(fullCompleteCount));ls.setStr("fullCompleteDate",today);}
       const stats=loadDailyStats();stats[today]=comp;saveDailyStats(stats);
       document.getElementById("progressText").textContent=`Today: ${comp} / ${tasks.length}`;
       const el=document.getElementById("checkboxList");el.innerHTML="";
@@ -701,7 +696,6 @@
         document.querySelectorAll(".streak-label").forEach(e=>e.style.color="#888");
         document.querySelectorAll(".streak-label span").forEach(e=>e.style.color="#ccc");
         document.querySelectorAll("button.main").forEach(e=>e.style.color="#fff");
-        // ── 수정 2: 다크 테마 Goals 텍스트
         const gt=document.getElementById("goalsSectionTitle");if(gt)gt.classList.add("dark");
         document.querySelectorAll(".goal-plan-text").forEach(e=>e.classList.add("dark"));
       } else {
@@ -743,8 +737,46 @@
     async function loadTodayTrivia(){const k=ls.str("mandart_api_key");document.getElementById("triviaBtn").style.display="none";document.getElementById("triviaLoading").style.display="block";const cat=pickTriviaCategory();const hist=loadTriviaHistory();const recent=hist.slice(-10).map(h=>`[${h.category}] ${h.summary}`).join("\n");const avoid=recent?`\n\n아래는 최근에 이미 다룬 내용이니 겹치지 않게 해줘:\n${recent}`:"";const prompt=cat==="Movie Recommendation"?`오늘 볼 만한 영화 한 편을 추천해줘. 제목(개봉연도), 장르, 추천 이유 1~2문장을 포함해서 구체적으로 말해줘. 너무 유명한 영화(타이타닉, 인셉션 등)보다는 덜 알려진 명작이나 숨은 걸작 위주로 골라줘.${avoid}`:`"${cat}"에 대한 흥미롭고 구체적인 상식 한 가지를 2~3문장으로 말해줘. "알고 계셨나요?" 같은 서두 없이 바로 본론으로 시작해. 최대한 구체적인 수치나 사례를 포함해서 생생하게.${avoid}`;try{const res=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json","x-api-key":k,"anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:300,messages:[{role:"user",content:prompt}]})});if(!res.ok){const e=await res.json().catch(()=>({}));throw new Error(e?.error?.message||`HTTP ${res.status}`);}const data=await res.json();if(data.content?.[0]?.text){const text=data.content[0].text.trim();ls.setStr("triviaDate",today);ls.setStr("triviaText",text);ls.setStr("triviaCategory",cat);saveTriviaHistory({date:today,category:cat,summary:text.slice(0,60)});document.getElementById("triviaContent").textContent=text;document.getElementById("triviaCategory").textContent=`# ${cat}`;document.getElementById("triviaLoading").style.display="none";document.getElementById("triviaCard").style.display="block";}else throw new Error("No content");}catch(e){document.getElementById("triviaLoading").style.display="none";document.getElementById("triviaContent").textContent=`Failed: ${e.message}`;document.getElementById("triviaCategory").textContent="";document.getElementById("triviaCard").style.display="block";}}
 
     let currentViewYear=parseInt(today.split("-")[0]),currentViewMonth=parseInt(today.split("-")[1]);
-    function buildMonthlyCalendar(year,month){const stats=loadDailyStats(),cont=document.getElementById("calendarTableContainer");cont.innerHTML="";document.getElementById("calendarMonthTitle").textContent=`${year}년 ${month}월`;let perf=0;for(const k in stats){if(stats[k]===tasks.length)perf++;}const pe=document.getElementById("perfectDaysCount");if(pe)pe.textContent=`♥ ${perf} ♥`;const fd=new Date(year,month-1,1).getDay(),ld=new Date(year,month,0).getDate();const table=document.createElement("table");table.className="calendar-table";const thead=document.createElement("thead"),hr=document.createElement("tr");["일","월","화","수","목","금","토"].forEach(w=>{const th=document.createElement("th");th.textContent=w;hr.appendChild(th);});thead.appendChild(hr);table.appendChild(thead);const tbody=document.createElement("tbody");let row=document.createElement("tr"),cc=0;for(let i=0;i<fd;i++){row.appendChild(document.createElement("td"));cc++;}for(let day=1;day<=ld;day++){if(cc===7){tbody.appendChild(row);row=document.createElement("tr");cc=0;}const td=document.createElement("td"),key=`${year}-${String(month).padStart(2,"0")}-${String(day).padStart(2,"0")}`,cnt=stats[key]||0;const num=document.createElement("div");num.className="cal-day-number";num.textContent=day;const info=document.createElement("div");info.className="cal-day-tasks";info.textContent=`${cnt}/${tasks.length}`;td.appendChild(num);td.appendChild(info);if(cnt===tasks.length)td.style.background="rgba(46,204,113,0.25)";else if(cnt>=Math.ceil(tasks.length/2))td.style.background="rgba(241,196,15,0.2)";if(key===today)td.classList.add("cal-today");row.appendChild(td);cc++;}if(cc>0){for(let i=cc;i<7;i++)row.appendChild(document.createElement("td"));tbody.appendChild(row);}table.appendChild(tbody);cont.appendChild(table);}
-    function toggleCalendar(){const c=document.getElementById("calendarContainer"),btn=document.getElementById("toggleCalendarButton");if(!c.style.display||c.style.display==="none"){currentViewYear=parseInt(today.split("-")[0]);currentViewMonth=parseInt(today.split("-")[1]);buildMonthlyCalendar(currentViewYear,currentViewMonth);c.style.display="block";btn.textContent="📅 Close";document.getElementById("perfectDaysWrap").style.display="block";}else{c.style.display="none";btn.textContent="📅 Calendar";document.getElementById("perfectDaysWrap").style.display="none";}}
+
+    // ✅ FIX: 하트(perfectDays) 관련 코드 제거
+    function buildMonthlyCalendar(year,month){
+      const stats=loadDailyStats(),cont=document.getElementById("calendarTableContainer");
+      cont.innerHTML="";
+      document.getElementById("calendarMonthTitle").textContent=`${year}년 ${month}월`;
+      const fd=new Date(year,month-1,1).getDay(),ld=new Date(year,month,0).getDate();
+      const table=document.createElement("table");table.className="calendar-table";
+      const thead=document.createElement("thead"),hr=document.createElement("tr");
+      ["일","월","화","수","목","금","토"].forEach(w=>{const th=document.createElement("th");th.textContent=w;hr.appendChild(th);});
+      thead.appendChild(hr);table.appendChild(thead);
+      const tbody=document.createElement("tbody");let row=document.createElement("tr"),cc=0;
+      for(let i=0;i<fd;i++){row.appendChild(document.createElement("td"));cc++;}
+      for(let day=1;day<=ld;day++){
+        if(cc===7){tbody.appendChild(row);row=document.createElement("tr");cc=0;}
+        const td=document.createElement("td"),key=`${year}-${String(month).padStart(2,"0")}-${String(day).padStart(2,"0")}`,cnt=stats[key]||0;
+        const num=document.createElement("div");num.className="cal-day-number";num.textContent=day;
+        const info=document.createElement("div");info.className="cal-day-tasks";info.textContent=`${cnt}/${tasks.length}`;
+        td.appendChild(num);td.appendChild(info);
+        if(cnt===tasks.length)td.style.background="rgba(46,204,113,0.25)";
+        else if(cnt>=Math.ceil(tasks.length/2))td.style.background="rgba(241,196,15,0.2)";
+        if(key===today)td.classList.add("cal-today");
+        row.appendChild(td);cc++;
+      }
+      if(cc>0){for(let i=cc;i<7;i++)row.appendChild(document.createElement("td"));tbody.appendChild(row);}
+      table.appendChild(tbody);cont.appendChild(table);
+    }
+
+    // ✅ FIX: perfectDaysWrap show/hide 제거
+    function toggleCalendar(){
+      const c=document.getElementById("calendarContainer"),btn=document.getElementById("toggleCalendarButton");
+      if(!c.style.display||c.style.display==="none"){
+        currentViewYear=parseInt(today.split("-")[0]);currentViewMonth=parseInt(today.split("-")[1]);
+        buildMonthlyCalendar(currentViewYear,currentViewMonth);
+        c.style.display="block";btn.textContent="📅 Close";
+      }else{
+        c.style.display="none";btn.textContent="📅 Calendar";
+      }
+    }
+
     function changeMonth(delta){currentViewMonth+=delta;if(currentViewMonth>12){currentViewMonth=1;currentViewYear++;}else if(currentViewMonth<1){currentViewMonth=12;currentViewYear--;}buildMonthlyCalendar(currentViewYear,currentViewMonth);const rc=document.getElementById("reportContainer");if(rc&&rc.style.display!=="none")buildReport(currentViewYear,currentViewMonth);}
     function toggleReport(){const rc=document.getElementById("reportContainer"),btn=document.getElementById("toggleReportButton");if(!rc.style.display||rc.style.display==="none"){buildReport(currentViewYear,currentViewMonth);rc.style.display="block";btn.textContent="📊 Close";}else{rc.style.display="none";btn.textContent="📊 Report";}}
     function buildReport(year,month){const cont=document.getElementById("reportContainer");if(!cont)return;const stats=loadDailyStats(),ml=loadMissionLog(),sl=loadSkipLog();const ld=new Date(year,month,0).getDate(),mdays=[];for(let d=1;d<=ld;d++)mdays.push(`${year}-${String(month).padStart(2,"0")}-${String(d).padStart(2,"0")}`);const td2=new Date(...today.split("-").map((v,i)=>i===1?v-1:+v)),dow=td2.getDay();const ws=new Date(td2);ws.setDate(td2.getDate()-(dow===0?6:dow-1));const wdays=[];for(let i=0;i<7;i++){const dd=new Date(ws);dd.setDate(ws.getDate()+i);wdays.push(`${dd.getFullYear()}-${String(dd.getMonth()+1).padStart(2,"0")}-${String(dd.getDate()).padStart(2,"0")}`);}function makeItems(days,label){const items=[],td=days.filter(d=>d<=today).length;if(td===0)return items;const dd=days.filter(d=>stats[d]===tasks.length).length,dr=Math.round(dd/td*100);if(dr===100)items.push({i:"🏆",t:`Perfect! All ${td} days fully completed.`});else if(dr>=70)items.push({i:"✅",t:`Great job! ${dr}% full completion rate this ${label}.`});else if(dr>=40)items.push({i:"📈",t:`${dr}% full days this ${label}. Room to grow!`});else items.push({i:"💪",t:`Only ${dr}% full days this ${label}. Let's push harder!`});const st=days.reduce((s,d)=>s+(sl[d]||0),0);if(st>=5)items.push({i:"😅",t:`Skipped ${st} times this ${label}. Maybe a bit too many?`});else if(st>=3)items.push({i:"🙈",t:`${st} skips this ${label}. Try to cut it down!`});else if(st===0&&td>=3)items.push({i:"🔥",t:`Zero skips this ${label}! Amazing discipline.`});const mc={};tasks.forEach(t=>mc[t]=0);days.forEach(d=>{if(ml[d])Object.entries(ml[d]).forEach(([t,c])=>{if(mc[t]!=null)mc[t]+=c;});});const sorted=Object.entries(mc).sort((a,b)=>b[1]-a[1]),mx=sorted[0],mn=sorted[sorted.length-1],act=days.filter(d=>d<=today).length;if(mx&&mx[1]>=Math.round(act*0.7))items.push({i:"⭐",t:`"${mx[0]}" is your strongest mission this ${label}!`});if(mn&&mn[1]===0&&act>=3)items.push({i:"😬",t:`"${mn[0]}" — not done once this ${label}. Don't forget it!`});else if(mn&&mn[1]<=Math.round(act*0.2)&&act>=5)items.push({i:"⚠️",t:`"${mn[0]}" is being neglected this ${label}. Only ${mn[1]} time(s).`});return items;}const dk=window._isDarkTheme?'color:#d0d0d0;background:rgba(255,255,255,0.06)':'';const wi=makeItems(wdays,"week"),mi=makeItems(mdays,"month");let html="";if(wi.length)html+=`<div class="report-section"><div class="report-title">📊 This Week</div>${wi.map(x=>`<div class="report-item" style="${dk}"><span class="ri-icon">${x.i}</span><span>${x.t}</span></div>`).join("")}</div>`;if(mi.length)html+=`<div class="report-section"><div class="report-title">📅 ${year}.${String(month).padStart(2,"0")} Monthly</div>${mi.map(x=>`<div class="report-item" style="${dk}"><span class="ri-icon">${x.i}</span><span>${x.t}</span></div>`).join("")}</div>`;if(!html)html=`<div class="report-item" style="${dk}"><span class="ri-icon">🌱</span><span>Not enough data yet. Keep going!</span></div>`;cont.innerHTML=html;}
