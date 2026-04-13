@@ -158,15 +158,9 @@
     .api-key-badge.set   { background: rgba(46,204,113,0.15); color: #1a7a45; }
     .api-key-badge.unset { background: rgba(0,0,0,0.06); color: #999; }
     #goalsContainer { margin-top: 12px; display: none; }
-    .goals-section-title {
-      font-size: 10px; font-weight: 700; text-transform: uppercase;
-      letter-spacing: 0.5px; color: #aaa; margin-bottom: 12px;
-    }
+    .goals-section-title { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: #aaa; margin-bottom: 12px; }
     .goals-timeline { display: flex; flex-direction: column; gap: 0; position: relative; }
-    .goals-timeline::before {
-      content: ""; position: absolute; left: 28px; top: 6px;
-      bottom: 6px; width: 2px; background: #e8e8e8; z-index: 0;
-    }
+    .goals-timeline::before { content: ""; position: absolute; left: 28px; top: 6px; bottom: 6px; width: 2px; background: #e8e8e8; z-index: 0; }
     .goal-row { display: flex; align-items: flex-start; gap: 10px; padding: 6px 0; position: relative; z-index: 1; }
     .goal-dot-wrap { width: 20px; flex-shrink: 0; display: flex; flex-direction: column; align-items: center; padding-top: 2px; }
     .goal-dot { width: 10px; height: 10px; border-radius: 50%; border: 2px solid #ddd; background: #fff; flex-shrink: 0; transition: all 0.2s; }
@@ -417,18 +411,27 @@
       rm:    (k) => localStorage.removeItem(k)
     };
 
+    function loadDailyStats()  { return ls.get("dailyStats")||{}; }
+    function saveDailyStats(s) { ls.set("dailyStats",s); }
+
     function loadTaskStatus() {
       const s=ls.get("taskStatus"), d=ls.str("taskDate");
       if(!s||d!==today){const r={};tasks.forEach(t=>r[t]=false);ls.set("taskStatus",r);ls.setStr("taskDate",today);return r;}
       return s;
     }
 
-    // ✅ dailyStats 기반으로 풀데이 재계산 — 저장된 카운터 무시하고 항상 실제 기록에서 산출
-    function loadFullDays() {
-      const stats = loadDailyStats();
-      const count = Object.values(stats).filter(v => v >= tasks.length).length;
-      ls.setStr("fullCompleteCount", String(count));
-      return { count, lastDate: ls.str("fullCompleteDate") || "" };
+    // ✅ fullCompleteCount 계산 함수 — dailyStats 기반, 항상 tasks.length 기준
+    // 오늘은 별도 인자로 comp를 받아 처리 (stats[today] 덮어쓰기 없이)
+    function calcFullDays(stats, todayComp) {
+      const todayRfn = dailyEvent && dailyEvent.id === "half_day_full"
+        ? Math.ceil(tasks.length / 2)
+        : tasks.length;
+      // 과거 날짜: 항상 tasks.length 기준
+      const pastCount = Object.entries(stats)
+        .filter(([k, v]) => k !== today && v >= tasks.length).length;
+      // 오늘: rfn 기준 (half_day_full 이벤트 반영)
+      const todayCount = todayComp >= todayRfn ? 1 : 0;
+      return pastCount + todayCount;
     }
 
     function loadCoins()      { return parseInt(ls.str("coinCount")||"0",10); }
@@ -437,8 +440,6 @@
       if(!id||dt!==today){const e=dailyEvents[Math.floor(Math.random()*dailyEvents.length)];ls.setStr("dailyEventId",e.id);ls.setStr("dailyEventDate",today);return e;}
       return dailyEvents.find(e=>e.id===id)||dailyEvents[0];
     }
-    function loadDailyStats()  { return ls.get("dailyStats")||{}; }
-    function saveDailyStats(s) { ls.set("dailyStats",s); }
     function loadMissionLog()  { return ls.get("missionLog")||{}; }
     function saveMissionLog(l) { ls.set("missionLog",l); }
     function recordMissionDone(t) { const l=loadMissionLog();if(!l[today])l[today]={};l[today][t]=(l[today][t]||0)+1;saveMissionLog(l); }
@@ -467,79 +468,62 @@
       { plan: "🎯 플랭크 3분 × 2세트\n독서 50p\n브릴리언트 10개\n말해보카 100개\n달리기 6km\n퀴즈 서술형 or 객관식 160\n부기스 블로그+인스타 동시 운영" },
       { plan: "유지 + 새 챌린지 추가" }, { plan: "유지 + 새 챌린지 추가" }, { plan: "유지 + 새 챌린지 추가" }
     ];
-
-    function loadYearGoals() {
-      const raw = ls.get("yearGoals2026");
-      if (raw && Array.isArray(raw) && raw.length === 12) return raw;
-      return DEFAULT_GOALS.map(g => ({ ...g }));
-    }
-    function saveYearGoals(g) { ls.set("yearGoals2026", g); }
+    function loadYearGoals() { const raw=ls.get("yearGoals2026"); if(raw&&Array.isArray(raw)&&raw.length===12)return raw; return DEFAULT_GOALS.map(g=>({...g})); }
+    function saveYearGoals(g) { ls.set("yearGoals2026",g); }
 
     function renderGoalsTimeline() {
-      const goals = loadYearGoals(), tl = document.getElementById("goalsTimeline");
-      if (!tl) return;
-      tl.innerHTML = "";
-      const curMonth = parseInt(today.split("-")[1], 10), dk = window._isDarkTheme;
-      const titleEl = document.getElementById("goalsSectionTitle");
-      if (titleEl) titleEl.classList.toggle("dark", dk);
-      goals.forEach((g, i) => {
-        const mn = i+1, state = mn < curMonth ? "past" : mn === curMonth ? "current" : "future";
-        const hasPlan = g.plan && g.plan.trim().length > 0;
-        const row = document.createElement("div"); row.className = "goal-row";
-        const dotWrap = document.createElement("div"); dotWrap.className = "goal-dot-wrap";
-        const dot = document.createElement("div"); dot.className = `goal-dot ${hasPlan ? state : "empty"}`;
-        dotWrap.appendChild(dot); row.appendChild(dotWrap);
-        const body = document.createElement("div"); body.className = "goal-body";
-        const header = document.createElement("div"); header.className = "goal-month-header";
-        const nameLbl = document.createElement("span"); nameLbl.className = `goal-month-name ${state}`;
-        nameLbl.textContent = `${MONTH_NAMES[i]} (${mn}월)`; header.appendChild(nameLbl);
-        if (state === "current") { const badge = document.createElement("span"); badge.className = "goal-month-badge show"; badge.textContent = "NOW"; header.appendChild(badge); }
+      const goals=loadYearGoals(),tl=document.getElementById("goalsTimeline");
+      if(!tl)return; tl.innerHTML="";
+      const curMonth=parseInt(today.split("-")[1],10),dk=window._isDarkTheme;
+      const titleEl=document.getElementById("goalsSectionTitle");
+      if(titleEl)titleEl.classList.toggle("dark",dk);
+      goals.forEach((g,i)=>{
+        const mn=i+1,state=mn<curMonth?"past":mn===curMonth?"current":"future";
+        const hasPlan=g.plan&&g.plan.trim().length>0;
+        const row=document.createElement("div");row.className="goal-row";
+        const dotWrap=document.createElement("div");dotWrap.className="goal-dot-wrap";
+        const dot=document.createElement("div");dot.className=`goal-dot ${hasPlan?state:"empty"}`;
+        dotWrap.appendChild(dot);row.appendChild(dotWrap);
+        const body=document.createElement("div");body.className="goal-body";
+        const header=document.createElement("div");header.className="goal-month-header";
+        const nameLbl=document.createElement("span");nameLbl.className=`goal-month-name ${state}`;
+        nameLbl.textContent=`${MONTH_NAMES[i]} (${mn}월)`;header.appendChild(nameLbl);
+        if(state==="current"){const badge=document.createElement("span");badge.className="goal-month-badge show";badge.textContent="NOW";header.appendChild(badge);}
         body.appendChild(header);
-        const planEl = document.createElement("div");
-        if (hasPlan) { planEl.className = "goal-plan-text" + (dk ? " dark" : ""); planEl.textContent = g.plan; }
-        else { planEl.className = "goal-plan-text empty-hint" + (dk ? " dark" : ""); planEl.textContent = state === "current" ? "아직 플랜 미작성" : state === "future" ? "계획 없음" : "기록 없음"; }
+        const planEl=document.createElement("div");
+        if(hasPlan){planEl.className="goal-plan-text"+(dk?" dark":"");planEl.textContent=g.plan;}
+        else{planEl.className="goal-plan-text empty-hint"+(dk?" dark":"");planEl.textContent=state==="current"?"아직 플랜 미작성":state==="future"?"계획 없음":"기록 없음";}
         body.appendChild(planEl);
-        const editBtn = document.createElement("button"); editBtn.className = "goal-edit-inline"; editBtn.textContent = "✏️ edit";
-        editBtn.onclick = () => openGoalsEditModalAt(i); body.appendChild(editBtn);
-        row.appendChild(body); tl.appendChild(row);
+        const editBtn=document.createElement("button");editBtn.className="goal-edit-inline";editBtn.textContent="✏️ edit";
+        editBtn.onclick=()=>openGoalsEditModalAt(i);body.appendChild(editBtn);
+        row.appendChild(body);tl.appendChild(row);
       });
     }
-
-    function toggleGoals() {
-      const c = document.getElementById("goalsContainer"), btn = document.getElementById("toggleGoalsButton");
-      if (!c.style.display || c.style.display === "none") { renderGoalsTimeline(); c.style.display = "block"; btn.textContent = "🎯 Close"; }
-      else { c.style.display = "none"; btn.textContent = "🎯 Goals"; }
-    }
-    function openGoalsEditModal() { openGoalsEditModalAt(null); }
-    function openGoalsEditModalAt(focusIdx) {
-      const goals = loadYearGoals(), list = document.getElementById("goalsEditList"); list.innerHTML = "";
-      goals.forEach((g, i) => {
-        const div = document.createElement("div"); div.className = "goals-edit-row";
-        const lbl = document.createElement("div"); lbl.className = "goals-edit-month-label"; lbl.textContent = `${MONTH_NAMES[i]} (${i+1}월)`;
-        const ta = document.createElement("textarea"); ta.className = "goals-edit-textarea";
-        ta.id = `gPlan_${i}`; ta.value = g.plan || ""; ta.placeholder = "이번 달 강도 플랜을 적어보세요";
-        ta.addEventListener("input", () => { ta.style.height = "auto"; ta.style.height = ta.scrollHeight + "px"; });
-        div.appendChild(lbl); div.appendChild(ta); list.appendChild(div);
-        setTimeout(() => { ta.style.height = "auto"; ta.style.height = ta.scrollHeight + "px"; }, 0);
+    function toggleGoals(){const c=document.getElementById("goalsContainer"),btn=document.getElementById("toggleGoalsButton");if(!c.style.display||c.style.display==="none"){renderGoalsTimeline();c.style.display="block";btn.textContent="🎯 Close";}else{c.style.display="none";btn.textContent="🎯 Goals";}}
+    function openGoalsEditModal(){openGoalsEditModalAt(null);}
+    function openGoalsEditModalAt(focusIdx){
+      const goals=loadYearGoals(),list=document.getElementById("goalsEditList");list.innerHTML="";
+      goals.forEach((g,i)=>{
+        const div=document.createElement("div");div.className="goals-edit-row";
+        const lbl=document.createElement("div");lbl.className="goals-edit-month-label";lbl.textContent=`${MONTH_NAMES[i]} (${i+1}월)`;
+        const ta=document.createElement("textarea");ta.className="goals-edit-textarea";
+        ta.id=`gPlan_${i}`;ta.value=g.plan||"";ta.placeholder="이번 달 강도 플랜을 적어보세요";
+        ta.addEventListener("input",()=>{ta.style.height="auto";ta.style.height=ta.scrollHeight+"px";});
+        div.appendChild(lbl);div.appendChild(ta);list.appendChild(div);
+        setTimeout(()=>{ta.style.height="auto";ta.style.height=ta.scrollHeight+"px";},0);
       });
-      document.getElementById("goalsEditModal").style.display = "flex";
-      if (focusIdx !== null) setTimeout(() => { const el = document.getElementById(`gPlan_${focusIdx}`); if (el) { el.focus(); el.scrollIntoView({ behavior:"smooth", block:"center" }); } }, 100);
+      document.getElementById("goalsEditModal").style.display="flex";
+      if(focusIdx!==null)setTimeout(()=>{const el=document.getElementById(`gPlan_${focusIdx}`);if(el){el.focus();el.scrollIntoView({behavior:"smooth",block:"center"});}},100);
     }
-    function closeGoalsEditModal() { document.getElementById("goalsEditModal").style.display = "none"; }
-    function saveGoals() {
-      const goals = loadYearGoals();
-      goals.forEach((_, i) => { const ta = document.getElementById(`gPlan_${i}`); if(ta) goals[i].plan = ta.value.trim(); });
-      saveYearGoals(goals); closeGoalsEditModal(); renderGoalsTimeline();
-    }
+    function closeGoalsEditModal(){document.getElementById("goalsEditModal").style.display="none";}
+    function saveGoals(){const goals=loadYearGoals();goals.forEach((_,i)=>{const ta=document.getElementById(`gPlan_${i}`);if(ta)goals[i].plan=ta.value.trim();});saveYearGoals(goals);closeGoalsEditModal();renderGoalsTimeline();}
 
-    function loadTungState() {
-      if(ls.str("tungDate")!==today){ls.setStr("tungDate",today);ls.setStr("tungCount","0");ls.setStr("tungFreeUsed","0");ls.rm("tungChoice");return{count:0,freeUsed:false};}
-      return{count:parseInt(ls.str("tungCount")||"0",10),freeUsed:ls.str("tungFreeUsed")==="1"};
-    }
+    function loadTungState(){if(ls.str("tungDate")!==today){ls.setStr("tungDate",today);ls.setStr("tungCount","0");ls.setStr("tungFreeUsed","0");ls.rm("tungChoice");return{count:0,freeUsed:false};}return{count:parseInt(ls.str("tungCount")||"0",10),freeUsed:ls.str("tungFreeUsed")==="1"};}
+
     let {count:tungCount,freeUsed:tungFreeUsed}=loadTungState();
     let taskStatus=loadTaskStatus();
-    let {count:fullCompleteCount,lastDate:fullCompleteDate}=loadFullDays();
     let coinCount=loadCoins(), dailyEvent=loadDailyEvent();
+    let fullCompleteCount=0; // updateUI에서 매번 재계산
     let isPicking=false, hasShownProgress=false, currentTask=null, currentTier=null, skippedTasks={};
 
     function openApiKeyModal(){const k=ls.str("mandart_api_key")||"";document.getElementById("apiKeyStatus").innerHTML=k?`<span class="api-key-badge set">✅ 저장됨</span>`:`<span class="api-key-badge unset">미설정</span>`;const inp=document.getElementById("apiKeyModalInput");inp.value="";inp.placeholder=k?"새 키를 입력하면 교체돼요":"sk-ant-...";document.getElementById("apiKeyModal").style.display="flex";}
@@ -564,16 +548,14 @@
     function updateUI(){
       const comp = getCompletedCount();
 
-      // ✅ 오늘 stats 저장 후 전체 기록 기반으로 fullCompleteCount 재계산
+      // ✅ stats[today]는 Math.max로 보호 — 절대 기존값보다 낮게 덮어쓰지 않음
       const stats = loadDailyStats();
-      stats[today] = comp;
+      stats[today] = Math.max(stats[today] || 0, comp);
       saveDailyStats(stats);
 
-      let rfn = tasks.length;
-      if (dailyEvent.id === "half_day_full") rfn = Math.ceil(tasks.length / 2);
-      fullCompleteCount = Object.values(stats).filter(v => v >= rfn).length;
+      // ✅ 과거 날짜는 tasks.length 고정 기준, 오늘만 rfn(이벤트) 적용
+      fullCompleteCount = calcFullDays(stats, comp);
       ls.setStr("fullCompleteCount", String(fullCompleteCount));
-      if (comp >= rfn) { fullCompleteDate = today; ls.setStr("fullCompleteDate", today); }
 
       document.getElementById("progressText").textContent=`Today: ${comp} / ${tasks.length}`;
       const el=document.getElementById("checkboxList");el.innerHTML="";
@@ -695,14 +677,7 @@
       if(cc>0){for(let i=cc;i<7;i++)row.appendChild(document.createElement("td"));tbody.appendChild(row);}
       table.appendChild(tbody);cont.appendChild(table);
     }
-
-    function toggleCalendar(){
-      const c=document.getElementById("calendarContainer"),btn=document.getElementById("toggleCalendarButton");
-      if(!c.style.display||c.style.display==="none"){
-        currentViewYear=parseInt(today.split("-")[0]);currentViewMonth=parseInt(today.split("-")[1]);
-        buildMonthlyCalendar(currentViewYear,currentViewMonth);c.style.display="block";btn.textContent="📅 Close";
-      }else{c.style.display="none";btn.textContent="📅 Calendar";}
-    }
+    function toggleCalendar(){const c=document.getElementById("calendarContainer"),btn=document.getElementById("toggleCalendarButton");if(!c.style.display||c.style.display==="none"){currentViewYear=parseInt(today.split("-")[0]);currentViewMonth=parseInt(today.split("-")[1]);buildMonthlyCalendar(currentViewYear,currentViewMonth);c.style.display="block";btn.textContent="📅 Close";}else{c.style.display="none";btn.textContent="📅 Calendar";}}
     function changeMonth(delta){currentViewMonth+=delta;if(currentViewMonth>12){currentViewMonth=1;currentViewYear++;}else if(currentViewMonth<1){currentViewMonth=12;currentViewYear--;}buildMonthlyCalendar(currentViewYear,currentViewMonth);const rc=document.getElementById("reportContainer");if(rc&&rc.style.display!=="none")buildReport(currentViewYear,currentViewMonth);}
     function toggleReport(){const rc=document.getElementById("reportContainer"),btn=document.getElementById("toggleReportButton");if(!rc.style.display||rc.style.display==="none"){buildReport(currentViewYear,currentViewMonth);rc.style.display="block";btn.textContent="📊 Close";}else{rc.style.display="none";btn.textContent="📊 Report";}}
     function buildReport(year,month){const cont=document.getElementById("reportContainer");if(!cont)return;const stats=loadDailyStats(),ml=loadMissionLog(),sl=loadSkipLog();const ld=new Date(year,month,0).getDate(),mdays=[];for(let d=1;d<=ld;d++)mdays.push(`${year}-${String(month).padStart(2,"0")}-${String(d).padStart(2,"0")}`);const td2=new Date(...today.split("-").map((v,i)=>i===1?v-1:+v)),dow=td2.getDay();const ws=new Date(td2);ws.setDate(td2.getDate()-(dow===0?6:dow-1));const wdays=[];for(let i=0;i<7;i++){const dd=new Date(ws);dd.setDate(ws.getDate()+i);wdays.push(`${dd.getFullYear()}-${String(dd.getMonth()+1).padStart(2,"0")}-${String(dd.getDate()).padStart(2,"0")}`);}function makeItems(days,label){const items=[],td=days.filter(d=>d<=today).length;if(td===0)return items;const dd=days.filter(d=>stats[d]>=tasks.length).length,dr=Math.round(dd/td*100);if(dr===100)items.push({i:"🏆",t:`Perfect! All ${td} days fully completed.`});else if(dr>=70)items.push({i:"✅",t:`Great job! ${dr}% full completion rate this ${label}.`});else if(dr>=40)items.push({i:"📈",t:`${dr}% full days this ${label}. Room to grow!`});else items.push({i:"💪",t:`Only ${dr}% full days this ${label}. Let's push harder!`});const st=days.reduce((s,d)=>s+(sl[d]||0),0);if(st>=5)items.push({i:"😅",t:`Skipped ${st} times this ${label}. Maybe a bit too many?`});else if(st>=3)items.push({i:"🙈",t:`${st} skips this ${label}. Try to cut it down!`});else if(st===0&&td>=3)items.push({i:"🔥",t:`Zero skips this ${label}! Amazing discipline.`});const mc={};tasks.forEach(t=>mc[t]=0);days.forEach(d=>{if(ml[d])Object.entries(ml[d]).forEach(([t,c])=>{if(mc[t]!=null)mc[t]+=c;});});const sorted=Object.entries(mc).sort((a,b)=>b[1]-a[1]),mx=sorted[0],mn=sorted[sorted.length-1],act=days.filter(d=>d<=today).length;if(mx&&mx[1]>=Math.round(act*0.7))items.push({i:"⭐",t:`"${mx[0]}" is your strongest mission this ${label}!`});if(mn&&mn[1]===0&&act>=3)items.push({i:"😬",t:`"${mn[0]}" — not done once this ${label}. Don't forget it!`});else if(mn&&mn[1]<=Math.round(act*0.2)&&act>=5)items.push({i:"⚠️",t:`"${mn[0]}" is being neglected this ${label}. Only ${mn[1]} time(s).`});return items;}const dk=window._isDarkTheme?'color:#d0d0d0;background:rgba(255,255,255,0.06)':'';const wi=makeItems(wdays,"week"),mi=makeItems(mdays,"month");let html="";if(wi.length)html+=`<div class="report-section"><div class="report-title">📊 This Week</div>${wi.map(x=>`<div class="report-item" style="${dk}"><span class="ri-icon">${x.i}</span><span>${x.t}</span></div>`).join("")}</div>`;if(mi.length)html+=`<div class="report-section"><div class="report-title">📅 ${year}.${String(month).padStart(2,"0")} Monthly</div>${mi.map(x=>`<div class="report-item" style="${dk}"><span class="ri-icon">${x.i}</span><span>${x.t}</span></div>`).join("")}</div>`;if(!html)html=`<div class="report-item" style="${dk}"><span class="ri-icon">🌱</span><span>Not enough data yet. Keep going!</span></div>`;cont.innerHTML=html;}
