@@ -48,14 +48,8 @@
       box-shadow: 0 8px 20px rgba(0,0,0,0.18);
     }
     button.main:active { transform: scale(0.96); box-shadow: 0 3px 8px rgba(0,0,0,0.18); }
-    button.main:disabled {
-      opacity: 0.5; cursor: default; background: var(--accent-soft,#8faefc); box-shadow: none;
-    }
-    /* 다크 모드에서 비활성 버튼 — 밝은 회색 대신 어두운 색으로 */
-    body.dark-mode button.main:disabled {
-      background: rgba(255,255,255,0.15) !important;
-      opacity: 1;
-    }
+    button.main:disabled { opacity: 0.5; cursor: default; background: var(--accent-soft,#8faefc); box-shadow: none; }
+    body.dark-mode button.main:disabled { background: rgba(255,255,255,0.15) !important; opacity: 1; }
     .action-buttons { display: flex; gap: 8px; justify-content: center; margin-top: 10px; margin-bottom: 6px; }
     .complete-btn {
       flex: 3; padding: 12px 0; border-radius: 999px; border: none;
@@ -136,20 +130,9 @@
       padding: 8px 0; font-size: 13px; font-weight: 600; cursor: pointer;
       background: var(--accent,#4b8cff); color: #fff;
     }
-    /* 다크 모드에서 모달 버튼: 모달 배경이 흰색이므로 accent가 밝으면 어둡게 고정 */
-    body.dark-mode .modal-close-btn {
-      background: #333 !important;
-      color: #fff !important;
-    }
-    /* Cancel 버튼은 원래 #e0e0e0 인라인 스타일이라 별도 처리 */
-    body.dark-mode .modal-close-btn.cancel-btn {
-      background: #555 !important;
-      color: #eee !important;
-    }
-    body.dark-mode .modal-close-btn.danger-btn {
-      background: #c0392b !important;
-      color: #fff !important;
-    }
+    body.dark-mode .modal-close-btn { background: #333 !important; color: #fff !important; }
+    body.dark-mode .modal-close-btn.cancel-btn { background: #555 !important; color: #eee !important; }
+    body.dark-mode .modal-close-btn.danger-btn { background: #c0392b !important; color: #fff !important; }
     .tung-modal-content { padding-top: 16px; }
     .tung-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
     .tung-title { font-size: 14px; font-weight: 700; }
@@ -168,11 +151,7 @@
       width: 100%; margin-top: 0;
     }
     .toggle-btn:active { background: var(--accent,#4b8cff); color: #fff; }
-    /* 다크 모드에서 toggle-btn: 테두리/텍스트가 밝은 회색이면 흰색으로 */
-    body.dark-mode .toggle-btn {
-      border-color: rgba(255,255,255,0.4);
-      color: rgba(255,255,255,0.75);
-    }
+    body.dark-mode .toggle-btn { border-color: rgba(255,255,255,0.4); color: rgba(255,255,255,0.75); }
     #calendarContainer { margin-top: 10px; font-size: 11px; }
     .calendar-table { width: 100%; border-collapse: collapse; }
     .calendar-table th, .calendar-table td { border: 1px solid #eee; text-align: center; padding: 4px 2px; vertical-align: top; min-width: 32px; }
@@ -186,24 +165,12 @@
 
     /* ─── Year Goals ─────────────────────────────────────── */
     #goalsContainer { margin-top: 12px; display: none; }
-    .goals-section-title {
-      font-size: 10px; font-weight: 700; text-transform: uppercase;
-      letter-spacing: 0.5px; color: #aaa; margin-bottom: 12px;
-    }
+    .goals-section-title { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: #aaa; margin-bottom: 12px; }
     .goals-timeline { display: flex; flex-direction: column; gap: 0; position: relative; }
-    .goals-timeline::before {
-      content: ""; position: absolute; left: 28px; top: 6px;
-      bottom: 6px; width: 2px; background: #e8e8e8; z-index: 0;
-    }
-    .goal-row {
-      display: flex; align-items: flex-start; gap: 10px;
-      padding: 6px 0; position: relative; z-index: 1;
-    }
+    .goals-timeline::before { content: ""; position: absolute; left: 28px; top: 6px; bottom: 6px; width: 2px; background: #e8e8e8; z-index: 0; }
+    .goal-row { display: flex; align-items: flex-start; gap: 10px; padding: 6px 0; position: relative; z-index: 1; }
     .goal-dot-wrap { width: 20px; flex-shrink: 0; display: flex; flex-direction: column; align-items: center; padding-top: 2px; }
-    .goal-dot {
-      width: 10px; height: 10px; border-radius: 50%;
-      border: 2px solid #ddd; background: #fff; flex-shrink: 0; transition: all 0.2s;
-    }
+    .goal-dot { width: 10px; height: 10px; border-radius: 50%; border: 2px solid #ddd; background: #fff; flex-shrink: 0; transition: all 0.2s; }
     .goal-dot.past    { background: #2ecc71; border-color: #2ecc71; }
     .goal-dot.current { background: var(--accent,#4b8cff); border-color: var(--accent,#4b8cff); box-shadow: 0 0 0 3px rgba(75,140,255,0.2); }
     .goal-dot.future  { background: #fff; border-color: #ddd; }
@@ -214,29 +181,18 @@
     .goal-month-name.past    { color: #2ecc71; }
     .goal-month-name.current { color: var(--accent,#4b8cff); }
     .goal-month-name.future  { color: #ccc; }
-    .goal-month-badge {
-      font-size: 9px; font-weight: 700; padding: 1px 6px; border-radius: 999px;
-      background: rgba(75,140,255,0.12); color: var(--accent,#4b8cff); display: none;
-    }
+    .goal-month-badge { font-size: 9px; font-weight: 700; padding: 1px 6px; border-radius: 999px; background: rgba(75,140,255,0.12); color: var(--accent,#4b8cff); display: none; }
     .goal-month-badge.show { display: inline-block; }
     .goal-plan-text { font-size: 12px; color: #555; line-height: 1.5; white-space: pre-wrap; word-break: break-word; }
     .goal-plan-text.empty-hint { color: #ccc; font-style: italic; font-size: 11px; }
     .goal-plan-text.dark { color: #ccc; }
     .goal-plan-text.empty-hint.dark { color: #555; }
     .goals-section-title.dark { color: #666; }
-    .goal-edit-inline {
-      margin-top: 4px; font-size: 11px; color: var(--accent,#4b8cff);
-      cursor: pointer; opacity: 0; transition: opacity 0.15s;
-      background: none; border: none; padding: 0; font-family: inherit;
-    }
+    .goal-edit-inline { margin-top: 4px; font-size: 11px; color: var(--accent,#4b8cff); cursor: pointer; opacity: 0; transition: opacity 0.15s; background: none; border: none; padding: 0; font-family: inherit; }
     .goal-row:hover .goal-edit-inline { opacity: 1; }
     .goals-edit-row { margin-bottom: 12px; }
     .goals-edit-month-label { font-size: 12px; font-weight: 700; color: var(--accent,#4b8cff); margin-bottom: 4px; }
-    .goals-edit-textarea {
-      width: 100%; box-sizing: border-box; border: 1px solid #e5e7eb;
-      border-radius: 8px; padding: 8px 10px; font-size: 12px; color: #444;
-      font-family: inherit; resize: none; line-height: 1.5; min-height: 52px; overflow: hidden;
-    }
+    .goals-edit-textarea { width: 100%; box-sizing: border-box; border: 1px solid #e5e7eb; border-radius: 8px; padding: 8px 10px; font-size: 12px; color: #444; font-family: inherit; resize: none; line-height: 1.5; min-height: 52px; overflow: hidden; }
     .goals-edit-textarea:focus { outline: none; border-color: var(--accent,#4b8cff); }
 
     @media (max-width: 480px) {
@@ -316,7 +272,6 @@
         <span id="perfectDaysCount" style="font-size:13px; font-weight:600; color:#e74c3c;"></span>
       </div>
 
-      <!-- ── Year Goals ── -->
       <div id="goalsContainer">
         <div class="goals-section-title" id="goalsSectionTitle" style="margin-top:2px;">🎯 2026 Intensity Plan</div>
         <div class="goals-timeline" id="goalsTimeline"></div>
@@ -502,22 +457,25 @@
     function recordSkip()      { const l=loadSkipLog();l[today]=(l[today]||0)+1;saveSkipLog(l); }
     function loadWeeklyPopup() { return ls.get("weeklyPopupStatus")||{}; }
     function saveWeeklyPopup(s){ ls.set("weeklyPopupStatus",s); }
+
+    // ── Trivia history ────────────────────────────────────────────
     function loadTriviaHistory()  { return ls.get("triviaHistory")||[]; }
     function saveTriviaHistory(e) { const h=loadTriviaHistory();h.push(e);if(h.length>30)h.splice(0,h.length-30);ls.set("triviaHistory",h); }
+
     function pickTriviaCategory() {
-      const recent=loadTriviaHistory().slice(-5).map(h=>h.category);
-      const avail=triviaCategories.filter(c=>!recent.includes(c));
-      const pool=avail.length>0?avail:triviaCategories;
-      return pool[Math.floor(Math.random()*pool.length)];
+      const h = loadTriviaHistory();
+      // ── 수정 1: 최근 9개 카테고리 제외 → 10개 중 매번 다른 카테고리 보장
+      const recentCats = h.slice(-9).map(x => x.category);
+      const avail = triviaCategories.filter(c => !recentCats.includes(c));
+      const pool = avail.length > 0 ? avail : triviaCategories;
+      return pool[Math.floor(Math.random() * pool.length)];
     }
 
     // ── Year Goals ────────────────────────────────────────────────
     const MONTH_NAMES = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 
     const DEFAULT_GOALS = [
-      { plan: "" },
-      { plan: "" },
-      { plan: "" },
+      { plan: "" }, { plan: "" }, { plan: "" },
       { plan: "플랭크 50초\n독서 15p\n브릴리언트 5개\n말해보카 50개\n달리기 2km or 만보\n퀴즈 서술형 or 객관식 80\n부기스 인스타/블로그+스토어" },
       { plan: "플랭크 1분 15초\n독서 25p\n브릴리언트 6개\n말해보카 60개\n달리기 3km\n퀴즈 서술형 or 객관식 100\n부기스 주 2회 이상" },
       { plan: "플랭크 1분 45초\n독서 30p\n브릴리언트 7개\n말해보카 70개\n달리기 4km\n퀴즈 서술형 or 객관식 120\n부기스 블로그 주 3회 고정" },
@@ -543,7 +501,6 @@
       tl.innerHTML = "";
       const curMonth = parseInt(today.split("-")[1], 10);
       const dk = window._isDarkTheme;
-
       const titleEl = document.getElementById("goalsSectionTitle");
       if (titleEl) titleEl.classList.toggle("dark", dk);
 
@@ -564,7 +521,6 @@
         nameLbl.className = `goal-month-name ${state}`;
         nameLbl.textContent = `${MONTH_NAMES[i]} (${mn}월)`;
         header.appendChild(nameLbl);
-
         if (state === "current") {
           const badge = document.createElement("span");
           badge.className = "goal-month-badge show"; badge.textContent = "NOW";
@@ -597,9 +553,7 @@
       const btn = document.getElementById("toggleGoalsButton");
       if (!c.style.display || c.style.display === "none") {
         renderGoalsTimeline(); c.style.display = "block"; btn.textContent = "🎯 Close";
-      } else {
-        c.style.display = "none"; btn.textContent = "🎯 Goals";
-      }
+      } else { c.style.display = "none"; btn.textContent = "🎯 Goals"; }
     }
 
     function openGoalsEditModal() { openGoalsEditModalAt(null); }
@@ -712,8 +666,6 @@
       document.body.style.background=t.b;
       const card=document.getElementById("card");if(card)card.style.background=t.c;
       window._isDarkTheme=t.dk;
-
-      // dark-mode 클래스로 CSS 규칙 트리거
       document.body.classList.toggle("dark-mode", t.dk);
 
       const tc=document.getElementById("triviaContent");
@@ -728,8 +680,7 @@
         document.querySelectorAll(".streak-label").forEach(e=>e.style.color="#888");
         document.querySelectorAll(".streak-label span").forEach(e=>e.style.color="#ccc");
         document.querySelectorAll("button.main").forEach(e=>e.style.color="#fff");
-        if(tc)  tc.style.color="#bbb";
-        if(tcat)tcat.style.color="#888";
+        if(tc)tc.style.color="#bbb"; if(tcat)tcat.style.color="#888";
         const gt=document.getElementById("goalsSectionTitle");if(gt)gt.classList.add("dark");
         document.querySelectorAll(".goal-plan-text").forEach(e=>e.classList.add("dark"));
       } else {
@@ -739,8 +690,7 @@
         const pt=document.getElementById("progressText");if(pt)pt.style.color="";
         document.querySelectorAll(".streak-label,.streak-label span").forEach(e=>e.style.color="");
         document.querySelectorAll("button.main").forEach(e=>e.style.color="#fff");
-        if(tc)  tc.style.color="#444";
-        if(tcat)tcat.style.color="#aaa";
+        if(tc)tc.style.color="#444"; if(tcat)tcat.style.color="#aaa";
         const gt=document.getElementById("goalsSectionTitle");if(gt)gt.classList.remove("dark");
         document.querySelectorAll(".goal-plan-text").forEach(e=>e.classList.remove("dark"));
       }
@@ -768,7 +718,11 @@
     function saveSettings(){ls.set("customMissions",missionData.map((_,i)=>({name:document.getElementById(`mName_${i}`)?.value.trim()||missionData[i].name,hint:document.getElementById(`mHint_${i}`)?.value.trim()||missionData[i].hint,tier:document.getElementById(`mTier_${i}`)?.value||missionData[i].tier})));ls.set("customTungOptions",Array.from(document.getElementById("settingsTungList").querySelectorAll("input")).map(e=>e.value.trim()).filter(v=>v));closeSettingsModal();alert("Saved! Refresh to apply changes 🙂");}
     function closeSettingsModal(){document.getElementById("settingsModal").style.display="none";}
 
-    const triviaCategories=["World Geography","Science Formulas","Math Facts","Football (Soccer)","Computer Science","AI Knowledge","Investment Tips","Skincare Tips","Movie Recommendation","World History"];
+    const triviaCategories = [
+      "World Geography", "Science Formulas", "Math Facts", "Football (Soccer)",
+      "Computer Science", "AI Knowledge", "Investment Tips", "Skincare Tips",
+      "Movie Recommendation", "World History"
+    ];
 
     function initTriviaCard(){
       const k=ls.str("mandart_api_key");
@@ -776,11 +730,9 @@
       if(!k){document.getElementById("triviaNoKey").style.display="block";document.getElementById("triviaBtn").style.display="none";document.getElementById("triviaCard").style.display="none";return;}
       document.getElementById("triviaNoKey").style.display="none";
       if(ls.str("triviaDate")===today&&ls.str("triviaText")){
-        const tc=document.getElementById("triviaContent");
-        const tcat=document.getElementById("triviaCategory");
-        tc.textContent=ls.str("triviaText");
-        tcat.textContent=`# ${ls.str("triviaCategory")}`;
-        if(window._isDarkTheme){ tc.style.color="#bbb"; tcat.style.color="#888"; }
+        const tc=document.getElementById("triviaContent"),tcat=document.getElementById("triviaCategory");
+        tc.textContent=ls.str("triviaText"); tcat.textContent=`# ${ls.str("triviaCategory")}`;
+        if(window._isDarkTheme){tc.style.color="#bbb";tcat.style.color="#888";}
         document.getElementById("triviaCard").style.display="block";
         document.getElementById("triviaBtn").style.display="none";
         return;
@@ -792,13 +744,20 @@
       const k=ls.str("mandart_api_key");
       document.getElementById("triviaBtn").style.display="none";
       document.getElementById("triviaLoading").style.display="block";
-      const cat=pickTriviaCategory();
-      const hist=loadTriviaHistory();
-      const recent=hist.slice(-10).map(h=>`[${h.category}] ${h.summary}`).join("\n");
-      const avoid=recent?`\n\n아래는 최근에 이미 다룬 내용이니 겹치지 않게 해줘:\n${recent}`:"";
-      const prompt=cat==="Movie Recommendation"
-        ?`오늘 볼 만한 영화 한 편을 추천해줘. 제목(개봉연도), 장르, 추천 이유 1~2문장을 포함해서 구체적으로 말해줘. 너무 유명한 영화(타이타닉, 인셉션 등)보다는 덜 알려진 명작이나 숨은 걸작 위주로 골라줘.${avoid}`
-        :`"${cat}"에 대한 흥미롭고 구체적인 상식 한 가지를 2~3문장으로 말해줘. "알고 계셨나요?" 같은 서두 없이 바로 본론으로 시작해. 최대한 구체적인 수치나 사례를 포함해서 생생하게.${avoid}`;
+
+      const cat = pickTriviaCategory();
+      const hist = loadTriviaHistory();
+
+      // ── 수정 2: 최근 15개 요약을 넘기고, 금지 지시를 강하게
+      const recentSummaries = hist.slice(-15).map(h => `[${h.category}] ${h.summary}`).join("\n");
+      const avoidClause = recentSummaries
+        ? `\n\n[절대 금지] 아래 내용과 같거나 비슷한 주제·사실을 다루면 안 돼. 완전히 새로운 사실을 골라야 해:\n${recentSummaries}`
+        : "";
+
+      const prompt = cat === "Movie Recommendation"
+        ? `오늘 볼 만한 영화 한 편을 추천해줘. 제목(개봉연도), 장르, 추천 이유 1~2문장을 포함해서 구체적으로 말해줘. 너무 유명한 영화(타이타닉, 인셉션 등)보다는 덜 알려진 명작이나 숨은 걸작 위주로 골라줘.${avoidClause}`
+        : `"${cat}"에 대한 흥미롭고 구체적인 상식 한 가지를 2~3문장으로 말해줘. "알고 계셨나요?" 같은 서두 없이 바로 본론으로 시작해. 최대한 구체적인 수치나 사례를 포함해서 생생하게.${avoidClause}`;
+
       try{
         const res=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json","x-api-key":k,"anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:300,messages:[{role:"user",content:prompt}]})});
         if(!res.ok){const e=await res.json().catch(()=>({}));throw new Error(e?.error?.message||`HTTP ${res.status}`);}
@@ -807,10 +766,9 @@
           const text=data.content[0].text.trim();
           ls.setStr("triviaDate",today);ls.setStr("triviaText",text);ls.setStr("triviaCategory",cat);
           saveTriviaHistory({date:today,category:cat,summary:text.slice(0,60)});
-          const tc=document.getElementById("triviaContent");
-          const tcat=document.getElementById("triviaCategory");
+          const tc=document.getElementById("triviaContent"),tcat=document.getElementById("triviaCategory");
           tc.textContent=text; tcat.textContent=`# ${cat}`;
-          if(window._isDarkTheme){ tc.style.color="#bbb"; tcat.style.color="#888"; }
+          if(window._isDarkTheme){tc.style.color="#bbb";tcat.style.color="#888";}
           document.getElementById("triviaLoading").style.display="none";
           document.getElementById("triviaCard").style.display="block";
         } else throw new Error("No content");
@@ -818,7 +776,7 @@
         document.getElementById("triviaLoading").style.display="none";
         const tc=document.getElementById("triviaContent");
         tc.textContent=`Failed: ${e.message}`;
-        if(window._isDarkTheme) tc.style.color="#bbb";
+        if(window._isDarkTheme)tc.style.color="#bbb";
         document.getElementById("triviaCategory").textContent="";
         document.getElementById("triviaCard").style.display="block";
       }
