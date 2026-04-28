@@ -23,8 +23,17 @@
       max-width: 420px; width: 100%; box-sizing: border-box;
       transition: background 0.3s ease, box-shadow 0.2s ease;
     }
-    h1 { font-size: 16px; margin-bottom: 8px; }
-    .theme-label { font-size: 15px; margin-bottom: 20px; }
+    h1 { font-size: 16px; margin-bottom: 4px; }
+    .theme-label { font-size: 15px; margin-bottom: 4px; }
+
+    /* ── 오늘의 운세 ── */
+    #fortuneText {
+      font-size: 11.5px; color: #999; margin-bottom: 18px;
+      font-style: italic; line-height: 1.5; min-height: 14px;
+      padding: 0 4px;
+    }
+    body.dark-mode #fortuneText { color: #666; }
+
     .mission-card {
       margin: 16px 0 0; border-radius: 12px; background: rgba(0,0,0,0.03);
       transition: background 0.3s; min-height: 80px;
@@ -87,23 +96,60 @@
       display: flex; justify-content: space-between; align-items: center;
     }
     .streak-label span { font-size: 12px; font-weight: 700; color: #555; letter-spacing: 0; text-transform: none; }
-    /* 바 래퍼: 페이스 마커를 position:absolute로 올리기 위해 relative */
     .streak-bar {
       margin-top: 5px; width: 100%; height: 14px; border-radius: 999px;
-      background: #e0e0e0; overflow: hidden; position: relative;
+      background: #e0e0e0; position: relative; overflow: hidden;
     }
-    .streak-fill {
-      height: 100%; width: 0%;
-      background: linear-gradient(90deg, var(--accent,#4b8cff), #2ecc71);
-      transition: width 0.3s;
-    }
-    /* 페이스 마커: 오늘 날짜 기준 100% 달성 시 위치 */
+    .streak-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--accent,#4b8cff), #2ecc71); transition: width 0.3s; }
     .pace-marker {
-      position: absolute; top: 0; height: 100%;
-      width: 2px; background: rgba(0,0,0,0.25);
-      border-radius: 1px; pointer-events: none;
+      position: absolute; top: 0; height: 100%; width: 2px;
+      background: rgba(0,0,0,0.25); border-radius: 1px; pointer-events: none;
     }
     body.dark-mode .pace-marker { background: rgba(255,255,255,0.35); }
+
+    /* ── 크리티컬 플래시 ── */
+    #criticalFlash {
+      position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.7);
+      background: linear-gradient(135deg, #f39c12, #e74c3c);
+      color: #fff; font-size: 22px; font-weight: 900; padding: 14px 28px;
+      border-radius: 16px; box-shadow: 0 8px 32px rgba(231,76,60,0.5);
+      pointer-events: none; opacity: 0; z-index: 9999;
+      transition: opacity 0.15s, transform 0.15s;
+      text-align: center; letter-spacing: 0.5px;
+    }
+    #criticalFlash.show {
+      opacity: 1; transform: translate(-50%, -50%) scale(1);
+    }
+
+    /* ── 도전 미션 카드 ── */
+    #challengeCard {
+      margin-top: 16px; border-radius: 14px;
+      border: 1.5px solid rgba(75,140,255,0.25);
+      background: rgba(75,140,255,0.04);
+      padding: 14px 16px; display: none;
+    }
+    .challenge-header {
+      font-size: 10px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.5px; color: var(--accent,#4b8cff); margin-bottom: 8px;
+    }
+    .challenge-text {
+      font-size: 14px; font-weight: 600; color: #333; line-height: 1.5; margin-bottom: 12px;
+    }
+    body.dark-mode .challenge-text { color: #ddd; }
+    .challenge-btns { display: flex; gap: 8px; }
+    .challenge-done-btn {
+      flex: 2; padding: 8px 0; border-radius: 999px; border: none;
+      font-size: 13px; font-weight: 700; cursor: pointer;
+      background: #2ecc71; color: #fff;
+    }
+    .challenge-pass-btn {
+      flex: 1; padding: 8px 0; border-radius: 999px;
+      border: 1.5px solid #ddd; font-size: 12px; font-weight: 600;
+      cursor: pointer; background: transparent; color: #aaa;
+    }
+    .challenge-result {
+      font-size: 12px; color: #aaa; text-align: center; padding: 4px 0;
+    }
 
     #reportContainer { font-size: 12px; }
     .report-section { margin-bottom: 10px; }
@@ -223,644 +269,768 @@
   </style>
 </head>
 <body>
-  <div class="card" id="card">
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
-      <h1 style="margin:0;">Random Task Picker</h1>
-      <div style="display:flex; gap:6px; align-items:center;">
-        <button onclick="openApiKeyModal()" id="apiKeyHeaderBtn"
-          style="border:none; background:transparent; font-size:18px; cursor:pointer; padding:4px;" title="API Key 설정">🔑</button>
-        <button onclick="openSettingsModal()"
-          style="border:none; background:transparent; font-size:20px; cursor:pointer; padding:4px;" title="설정">⚙️</button>
-      </div>
-    </div>
-    <div class="theme-label" id="themeLabel"></div>
+<div id="criticalFlash">⚡ CRITICAL!<br><span style="font-size:14px; font-weight:700;">코인 ×2!</span></div>
 
-    <button class="main" id="pickButton" onclick="pickRandom()">Pick one now!</button>
-
-    <div class="mission-card" id="missionCard">
-      <div id="result">Press the button to start!</div>
-      <div id="hint"></div>
-    </div>
-
-    <div class="action-buttons" style="display:none;" id="actionButtons">
-      <button class="complete-btn" onclick="markComplete()">Done</button>
-      <button class="pending-btn" onclick="markPending()">Skip</button>
-    </div>
-
-    <div class="progress-box" id="progressContainer" style="display:none;">
-      <div class="status-summary">
-        <span class="badge badge-coin" id="badgeCoin">🪙 0</span>
-        <span class="badge badge-lv" id="badgeLv">⚡ LV 1</span>
-        <button id="tungContainer" onclick="openTungModal()" class="tung-btn" style="display:none;">💭</button>
-      </div>
-
-      <div style="font-size:12px; font-weight:700; color:var(--accent,#4b8cff); margin-bottom:4px;" id="progressText">Today: 0 / 7</div>
-      <div class="checkbox-list" id="checkboxList"></div>
-
-      <div class="streak-box">
-        <div class="streak-label">Full days this year <span id="streakText">0 / 351 (0.0%)</span></div>
-        <div class="streak-bar">
-          <div class="streak-fill" id="streakFill"></div>
-          <div class="pace-marker" id="paceFull"></div>
-        </div>
-      </div>
-      <div class="streak-box">
-        <div class="streak-label">Total tasks this year <span id="taskStreakText">0 / 2457 (0.0%)</span></div>
-        <div class="streak-bar">
-          <div class="streak-fill" id="taskStreakFill"></div>
-          <div class="pace-marker" id="paceTask"></div>
-        </div>
-      </div>
-
-      <div id="eventText"></div>
-
-      <div style="display:flex; gap:6px; margin-top:18px;">
-        <button class="toggle-btn" id="toggleCalendarButton" onclick="toggleCalendar()" style="flex:1;">📅 Calendar</button>
-        <button class="toggle-btn" id="toggleReportButton"   onclick="toggleReport()"   style="flex:1;">📊 Report</button>
-        <button class="toggle-btn" id="toggleGoalsButton"    onclick="toggleGoals()"    style="flex:1;">🎯 Goals</button>
-      </div>
-
-      <div id="reportContainer" style="display:none; margin-top:12px;"></div>
-
-      <div id="calendarContainer" style="display:none;">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; margin-top:10px;">
-          <button onclick="changeMonth(-1)" style="border:none; background:transparent; font-size:20px; cursor:pointer; padding:4px 8px;">◀</button>
-          <span id="calendarMonthTitle" style="font-size:15px; font-weight:700;"></span>
-          <button onclick="changeMonth(1)"  style="border:none; background:transparent; font-size:20px; cursor:pointer; padding:4px 8px;">▶</button>
-        </div>
-        <div id="calendarTableContainer"></div>
-      </div>
-      <div id="perfectDaysWrap" style="display:none; text-align:right; margin-top:6px;">
-        <span id="perfectDaysCount" style="font-size:13px; font-weight:600; color:#e74c3c;"></span>
-      </div>
-
-      <div id="goalsContainer">
-        <div class="goals-section-title" id="goalsSectionTitle" style="margin-top:2px;">🎯 2026 Intensity Plan</div>
-        <div class="goals-timeline" id="goalsTimeline"></div>
-        <button onclick="openGoalsEditModal()"
-          style="margin-top:12px; width:100%; padding:8px 0; border-radius:999px;
-            border:1.5px dashed var(--accent,#4b8cff); background:transparent;
-            color:var(--accent,#4b8cff); font-size:12px; font-weight:600; cursor:pointer;">
-          ✏️ Edit plan
-        </button>
-      </div>
-
-      <a href="https://bethej2love-lab.github.io/narang-mandart-chart/mandart" target="_blank"
-        style="display:block; margin-top:14px; padding:10px 0; text-align:center; background:var(--accent,#4b8cff); color:#fff; font-size:13px; font-weight:600; border-radius:999px; text-decoration:none;">
-        🗺️ Go to Mandart
-      </a>
-      <a href="https://www.notion.so/dashboard-2f5139841f3c806ab733fa8e408225ee" target="_blank"
-        style="display:block; margin-top:8px; padding:10px 0; text-align:center; background:transparent; color:var(--accent,#4b8cff); font-size:13px; font-weight:600; border-radius:999px; text-decoration:none; border:1.5px solid var(--accent,#4b8cff);">
-        📝 Go to Notion
-      </a>
-
-      <div id="triviaCard" style="margin-top:14px; display:none;">
-        <div style="font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; color:#aaa; margin-bottom:6px;">💡 Today's Trivia</div>
-        <div id="triviaContent" style="font-size:12px; line-height:1.6; padding:12px 14px; border-radius:12px; background:rgba(0,0,0,0.03); color:#444;"></div>
-        <div id="triviaCategory" style="font-size:10px; color:#aaa; margin-top:5px; text-align:right;"></div>
-      </div>
-      <div id="triviaLoading" style="margin-top:14px; display:none; font-size:12px; color:#aaa; text-align:center; padding:12px;">✨ Loading today's trivia…</div>
-      <button id="triviaBtn" onclick="loadTodayTrivia()" style="display:none; margin-top:14px; width:100%; padding:10px 0; border-radius:999px; border:1.5px solid var(--accent,#4b8cff); background:transparent; color:var(--accent,#4b8cff); font-size:12px; font-weight:600; cursor:pointer;">💡 Get Today's Trivia</button>
-      <div id="triviaNoKey" style="margin-top:14px; display:none; font-size:11px; color:#aaa; text-align:center; padding:10px; border-radius:10px; border:1px dashed #ddd;">
-        API key not set. Tap 🔑 in the top-right to add it!
-      </div>
+<div class="card" id="card">
+  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+    <h1 style="margin:0;">Random Task Picker</h1>
+    <div style="display:flex; gap:6px; align-items:center;">
+      <button onclick="openApiKeyModal()" id="apiKeyHeaderBtn"
+        style="border:none; background:transparent; font-size:18px; cursor:pointer; padding:4px;" title="API Key 설정">🔑</button>
+      <button onclick="openSettingsModal()"
+        style="border:none; background:transparent; font-size:20px; cursor:pointer; padding:4px;" title="설정">⚙️</button>
     </div>
   </div>
+  <div class="theme-label" id="themeLabel"></div>
+  <div id="fortuneText"></div>
 
-  <div class="modal-overlay" id="allDoneModal">
-    <div class="modal-content" style="text-align:center;">
-      <div style="font-size:48px; margin-bottom:8px;">🎉</div>
-      <div class="modal-title" style="font-size:18px;">All done today!</div>
-      <div style="font-size:13px; color:#555; margin-bottom:16px;" id="allDoneSubtext"></div>
-      <button class="modal-close-btn" onclick="closeAllDoneModal()">Great work 😊</button>
-    </div>
-  </div>
-  <div class="modal-overlay" id="weeklyModal">
-    <div class="modal-content">
-      <div class="modal-title">Last 7 Days</div>
-      <div id="weeklyStatsBody"></div>
-      <button class="modal-close-btn" onclick="closeWeeklyStats()">OK</button>
-    </div>
-  </div>
-  <div class="modal-overlay" id="tungModal">
-    <div class="modal-content tung-modal-content">
-      <div class="tung-header">
-        <div class="tung-title">Skip today…?</div>
-        <button class="tung-close" onclick="closeTungModal()">×</button>
-      </div>
-      <div class="tung-options" id="tungOptionsList"></div>
-      <div class="tung-subtext">First skip is free. Use coins for extra skips.</div>
-      <div class="tung-coin-actions">
-        <button class="tung-coin-btn" onclick="useTungCoins(1,20)">20 coins → +1 done</button>
-        <button class="tung-coin-btn" onclick="useTungCoins(2,30)">30 coins → +2 done</button>
-        <button class="tung-coin-btn" onclick="useTungCoins(3,50)">50 coins → +3 done</button>
-      </div>
-    </div>
-  </div>
-  <div class="modal-overlay" id="apiKeyModal">
-    <div class="modal-content">
-      <div class="modal-title">🔑 Claude API Key</div>
-      <div id="apiKeyStatus" style="text-align:center; margin-bottom:12px;"></div>
-      <input id="apiKeyModalInput" type="password" placeholder="sk-ant-..."
-        style="width:100%; box-sizing:border-box; border:1px solid #ddd; border-radius:8px; padding:9px 12px; font-size:13px; font-family:monospace; margin-bottom:6px;">
-      <div style="font-size:10px; color:#aaa; margin-bottom:14px; line-height:1.5;">
-        이 기기의 localStorage에만 저장돼요. GitHub에 올라가지 않아요.<br>Trivia 기능에 사용됩니다.
-      </div>
-      <div style="display:flex; gap:8px;">
-        <button class="modal-close-btn cancel-btn" onclick="closeApiKeyModal()">Cancel</button>
-        <button class="modal-close-btn danger-btn" onclick="clearApiKey()">Clear</button>
-        <button class="modal-close-btn" onclick="saveApiKey()">Save</button>
-      </div>
-    </div>
-  </div>
-  <div class="modal-overlay" id="settingsModal">
-    <div class="modal-content" style="max-height:80vh; overflow-y:auto;">
-      <div class="modal-title">⚙️ Settings</div>
-      <div style="font-size:12px; font-weight:700; margin-bottom:6px; color:#888;">Missions</div>
-      <div id="settingsMissionList" style="display:flex; flex-direction:column; gap:8px; margin-bottom:14px;"></div>
-      <div style="font-size:12px; font-weight:700; margin-bottom:6px; color:#888;">Skip Options</div>
-      <div id="settingsTungList" style="display:flex; flex-direction:column; gap:6px; margin-bottom:6px;"></div>
-      <button onclick="addTungOption()" style="width:100%; padding:7px; border-radius:8px; border:1px dashed #ccc; background:transparent; font-size:12px; cursor:pointer; margin-bottom:14px;">+ Add option</button>
-      <div style="font-size:11px; color:#aaa; padding:8px 12px; border-radius:8px; background:rgba(0,0,0,0.04); margin-bottom:14px; display:flex; align-items:center; gap:6px;">
-        🔑 API Key는 상단 <strong>🔑 버튼</strong>에서 따로 관리할 수 있어요.
-      </div>
-      <div style="display:flex; gap:8px;">
-        <button class="modal-close-btn cancel-btn" onclick="closeSettingsModal()">Cancel</button>
-        <button class="modal-close-btn" onclick="saveSettings()">Save</button>
-      </div>
-    </div>
-  </div>
-  <div class="modal-overlay" id="goalsEditModal">
-    <div class="modal-content" style="max-height:85vh; overflow-y:auto;">
-      <div class="modal-title">🎯 Intensity Plan 편집</div>
-      <div style="font-size:11px; color:#aaa; margin-bottom:14px; text-align:center; line-height:1.6;">
-        이번 달부터 뭘 바꿀지, 어떤 미션을 강화할지<br>자유롭게 수정하세요.
-      </div>
-      <div id="goalsEditList"></div>
-      <div style="display:flex; gap:8px; margin-top:4px;">
-        <button class="modal-close-btn cancel-btn" onclick="closeGoalsEditModal()">Cancel</button>
-        <button class="modal-close-btn" onclick="saveGoals()">Save</button>
-      </div>
-    </div>
+  <button class="main" id="pickButton" onclick="pickRandom()">Pick one now!</button>
+
+  <div class="mission-card" id="missionCard">
+    <div id="result">Press the button to start!</div>
+    <div id="hint"></div>
   </div>
 
-  <script>
-    const defaultMissions = [
-      { name:"듀오링고",               hint:"→ 딱 2개만 !",                                                                                                    tier:"B" },
-      { name:"Brilliant",              hint:"→ 3개 이상 푸십쇼",                                                                                               tier:"B" },
-      { name:"책 읽기",                hint:"→ 3페이지는 읽자..",                                                                                              tier:"A" },
-      { name:"플랭크 1분+간단 스트레칭", hint:"→ 몸을 움직여라!",                                                                                              tier:"B" },
-      { name:"부기스/블로그",           hint:"→ 책 등록/블로그 업로드/인스타 업로드/리뷰 답글 뭐든 제발!",                                                      tier:"S" },
-      { name:"달리기",                 hint:"→ 5분이라도! (만보 대체 가능ㅎ)",                                                                                  tier:"S" },
-      { name:"자격증 공부",             hint:"→ 컴활 2급 / 임상심리사 2급 / 청소년상담사 3급 / 투자자산운용사 / 정보처리기사 / 공인중개사 / 사회조사분석사",       tier:"A" }
+  <div class="action-buttons" style="display:none;" id="actionButtons">
+    <button class="complete-btn" onclick="markComplete()">Done</button>
+    <button class="pending-btn" onclick="markPending()">Skip</button>
+  </div>
+
+  <div class="progress-box" id="progressContainer" style="display:none;">
+    <div class="status-summary">
+      <span class="badge badge-coin" id="badgeCoin">🪙 0</span>
+      <span class="badge badge-lv" id="badgeLv">⚡ LV 1</span>
+      <button id="tungContainer" onclick="openTungModal()" class="tung-btn" style="display:none;">💭</button>
+    </div>
+
+    <div style="font-size:12px; font-weight:700; color:var(--accent,#4b8cff); margin-bottom:4px;" id="progressText">Today: 0 / 7</div>
+    <div class="checkbox-list" id="checkboxList"></div>
+
+    <div class="streak-box">
+      <div class="streak-label">Full days this year <span id="streakText">0 / 351 (0.0%)</span></div>
+      <div class="streak-bar">
+        <div class="streak-fill" id="streakFill"></div>
+        <div class="pace-marker" id="paceFull"></div>
+      </div>
+    </div>
+    <div class="streak-box">
+      <div class="streak-label">Total tasks this year <span id="taskStreakText">0 / 2457 (0.0%)</span></div>
+      <div class="streak-bar">
+        <div class="streak-fill" id="taskStreakFill"></div>
+        <div class="pace-marker" id="paceTask"></div>
+      </div>
+    </div>
+
+    <div id="eventText"></div>
+
+    <!-- 도전 미션 카드 -->
+    <div id="challengeCard">
+      <div class="challenge-header">🎲 오늘의 도전 미션</div>
+      <div class="challenge-text" id="challengeText"></div>
+      <div class="challenge-btns" id="challengeBtns">
+        <button class="challenge-done-btn" onclick="completeChallenge()">완수 ✓</button>
+        <button class="challenge-pass-btn" onclick="passChallenge()">오늘은 패스</button>
+      </div>
+      <div class="challenge-result" id="challengeResult" style="display:none;"></div>
+    </div>
+
+    <div style="display:flex; gap:6px; margin-top:18px;">
+      <button class="toggle-btn" id="toggleCalendarButton" onclick="toggleCalendar()" style="flex:1;">📅 Calendar</button>
+      <button class="toggle-btn" id="toggleReportButton"   onclick="toggleReport()"   style="flex:1;">📊 Report</button>
+      <button class="toggle-btn" id="toggleGoalsButton"    onclick="toggleGoals()"    style="flex:1;">🎯 Goals</button>
+    </div>
+
+    <div id="reportContainer" style="display:none; margin-top:12px;"></div>
+
+    <div id="calendarContainer" style="display:none;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; margin-top:10px;">
+        <button onclick="changeMonth(-1)" style="border:none; background:transparent; font-size:20px; cursor:pointer; padding:4px 8px;">◀</button>
+        <span id="calendarMonthTitle" style="font-size:15px; font-weight:700;"></span>
+        <button onclick="changeMonth(1)"  style="border:none; background:transparent; font-size:20px; cursor:pointer; padding:4px 8px;">▶</button>
+      </div>
+      <div id="calendarTableContainer"></div>
+    </div>
+    <div id="perfectDaysWrap" style="display:none; text-align:right; margin-top:6px;">
+      <span id="perfectDaysCount" style="font-size:13px; font-weight:600; color:#e74c3c;"></span>
+    </div>
+
+    <div id="goalsContainer">
+      <div class="goals-section-title" id="goalsSectionTitle" style="margin-top:2px;">🎯 2026 Intensity Plan</div>
+      <div class="goals-timeline" id="goalsTimeline"></div>
+      <button onclick="openGoalsEditModal()"
+        style="margin-top:12px; width:100%; padding:8px 0; border-radius:999px;
+          border:1.5px dashed var(--accent,#4b8cff); background:transparent;
+          color:var(--accent,#4b8cff); font-size:12px; font-weight:600; cursor:pointer;">
+        ✏️ Edit plan
+      </button>
+    </div>
+
+    <a href="https://bethej2love-lab.github.io/narang-mandart-chart/mandart" target="_blank"
+      style="display:block; margin-top:14px; padding:10px 0; text-align:center; background:var(--accent,#4b8cff); color:#fff; font-size:13px; font-weight:600; border-radius:999px; text-decoration:none;">
+      🗺️ Go to Mandart
+    </a>
+    <a href="https://www.notion.so/dashboard-2f5139841f3c806ab733fa8e408225ee" target="_blank"
+      style="display:block; margin-top:8px; padding:10px 0; text-align:center; background:transparent; color:var(--accent,#4b8cff); font-size:13px; font-weight:600; border-radius:999px; text-decoration:none; border:1.5px solid var(--accent,#4b8cff);">
+      📝 Go to Notion
+    </a>
+
+    <div id="triviaCard" style="margin-top:14px; display:none;">
+      <div style="font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; color:#aaa; margin-bottom:6px;">💡 Today's Trivia</div>
+      <div id="triviaContent" style="font-size:12px; line-height:1.6; padding:12px 14px; border-radius:12px; background:rgba(0,0,0,0.03); color:#444;"></div>
+      <div id="triviaCategory" style="font-size:10px; color:#aaa; margin-top:5px; text-align:right;"></div>
+    </div>
+    <div id="triviaLoading" style="margin-top:14px; display:none; font-size:12px; color:#aaa; text-align:center; padding:12px;">✨ Loading today's trivia…</div>
+    <button id="triviaBtn" onclick="loadTodayTrivia()" style="display:none; margin-top:14px; width:100%; padding:10px 0; border-radius:999px; border:1.5px solid var(--accent,#4b8cff); background:transparent; color:var(--accent,#4b8cff); font-size:12px; font-weight:600; cursor:pointer;">💡 Get Today's Trivia</button>
+    <div id="triviaNoKey" style="margin-top:14px; display:none; font-size:11px; color:#aaa; text-align:center; padding:10px; border-radius:10px; border:1px dashed #ddd;">
+      API key not set. Tap 🔑 in the top-right to add it!
+    </div>
+  </div>
+</div>
+
+<!-- Modals -->
+<div class="modal-overlay" id="allDoneModal">
+  <div class="modal-content" style="text-align:center;">
+    <div style="font-size:48px; margin-bottom:8px;">🎉</div>
+    <div class="modal-title" style="font-size:18px;">All done today!</div>
+    <div style="font-size:13px; color:#555; margin-bottom:16px;" id="allDoneSubtext"></div>
+    <button class="modal-close-btn" onclick="closeAllDoneModal()">Great work 😊</button>
+  </div>
+</div>
+<div class="modal-overlay" id="weeklyModal">
+  <div class="modal-content">
+    <div class="modal-title">Last 7 Days</div>
+    <div id="weeklyStatsBody"></div>
+    <button class="modal-close-btn" onclick="closeWeeklyStats()">OK</button>
+  </div>
+</div>
+<div class="modal-overlay" id="tungModal">
+  <div class="modal-content tung-modal-content">
+    <div class="tung-header">
+      <div class="tung-title">Skip today…?</div>
+      <button class="tung-close" onclick="closeTungModal()">×</button>
+    </div>
+    <div class="tung-options" id="tungOptionsList"></div>
+    <div class="tung-subtext">First skip is free. Use coins for extra skips.</div>
+    <div class="tung-coin-actions">
+      <button class="tung-coin-btn" onclick="useTungCoins(1,20)">20 coins → +1 done</button>
+      <button class="tung-coin-btn" onclick="useTungCoins(2,30)">30 coins → +2 done</button>
+      <button class="tung-coin-btn" onclick="useTungCoins(3,50)">50 coins → +3 done</button>
+    </div>
+  </div>
+</div>
+<div class="modal-overlay" id="apiKeyModal">
+  <div class="modal-content">
+    <div class="modal-title">🔑 Claude API Key</div>
+    <div id="apiKeyStatus" style="text-align:center; margin-bottom:12px;"></div>
+    <input id="apiKeyModalInput" type="password" placeholder="sk-ant-..."
+      style="width:100%; box-sizing:border-box; border:1px solid #ddd; border-radius:8px; padding:9px 12px; font-size:13px; font-family:monospace; margin-bottom:6px;">
+    <div style="font-size:10px; color:#aaa; margin-bottom:14px; line-height:1.5;">
+      이 기기의 localStorage에만 저장돼요. GitHub에 올라가지 않아요.<br>Trivia 기능에 사용됩니다.
+    </div>
+    <div style="display:flex; gap:8px;">
+      <button class="modal-close-btn cancel-btn" onclick="closeApiKeyModal()">Cancel</button>
+      <button class="modal-close-btn danger-btn" onclick="clearApiKey()">Clear</button>
+      <button class="modal-close-btn" onclick="saveApiKey()">Save</button>
+    </div>
+  </div>
+</div>
+<div class="modal-overlay" id="settingsModal">
+  <div class="modal-content" style="max-height:80vh; overflow-y:auto;">
+    <div class="modal-title">⚙️ Settings</div>
+    <div style="font-size:12px; font-weight:700; margin-bottom:6px; color:#888;">Missions</div>
+    <div id="settingsMissionList" style="display:flex; flex-direction:column; gap:8px; margin-bottom:14px;"></div>
+    <div style="font-size:12px; font-weight:700; margin-bottom:6px; color:#888;">Skip Options</div>
+    <div id="settingsTungList" style="display:flex; flex-direction:column; gap:6px; margin-bottom:6px;"></div>
+    <button onclick="addTungOption()" style="width:100%; padding:7px; border-radius:8px; border:1px dashed #ccc; background:transparent; font-size:12px; cursor:pointer; margin-bottom:14px;">+ Add option</button>
+    <div style="font-size:11px; color:#aaa; padding:8px 12px; border-radius:8px; background:rgba(0,0,0,0.04); margin-bottom:14px; display:flex; align-items:center; gap:6px;">
+      🔑 API Key는 상단 <strong>🔑 버튼</strong>에서 따로 관리할 수 있어요.
+    </div>
+    <div style="display:flex; gap:8px;">
+      <button class="modal-close-btn cancel-btn" onclick="closeSettingsModal()">Cancel</button>
+      <button class="modal-close-btn" onclick="saveSettings()">Save</button>
+    </div>
+  </div>
+</div>
+<div class="modal-overlay" id="goalsEditModal">
+  <div class="modal-content" style="max-height:85vh; overflow-y:auto;">
+    <div class="modal-title">🎯 Intensity Plan 편집</div>
+    <div style="font-size:11px; color:#aaa; margin-bottom:14px; text-align:center; line-height:1.6;">
+      이번 달부터 뭘 바꿀지, 어떤 미션을 강화할지<br>자유롭게 수정하세요.
+    </div>
+    <div id="goalsEditList"></div>
+    <div style="display:flex; gap:8px; margin-top:4px;">
+      <button class="modal-close-btn cancel-btn" onclick="closeGoalsEditModal()">Cancel</button>
+      <button class="modal-close-btn" onclick="saveGoals()">Save</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // ── 오늘의 운세 / 명언 (50개) ────────────────────────────────
+  const fortunes = [
+    "오늘 하루, 딱 한 가지만 제대로 해도 충분해.",
+    "The only way out is through.",
+    "완벽한 날은 없다. 다만 좋은 순간들이 있을 뿐.",
+    "Consistency beats intensity every time.",
+    "작은 것에 감탄하는 능력을 잃지 말 것.",
+    "Rest if you must, but don't quit.",
+    "Comparison is the thief of joy. — Roosevelt",
+    "오늘의 루틴이 내년의 나를 만든다.",
+    "Every expert was once a beginner.",
+    "습관은 처음엔 거미줄이고, 나중엔 밧줄이 된다.",
+    "Done is better than perfect.",
+    "오늘 심은 씨앗을 내일 수확하려 하지 말 것.",
+    "지치면 쉬어도 된다. 포기하지만 않으면.",
+    "Slow is smooth. Smooth is fast.",
+    "두려움과 설렘은 같은 감각이다. 해석이 다를 뿐.",
+    "You don't rise to the level of your goals — you fall to the level of your systems. — James Clear",
+    "완성보다 완료가 낫다.",
+    "조용히 성장하는 사람이 가장 오래 간다.",
+    "What you do today is what matters most.",
+    "실패는 데이터다. 포기는 게임 오버다.",
+    "Small steps still move you forward.",
+    "오늘 뭔가 불편했다면, 성장하고 있다는 신호다.",
+    "좋아하는 사람에게 오늘 연락해라. 오늘이 적기다.",
+    "평범한 날들이 쌓여 비범한 삶이 된다.",
+    "The quieter you become, the more you can hear.",
+    "생각이 너무 많을 땐, 일단 몸을 움직여라.",
+    "It's okay to be a work in progress.",
+    "당신은 지금 충분히 잘 하고 있다.",
+    "오늘도 뭔가 했다면, 오늘도 이긴 거다.",
+    "You are what you repeatedly do. — Aristotle",
+    "나를 알아가는 과정에서 서두를 필요는 없다.",
+    "A little progress each day adds up to big results.",
+    "말하기 전에 한 번 더 듣는 연습.",
+    "The hardest part is starting. Everything else is just details.",
+    "가장 긴 여정도 첫 걸음에서 시작된다.",
+    "Don't count the days. Make the days count. — Muhammad Ali",
+    "좋은 질문이 좋은 답보다 낫다.",
+    "Discipline is doing it even when you don't feel like it.",
+    "오늘은 어제 네가 그토록 원하던 내일이다.",
+    "Be so good they can't ignore you. — Steve Martin",
+    "남에게 친절한 것도 연습이 필요하다.",
+    "오늘의 나는 어제의 나보다 조금 더 알고 있다.",
+    "Energy flows where attention goes.",
+    "좋아하는 것을 계속 하는 것이 곧 재능이다.",
+    "오늘 괜찮았으면 그걸로 됐다.",
+    "Your habits will carry you further than your motivation.",
+    "배움에는 나이가 없다. 다만 게으름만 있을 뿐.",
+    "You can't go back and change the beginning, but you can start where you are.",
+    "느리게 가더라도 멈추지 않으면 된다. — 공자",
+    "오늘 하루도, 어떻게든 됐잖아.",
+  ];
+
+  // ── 도전 미션 (22개) ─────────────────────────────────────────
+  const challengeMissions = [
+    "오늘 하루 SNS 스크롤 없이 버티기 🙅",
+    "평소 안 듣는 장르의 음악 30분 듣기 🎵",
+    "손으로 무언가 한 장 쓰기 (일기, 메모, 편지 뭐든) ✍️",
+    "오늘 만나는 사람에게 진심 어린 칭찬 한 마디 건네기 💬",
+    "엘리베이터 대신 계단으로만 다니기 🪜",
+    "하늘 사진 한 장 찍어두기 ☁️",
+    "10분 동안 진짜 아무것도 안 하기 (폰도 내려놓고) 🪨",
+    "오늘 처음 접하는 단어나 개념 하나 찾아보기 📖",
+    "오래된 사진 꺼내서 한 장 들여다보기 📷",
+    "좋아하는 노래 가사를 처음부터 끝까지 천천히 읽기 🎤",
+    "오랫동안 연락 안 한 사람에게 안부 메시지 보내기 💌",
+    "목적지 없이 동네 한 바퀴 걷기 🚶",
+    "미뤄뒀던 작은 일 하나 오늘 끝내기 ✅",
+    "물 2L 마시기 💧",
+    "오늘 가장 인상 깊었던 순간 한 줄로 기록하기 📝",
+    "자주 쓰는 앱 하나, 오늘 하루만 안 열기 📵",
+    "냉장고 재료로만 뭔가 만들어 먹기 🍳",
+    "나만의 5분 스트레칭 루틴 새로 만들어보기 🧘",
+    "책 아무 페이지나 펼쳐서 딱 한 단락 읽기 📚",
+    "창문 열고 바깥 소리 1분 듣기 🌬️",
+    "오늘 제일 잘한 것 세 가지 떠올리기 🌟",
+    "오늘 하루 말을 평소보다 줄여보기 🤫",
+  ];
+
+  const defaultMissions = [
+    { name:"듀오링고",               hint:"→ 딱 2개만 !",                                                                                                    tier:"B" },
+    { name:"Brilliant",              hint:"→ 3개 이상 푸십쇼",                                                                                               tier:"B" },
+    { name:"책 읽기",                hint:"→ 3페이지는 읽자..",                                                                                              tier:"A" },
+    { name:"플랭크 1분+간단 스트레칭", hint:"→ 몸을 움직여라!",                                                                                              tier:"B" },
+    { name:"부기스/블로그",           hint:"→ 책 등록/블로그 업로드/인스타 업로드/리뷰 답글 뭐든 제발!",                                                      tier:"S" },
+    { name:"달리기",                 hint:"→ 5분이라도! (만보 대체 가능ㅎ)",                                                                                  tier:"S" },
+    { name:"자격증 공부",             hint:"→ 컴활 2급 / 임상심리사 2급 / 청소년상담사 3급 / 투자자산운용사 / 정보처리기사 / 공인중개사 / 사회조사분석사",       tier:"A" }
+  ];
+  const defaultTungOptions = ["영화","전시","우쿨렐레","뜨개질","요리","청소","벌떡 기상"];
+
+  function loadCustomMissions()    { try { return JSON.parse(localStorage.getItem("customMissions"))    || defaultMissions;    } catch(e) { return defaultMissions;    } }
+  function loadCustomTungOptions() { try { return JSON.parse(localStorage.getItem("customTungOptions")) || defaultTungOptions; } catch(e) { return defaultTungOptions; } }
+
+  let missionData = loadCustomMissions();
+  let tungOptions  = loadCustomTungOptions();
+  const tasks    = missionData.map(m => m.name);
+  const hints    = Object.fromEntries(missionData.map(m => [m.name, m.hint]));
+  const taskTier = Object.fromEntries(missionData.map(m => [m.name, m.tier]));
+  const tierLabel  = { S:"S-Tier", A:"A-Tier", B:"B-Tier" };
+  const baseReward = { S:3, A:2, B:1, BONUS:0 };
+  const YEAR_TOTAL_DAYS = 351;
+
+  function getKSTDate() {
+    const n = new Date();
+    return `${n.getFullYear()}-${String(n.getMonth()+1).padStart(2,"0")}-${String(n.getDate()).padStart(2,"0")}`;
+  }
+  const today = getKSTDate();
+
+  function getDayOfYear() {
+    const [y,m,d] = today.split("-").map(Number);
+    return Math.floor((new Date(y,m-1,d) - new Date(y,0,1)) / 86400000) + 1;
+  }
+
+  // 날짜 기반 인덱스
+  function dateIdx(arr) {
+    const [y,m,d] = today.split("-").map(Number);
+    return (y * 366 + m * 31 + d) % arr.length;
+  }
+
+  const dailyEvents = [
+    { id:"buff_all_plus1",  label:"Today's Buff: All missions +1 coin!",              type:"buff"    },
+    { id:"buff_s_plus1",    label:"Today's Buff: S-tier +1 coin!",                    type:"buff"    },
+    { id:"nerf_s_minus1",   label:"Today's Debuff: S-tier -1 coin…",                  type:"debuff"  },
+    { id:"half_day_full",   label:"Today's Special: 4 missions = full day!",          type:"special" },
+    { id:"buff_b_plus2",    label:"Today's Buff: B-tier +2 coins!",                   type:"buff"    },
+    { id:"nerf_all_minus1", label:"Today's Debuff: All missions -1 coin…",            type:"debuff"  },
+    { id:"lucky_day",       label:"Today's Special: First mission = +3 bonus coins!", type:"special" },
+    { id:"buff_a_plus2",    label:"Today's Buff: A-tier +2 coins!",                   type:"buff"    },
+    { id:"double_first",    label:"Today's Buff: First mission coins x2!",            type:"buff"    },
+    { id:"nerf_b_zero",     label:"Today's Debuff: B-tier earns no coins… sorry",     type:"debuff"  },
+    { id:"special_5done",   label:"Today's Special: 5 missions = +5 bonus coins!",    type:"special" },
+    { id:"buff_last_plus3", label:"Today's Buff: Last mission +3 coins!",             type:"buff"    }
+  ];
+
+  const ls = {
+    get:   (k) => { try { return JSON.parse(localStorage.getItem(k)); } catch(e) { return null; } },
+    set:   (k,v) => localStorage.setItem(k, JSON.stringify(v)),
+    str:   (k) => localStorage.getItem(k),
+    setStr:(k,v) => localStorage.setItem(k, v),
+    rm:    (k) => localStorage.removeItem(k)
+  };
+
+  function loadTaskStatus() {
+    const s=ls.get("taskStatus"), d=ls.str("taskDate");
+    if(!s||d!==today){const r={};tasks.forEach(t=>r[t]=false);ls.set("taskStatus",r);ls.setStr("taskDate",today);return r;}
+    return s;
+  }
+  function loadCoins()     { return parseInt(ls.str("coinCount")||"0",10); }
+  function loadDailyEvent() {
+    const id=ls.str("dailyEventId"), dt=ls.str("dailyEventDate");
+    if(!id||dt!==today){const e=dailyEvents[Math.floor(Math.random()*dailyEvents.length)];ls.setStr("dailyEventId",e.id);ls.setStr("dailyEventDate",today);return e;}
+    return dailyEvents.find(e=>e.id===id)||dailyEvents[0];
+  }
+  function loadDailyStats()  { return ls.get("dailyStats")||{}; }
+  function saveDailyStats(s) { ls.set("dailyStats",s); }
+  function loadMissionLog()  { return ls.get("missionLog")||{}; }
+  function saveMissionLog(l) { ls.set("missionLog",l); }
+  function recordMissionDone(t) { const l=loadMissionLog();if(!l[today])l[today]={};l[today][t]=(l[today][t]||0)+1;saveMissionLog(l); }
+  function loadSkipLog()     { return ls.get("skipLog")||{}; }
+  function saveSkipLog(l)    { ls.set("skipLog",l); }
+  function recordSkip()      { const l=loadSkipLog();l[today]=(l[today]||0)+1;saveSkipLog(l); }
+  function loadWeeklyPopup() { return ls.get("weeklyPopupStatus")||{}; }
+  function saveWeeklyPopup(s){ ls.set("weeklyPopupStatus",s); }
+  function countFullDays()   { return Object.values(loadDailyStats()).filter(v => v >= tasks.length).length; }
+
+  // ── 도전 미션 상태 ────────────────────────────────────────────
+  function loadChallengeState() {
+    const s = ls.get("challengeState");
+    if (!s || s.date !== today) return { date: today, status: "pending" };
+    return s;
+  }
+  function saveChallengeState(status) { ls.set("challengeState", { date: today, status }); }
+
+  function initChallengeCard() {
+    const mission = challengeMissions[dateIdx(challengeMissions)];
+    document.getElementById("challengeText").textContent = mission;
+    const state = loadChallengeState();
+    const btns = document.getElementById("challengeBtns");
+    const result = document.getElementById("challengeResult");
+    if (state.status === "done") {
+      btns.style.display = "none"; result.style.display = "block";
+      result.textContent = "완수했어요! 👏";
+    } else if (state.status === "pass") {
+      btns.style.display = "none"; result.style.display = "block";
+      result.textContent = "오늘은 패스. 내일 또 새 미션이 기다려요.";
+    } else {
+      btns.style.display = "flex"; result.style.display = "none";
+    }
+  }
+
+  function completeChallenge() {
+    saveChallengeState("done");
+    document.getElementById("challengeBtns").style.display = "none";
+    const r = document.getElementById("challengeResult");
+    r.style.display = "block"; r.textContent = "완수했어요! 👏";
+  }
+  function passChallenge() {
+    saveChallengeState("pass");
+    document.getElementById("challengeBtns").style.display = "none";
+    const r = document.getElementById("challengeResult");
+    r.style.display = "block"; r.textContent = "오늘은 패스. 내일 또 새 미션이 기다려요.";
+  }
+
+  function updateChallengeVisibility() {
+    const card = document.getElementById("challengeCard");
+    if (getCompletedCount() >= tasks.length) {
+      card.style.display = "block";
+      initChallengeCard();
+    } else {
+      card.style.display = "none";
+    }
+  }
+
+  // ── 크리티컬 히트 ─────────────────────────────────────────────
+  function triggerCritical() {
+    const el = document.getElementById("criticalFlash");
+    el.classList.add("show");
+    setTimeout(() => el.classList.remove("show"), 1400);
+  }
+
+  // ── Trivia ────────────────────────────────────────────────────
+  function loadTriviaHistory()  { return ls.get("triviaHistory")||[]; }
+  function saveTriviaHistory(e) { const h=loadTriviaHistory();h.push(e);if(h.length>30)h.splice(0,h.length-30);ls.set("triviaHistory",h); }
+  function pickTriviaCategory() {
+    const h = loadTriviaHistory();
+    const recentCats = h.slice(-9).map(x => x.category);
+    const avail = triviaCategories.filter(c => !recentCats.includes(c));
+    const pool = avail.length > 0 ? avail : triviaCategories;
+    return pool[Math.floor(Math.random() * pool.length)];
+  }
+
+  // ── Year Goals ────────────────────────────────────────────────
+  const MONTH_NAMES = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  const DEFAULT_GOALS = [
+    { plan: "" }, { plan: "" }, { plan: "" },
+    { plan: "플랭크 50초\n독서 15p\n브릴리언트 5개\n말해보카 50개\n달리기 2km or 만보\n퀴즈 서술형 or 객관식 80\n부기스 인스타/블로그+스토어" },
+    { plan: "플랭크 1분 15초\n독서 25p\n브릴리언트 6개\n말해보카 60개\n달리기 3km\n퀴즈 서술형 or 객관식 100\n부기스 주 2회 이상" },
+    { plan: "플랭크 1분 45초\n독서 30p\n브릴리언트 7개\n말해보카 70개\n달리기 4km\n퀴즈 서술형 or 객관식 120\n부기스 블로그 주 3회 고정" },
+    { plan: "플랭크 2분 30초\n독서 35p\n브릴리언트 8개\n말해보카 80개\n달리기 5km\n퀴즈 서술형 or 객관식 140\n부기스 스토어 월매출 목표 설정" },
+    { plan: "플랭크 3분 × 1세트\n독서 45p\n브릴리언트 9개\n말해보카 90개\n달리기 5.5km\n퀴즈 서술형 or 객관식 150\n부기스 콘텐츠 루틴화" },
+    { plan: "🎯 플랭크 3분 × 2세트\n독서 50p\n브릴리언트 10개\n말해보카 100개\n달리기 6km\n퀴즈 서술형 or 객관식 160\n부기스 블로그+인스타 동시 운영" },
+    { plan: "유지 + 새 챌린지 추가" },
+    { plan: "유지 + 새 챌린지 추가" },
+    { plan: "유지 + 새 챌린지 추가" }
+  ];
+  function loadYearGoals() {
+    const raw = ls.get("yearGoals2026");
+    if (raw && Array.isArray(raw) && raw.length === 12) return raw;
+    return DEFAULT_GOALS.map(g => ({ ...g }));
+  }
+  function saveYearGoals(g) { ls.set("yearGoals2026", g); }
+
+  function renderGoalsTimeline() {
+    const goals = loadYearGoals(), tl = document.getElementById("goalsTimeline");
+    if (!tl) return; tl.innerHTML = "";
+    const curMonth = parseInt(today.split("-")[1], 10), dk = window._isDarkTheme;
+    const titleEl = document.getElementById("goalsSectionTitle");
+    if (titleEl) titleEl.classList.toggle("dark", dk);
+    goals.forEach((g, i) => {
+      const mn = i+1, state = mn < curMonth ? "past" : mn === curMonth ? "current" : "future";
+      const hasPlan = g.plan && g.plan.trim().length > 0;
+      const row = document.createElement("div"); row.className = "goal-row";
+      const dotWrap = document.createElement("div"); dotWrap.className = "goal-dot-wrap";
+      const dot = document.createElement("div"); dot.className = `goal-dot ${hasPlan ? state : "empty"}`;
+      dotWrap.appendChild(dot); row.appendChild(dotWrap);
+      const body = document.createElement("div"); body.className = "goal-body";
+      const header = document.createElement("div"); header.className = "goal-month-header";
+      const nameLbl = document.createElement("span"); nameLbl.className = `goal-month-name ${state}`;
+      nameLbl.textContent = `${MONTH_NAMES[i]} (${mn}월)`; header.appendChild(nameLbl);
+      if (state === "current") { const b = document.createElement("span"); b.className = "goal-month-badge show"; b.textContent = "NOW"; header.appendChild(b); }
+      body.appendChild(header);
+      const planEl = document.createElement("div");
+      if (hasPlan) { planEl.className = "goal-plan-text" + (dk ? " dark" : ""); planEl.textContent = g.plan; }
+      else { planEl.className = "goal-plan-text empty-hint" + (dk ? " dark" : ""); planEl.textContent = state === "current" ? "아직 플랜 미작성" : state === "future" ? "계획 없음" : "기록 없음"; }
+      body.appendChild(planEl);
+      const editBtn = document.createElement("button"); editBtn.className = "goal-edit-inline"; editBtn.textContent = "✏️ edit";
+      editBtn.onclick = () => openGoalsEditModalAt(i); body.appendChild(editBtn);
+      row.appendChild(body); tl.appendChild(row);
+    });
+  }
+
+  function toggleGoals() {
+    const c = document.getElementById("goalsContainer"), btn = document.getElementById("toggleGoalsButton");
+    if (!c.style.display || c.style.display === "none") { renderGoalsTimeline(); c.style.display = "block"; btn.textContent = "🎯 Close"; }
+    else { c.style.display = "none"; btn.textContent = "🎯 Goals"; }
+  }
+  function openGoalsEditModal() { openGoalsEditModalAt(null); }
+  function openGoalsEditModalAt(focusIdx) {
+    const goals = loadYearGoals(), list = document.getElementById("goalsEditList"); list.innerHTML = "";
+    goals.forEach((g, i) => {
+      const div = document.createElement("div"); div.className = "goals-edit-row";
+      const lbl = document.createElement("div"); lbl.className = "goals-edit-month-label"; lbl.textContent = `${MONTH_NAMES[i]} (${i+1}월)`;
+      const ta = document.createElement("textarea"); ta.className = "goals-edit-textarea"; ta.id = `gPlan_${i}`; ta.value = g.plan || ""; ta.placeholder = "이번 달 강도 플랜을 적어보세요";
+      ta.addEventListener("input", () => { ta.style.height = "auto"; ta.style.height = ta.scrollHeight + "px"; });
+      div.appendChild(lbl); div.appendChild(ta); list.appendChild(div);
+      setTimeout(() => { ta.style.height = "auto"; ta.style.height = ta.scrollHeight + "px"; }, 0);
+    });
+    document.getElementById("goalsEditModal").style.display = "flex";
+    if (focusIdx !== null) setTimeout(() => { const el = document.getElementById(`gPlan_${focusIdx}`); if(el){el.focus();el.scrollIntoView({behavior:"smooth",block:"center"});} }, 100);
+  }
+  function closeGoalsEditModal() { document.getElementById("goalsEditModal").style.display = "none"; }
+  function saveGoals() {
+    const goals = loadYearGoals();
+    goals.forEach((_, i) => { const ta = document.getElementById(`gPlan_${i}`); if(ta) goals[i].plan = ta.value.trim(); });
+    saveYearGoals(goals); closeGoalsEditModal(); renderGoalsTimeline();
+  }
+
+  // ── State ─────────────────────────────────────────────────────
+  function loadTungState() {
+    if(ls.str("tungDate")!==today){ls.setStr("tungDate",today);ls.setStr("tungCount","0");ls.setStr("tungFreeUsed","0");ls.rm("tungChoice");return{count:0,freeUsed:false};}
+    return{count:parseInt(ls.str("tungCount")||"0",10),freeUsed:ls.str("tungFreeUsed")==="1"};
+  }
+  let {count:tungCount,freeUsed:tungFreeUsed}=loadTungState();
+  let taskStatus=loadTaskStatus();
+  let coinCount=loadCoins(), dailyEvent=loadDailyEvent();
+  let isPicking=false, hasShownProgress=false, currentTask=null, currentTier=null, skippedTasks={};
+
+  function openApiKeyModal(){const k=ls.str("mandart_api_key")||"";document.getElementById("apiKeyStatus").innerHTML=k?`<span class="api-key-badge set">✅ 저장됨</span>`:`<span class="api-key-badge unset">미설정</span>`;const inp=document.getElementById("apiKeyModalInput");inp.value="";inp.placeholder=k?"새 키를 입력하면 교체돼요":"sk-ant-...";document.getElementById("apiKeyModal").style.display="flex";}
+  function closeApiKeyModal(){document.getElementById("apiKeyModal").style.display="none";}
+  function saveApiKey(){const v=document.getElementById("apiKeyModalInput").value.trim();if(v){ls.setStr("mandart_api_key",v);closeApiKeyModal();initTriviaCard();alert("API Key 저장 완료! 🔑");}else closeApiKeyModal();}
+  function clearApiKey(){if(confirm("API Key를 삭제할까요?")){ls.rm("mandart_api_key");closeApiKeyModal();initTriviaCard();}}
+
+  function getLevel(p){return Math.min(20,Math.max(1,Math.floor(p/5)+1));}
+  function getRewardForTask(name){
+    const tier=taskTier[name]||"B";let r=baseReward[tier];if(tier==="BONUS")return 0;
+    if(dailyEvent.id==="buff_all_plus1"&&r>0)r+=1;
+    if(dailyEvent.id==="buff_s_plus1"&&tier==="S")r+=1;
+    if(dailyEvent.id==="nerf_s_minus1"&&tier==="S")r=Math.max(0,r-1);
+    if(dailyEvent.id==="buff_b_plus2"&&tier==="B")r+=2;
+    if(dailyEvent.id==="nerf_all_minus1"&&r>0)r=Math.max(0,r-1);
+    if(dailyEvent.id==="buff_a_plus2"&&tier==="A")r+=2;
+    if(dailyEvent.id==="nerf_b_zero"&&tier==="B")r=0;
+    return r;
+  }
+  function getCompletedCount(){return Math.min(tasks.length,Object.values(taskStatus).filter(v=>v).length+tungCount);}
+
+  function updateUI(){
+    const comp=getCompletedCount();
+    const stats=loadDailyStats(); stats[today]=comp; saveDailyStats(stats);
+
+    document.getElementById("progressText").textContent=`Today: ${comp} / ${tasks.length}`;
+    const el=document.getElementById("checkboxList");el.innerHTML="";
+    tasks.forEach(t=>{const d=document.createElement("div");d.textContent=(taskStatus[t]?"✔  ":"○  ")+t;if(taskStatus[t])d.classList.add("done");el.appendChild(d);});
+
+    const fullDays=countFullDays(), pct=Math.min(100,(fullDays/YEAR_TOTAL_DAYS)*100);
+    document.getElementById("streakText").textContent=`${fullDays} / ${YEAR_TOTAL_DAYS} (${pct.toFixed(1)}%)`;
+    document.getElementById("streakFill").style.width=`${pct}%`;
+
+    const TT=YEAR_TOTAL_DAYS*tasks.length,all=loadDailyStats(),done=Object.values(all).reduce((s,v)=>s+v,0),tp=Math.min(100,(done/TT)*100);
+    document.getElementById("taskStreakText").textContent=`${done} / ${TT} (${tp.toFixed(1)}%)`;
+    document.getElementById("taskStreakFill").style.width=`${tp}%`;
+
+    document.getElementById("badgeCoin").textContent=`🪙 ${coinCount}`;
+    document.getElementById("badgeLv").textContent=`⚡ LV ${getLevel(pct)}`;
+
+    const ev=document.getElementById("eventText");ev.className="";
+    const ico=dailyEvent.type==="buff"?"🟢":dailyEvent.type==="debuff"?"🔴":"🟡";
+    ev.innerHTML=`<span>${ico}</span><span>${dailyEvent.label}</span>`;
+    ev.classList.add(dailyEvent.type==="buff"?"event-buff":dailyEvent.type==="debuff"?"event-debuff":"event-special");
+
+    // 페이스 마커
+    const pacePct=Math.min(100,(getDayOfYear()/YEAR_TOTAL_DAYS)*100);
+    const pf=document.getElementById("paceFull"),pt2=document.getElementById("paceTask");
+    if(pf)pf.style.left=`calc(${pacePct}% - 1px)`;
+    if(pt2)pt2.style.left=`calc(${pacePct}% - 1px)`;
+
+    updateTungButtonVisibility();
+    updateChallengeVisibility();
+  }
+
+  function showProgressIfNeeded(){if(!hasShownProgress){document.getElementById("progressContainer").style.display="block";hasShownProgress=true;}}
+  function updateTungButtonVisibility(){const c=document.getElementById("tungContainer");if(!c)return;c.style.display=(!currentTask||getCompletedCount()>=tasks.length)?"none":"inline-block";}
+
+  // ── Theme ─────────────────────────────────────────────────────
+  function applyTheme(){
+    const[y,m,d]=getKSTDate().split("-").map(Number),date=new Date(y,m-1,d);
+    const diff=Math.floor((date-new Date(date.getFullYear(),0,1))/86400000);
+    const themes=[
+      {e:"🌅",b:"#fff5e6",c:"#ffffff",a:"#ff7b54",s:"#ffb199",dk:false},
+      {e:"🌊",b:"#e6f5ff",c:"#ffffff",a:"#3f8cff",s:"#9ac3ff",dk:false},
+      {e:"🌿",b:"#eef8f2",c:"#ffffff",a:"#2ecc71",s:"#8be3aa",dk:false},
+      {e:"🌌",b:"#050816",c:"#111827",a:"#6366f1",s:"#a5b4fc",dk:true},
+      {e:"☕️",b:"#f7f0ea",c:"#ffffff",a:"#b85c38",s:"#d19d85",dk:false},
+      {e:"📚",b:"#f6f4ff",c:"#ffffff",a:"#7c3aed",s:"#c4b5fd",dk:false},
+      {e:"🔥",b:"#fff1f2",c:"#ffffff",a:"#f97373",s:"#fecaca",dk:false},
+      {e:"🌈",b:"linear-gradient(135deg,#fdf2ff,#e0f2fe)",c:"#ffffff",a:"#ec4899",s:"#f9a8d4",dk:false},
+      {e:"🧊",b:"#edf5ff",c:"#ffffff",a:"#0ea5e9",s:"#7dd3fc",dk:false},
+      {e:"🍀",b:"#f1fdf3",c:"#ffffff",a:"#16a34a",s:"#6ee7b7",dk:false},
+      {e:"🌙",b:"#0d0d1a",c:"#13132b",a:"#a78bfa",s:"#c4b5fd",dk:true},
+      {e:"🖤",b:"#0a0a0a",c:"#1a1a1a",a:"#e5e5e5",s:"#aaaaaa",dk:true}
     ];
-    const defaultTungOptions = ["영화","전시","우쿨렐레","뜨개질","요리","청소","벌떡 기상"];
+    const t=themes[diff%themes.length];
+    document.getElementById("themeLabel").textContent=t.e;
+    document.documentElement.style.setProperty("--accent",t.a);
+    document.documentElement.style.setProperty("--accent-soft",t.s);
+    document.body.style.background=t.b;
+    const card=document.getElementById("card");if(card)card.style.background=t.c;
+    window._isDarkTheme=t.dk;
+    document.body.classList.toggle("dark-mode",t.dk);
 
-    function loadCustomMissions()    { try { return JSON.parse(localStorage.getItem("customMissions"))    || defaultMissions;    } catch(e) { return defaultMissions;    } }
-    function loadCustomTungOptions() { try { return JSON.parse(localStorage.getItem("customTungOptions")) || defaultTungOptions; } catch(e) { return defaultTungOptions; } }
-
-    let missionData = loadCustomMissions();
-    let tungOptions  = loadCustomTungOptions();
-    const tasks    = missionData.map(m => m.name);
-    const hints    = Object.fromEntries(missionData.map(m => [m.name, m.hint]));
-    const taskTier = Object.fromEntries(missionData.map(m => [m.name, m.tier]));
-    const tierLabel  = { S:"S-Tier", A:"A-Tier", B:"B-Tier" };
-    const baseReward = { S:3, A:2, B:1, BONUS:0 };
-    const YEAR_TOTAL_DAYS = 351;
-
-    function getKSTDate() {
-      const n = new Date();
-      return `${n.getFullYear()}-${String(n.getMonth()+1).padStart(2,"0")}-${String(n.getDate()).padStart(2,"0")}`;
-    }
-    const today = getKSTDate();
-
-    // 올해 경과 일수 (1월 1일 = 1일째)
-    function getDayOfYear() {
-      const [y,m,d] = today.split("-").map(Number);
-      const start = new Date(y, 0, 1);
-      const now   = new Date(y, m-1, d);
-      return Math.floor((now - start) / 86400000) + 1;
-    }
-
-    const dailyEvents = [
-      { id:"buff_all_plus1",  label:"Today's Buff: All missions +1 coin!",              type:"buff"    },
-      { id:"buff_s_plus1",    label:"Today's Buff: S-tier +1 coin!",                    type:"buff"    },
-      { id:"nerf_s_minus1",   label:"Today's Debuff: S-tier -1 coin…",                  type:"debuff"  },
-      { id:"half_day_full",   label:"Today's Special: 4 missions = full day!",          type:"special" },
-      { id:"buff_b_plus2",    label:"Today's Buff: B-tier +2 coins!",                   type:"buff"    },
-      { id:"nerf_all_minus1", label:"Today's Debuff: All missions -1 coin…",            type:"debuff"  },
-      { id:"lucky_day",       label:"Today's Special: First mission = +3 bonus coins!", type:"special" },
-      { id:"buff_a_plus2",    label:"Today's Buff: A-tier +2 coins!",                   type:"buff"    },
-      { id:"double_first",    label:"Today's Buff: First mission coins x2!",            type:"buff"    },
-      { id:"nerf_b_zero",     label:"Today's Debuff: B-tier earns no coins… sorry",     type:"debuff"  },
-      { id:"special_5done",   label:"Today's Special: 5 missions = +5 bonus coins!",    type:"special" },
-      { id:"buff_last_plus3", label:"Today's Buff: Last mission +3 coins!",             type:"buff"    }
-    ];
-
-    const ls = {
-      get:   (k) => { try { return JSON.parse(localStorage.getItem(k)); } catch(e) { return null; } },
-      set:   (k,v) => localStorage.setItem(k, JSON.stringify(v)),
-      str:   (k) => localStorage.getItem(k),
-      setStr:(k,v) => localStorage.setItem(k, v),
-      rm:    (k) => localStorage.removeItem(k)
-    };
-
-    function loadTaskStatus() {
-      const s=ls.get("taskStatus"), d=ls.str("taskDate");
-      if(!s||d!==today){const r={};tasks.forEach(t=>r[t]=false);ls.set("taskStatus",r);ls.setStr("taskDate",today);return r;}
-      return s;
-    }
-    function loadCoins()      { return parseInt(ls.str("coinCount")||"0",10); }
-    function loadDailyEvent() {
-      const id=ls.str("dailyEventId"), dt=ls.str("dailyEventDate");
-      if(!id||dt!==today){const e=dailyEvents[Math.floor(Math.random()*dailyEvents.length)];ls.setStr("dailyEventId",e.id);ls.setStr("dailyEventDate",today);return e;}
-      return dailyEvents.find(e=>e.id===id)||dailyEvents[0];
-    }
-    function loadDailyStats()  { return ls.get("dailyStats")||{}; }
-    function saveDailyStats(s) { ls.set("dailyStats",s); }
-    function loadMissionLog()  { return ls.get("missionLog")||{}; }
-    function saveMissionLog(l) { ls.set("missionLog",l); }
-    function recordMissionDone(t) { const l=loadMissionLog();if(!l[today])l[today]={};l[today][t]=(l[today][t]||0)+1;saveMissionLog(l); }
-    function loadSkipLog()     { return ls.get("skipLog")||{}; }
-    function saveSkipLog(l)    { ls.set("skipLog",l); }
-    function recordSkip()      { const l=loadSkipLog();l[today]=(l[today]||0)+1;saveSkipLog(l); }
-    function loadWeeklyPopup() { return ls.get("weeklyPopupStatus")||{}; }
-    function saveWeeklyPopup(s){ ls.set("weeklyPopupStatus",s); }
-
-    function countFullDays() {
-      return Object.values(loadDailyStats()).filter(v => v >= tasks.length).length;
+    const tc=document.getElementById("triviaContent"),tcat=document.getElementById("triviaCategory");
+    if(t.dk){
+      document.body.style.color="#f5f5f5";if(card)card.style.color="#f5f5f5";
+      document.getElementById("missionCard").style.background="rgba(255,255,255,0.05)";
+      document.querySelectorAll(".badge-coin").forEach(e=>{e.style.background="rgba(241,196,15,0.2)";e.style.color="#f1c40f";});
+      document.querySelectorAll(".badge-lv").forEach(e=>{e.style.background="rgba(163,185,252,0.15)";e.style.color="#a5b4fc";});
+      const pt=document.getElementById("progressText");if(pt)pt.style.color="var(--accent-soft,#a5b4fc)";
+      document.querySelectorAll(".streak-label").forEach(e=>e.style.color="#888");
+      document.querySelectorAll(".streak-label span").forEach(e=>e.style.color="#ccc");
+      document.querySelectorAll("button.main").forEach(e=>e.style.color="#fff");
+      if(tc)tc.style.color="#bbb"; if(tcat)tcat.style.color="#888";
+      const gt=document.getElementById("goalsSectionTitle");if(gt)gt.classList.add("dark");
+      document.querySelectorAll(".goal-plan-text").forEach(e=>e.classList.add("dark"));
+    } else {
+      document.body.style.color="#000";if(card)card.style.color="#000";
+      document.getElementById("missionCard").style.background="";
+      document.querySelectorAll(".badge-coin,.badge-lv").forEach(e=>{e.style.background="";e.style.color="";});
+      const pt=document.getElementById("progressText");if(pt)pt.style.color="";
+      document.querySelectorAll(".streak-label,.streak-label span").forEach(e=>e.style.color="");
+      document.querySelectorAll("button.main").forEach(e=>e.style.color="#fff");
+      if(tc)tc.style.color="#444"; if(tcat)tcat.style.color="#aaa";
+      const gt=document.getElementById("goalsSectionTitle");if(gt)gt.classList.remove("dark");
+      document.querySelectorAll(".goal-plan-text").forEach(e=>e.classList.remove("dark"));
     }
 
-    function loadTriviaHistory()  { return ls.get("triviaHistory")||[]; }
-    function saveTriviaHistory(e) { const h=loadTriviaHistory();h.push(e);if(h.length>30)h.splice(0,h.length-30);ls.set("triviaHistory",h); }
-    function pickTriviaCategory() {
-      const h = loadTriviaHistory();
-      const recentCats = h.slice(-9).map(x => x.category);
-      const avail = triviaCategories.filter(c => !recentCats.includes(c));
-      const pool = avail.length > 0 ? avail : triviaCategories;
-      return pool[Math.floor(Math.random() * pool.length)];
+    // 운세 표시
+    document.getElementById("fortuneText").textContent = `"${fortunes[dateIdx(fortunes)]}"`;
+  }
+
+  applyTheme(); updateUI(); renderTungOptions(); initTriviaCard();
+
+  function buildLast7DaysData(){const stats=loadDailyStats(),[y,m,d]=today.split("-").map(Number),base=new Date(y,m-1,d),res=[];for(let i=6;i>=0;i--){const dt=new Date(base);dt.setDate(base.getDate()-i);const k=`${dt.getFullYear()}-${String(dt.getMonth()+1).padStart(2,"0")}-${String(dt.getDate()).padStart(2,"0")}`;res.push({key:k,label:k.slice(5).replace("-","/"),count:stats[k]||0});}return res;}
+  function openWeeklyStatsModal(){const body=document.getElementById("weeklyStatsBody");body.innerHTML="";buildLast7DaysData().forEach(item=>{const r=document.createElement("div");r.className="weekly-row";const l=document.createElement("div");l.className="weekly-label";l.textContent=item.label;const b=document.createElement("div");b.className="weekly-bar";b.textContent="●".repeat(item.count)+"○".repeat(tasks.length-item.count)+` (${item.count}/${tasks.length})`;r.appendChild(l);r.appendChild(b);body.appendChild(r);});document.getElementById("weeklyModal").style.display="flex";}
+  function closeWeeklyStats(){document.getElementById("weeklyModal").style.display="none";}
+  function checkAndShowWeeklyStats(){const comp=getCompletedCount();if(comp>=tasks.length){if(ls.str("allDonePopupDate")!==today){ls.setStr("allDonePopupDate",today);setTimeout(()=>showAllDoneModal(),300);return;}}const thr=[2,4,6];if(!thr.includes(comp))return;const s=loadWeeklyPopup(),ts=s[today]||{};if(ts[comp])return;ts[comp]=true;s[today]=ts;saveWeeklyPopup(s);openWeeklyStatsModal();}
+  function showAllDoneModal(){const msgs=["Another full day! Amazing 🌟","All 7 done! What a great day ✨","Perfect day! Keep it up tomorrow 💪","Full clear! Knew you could do it 🔥","Crushed every task today! 👏"];document.getElementById("allDoneSubtext").textContent=msgs[Math.floor(Math.random()*msgs.length)];document.getElementById("allDoneModal").style.display="flex";}
+  function closeAllDoneModal(){document.getElementById("allDoneModal").style.display="none";}
+
+  function renderTungOptions(){const list=document.getElementById("tungOptionsList");if(!list)return;list.innerHTML="";tungOptions.forEach(name=>{const btn=document.createElement("button");btn.className="tung-option-btn";btn.textContent=name;btn.onclick=()=>pickTungOption(name);list.appendChild(btn);});}
+  function openSettingsModal(){
+    const ml=document.getElementById("settingsMissionList");ml.innerHTML="";
+    missionData.forEach((m,i)=>{const r=document.createElement("div");r.style.cssText="border:1px solid #eee;border-radius:10px;padding:8px 10px;";r.innerHTML=`<div style="display:flex;gap:6px;margin-bottom:5px;"><input id="mName_${i}" value="${m.name}" style="flex:1;border:1px solid #ddd;border-radius:6px;padding:4px 8px;font-size:12px;"><select id="mTier_${i}" style="border:1px solid #ddd;border-radius:6px;padding:4px 6px;font-size:12px;"><option value="S" ${m.tier==="S"?"selected":""}>S-Tier</option><option value="A" ${m.tier==="A"?"selected":""}>A-Tier</option><option value="B" ${m.tier==="B"?"selected":""}>B-Tier</option></select></div><input id="mHint_${i}" value="${m.hint}" style="width:100%;box-sizing:border-box;border:1px solid #ddd;border-radius:6px;padding:4px 8px;font-size:11px;color:#555;">`;ml.appendChild(r);});
+    const tl=document.getElementById("settingsTungList");tl.innerHTML="";
+    tungOptions.forEach((opt,i)=>{const r=document.createElement("div");r.style.cssText="display:flex;gap:6px;align-items:center;";r.innerHTML=`<input id="tung_${i}" value="${opt}" style="flex:1;border:1px solid #ddd;border-radius:6px;padding:4px 8px;font-size:12px;"><button onclick="removeTungOption(${i})" style="border:none;background:transparent;font-size:16px;cursor:pointer;color:#aaa;padding:0 4px;">×</button>`;tl.appendChild(r);});
+    document.getElementById("settingsModal").style.display="flex";
+  }
+  function addTungOption(){const l=document.getElementById("settingsTungList"),i=l.children.length,r=document.createElement("div");r.style.cssText="display:flex;gap:6px;align-items:center;";r.innerHTML=`<input id="tung_${i}" value="" style="flex:1;border:1px solid #ddd;border-radius:6px;padding:4px 8px;font-size:12px;"><button onclick="removeTungOption(${i})" style="border:none;background:transparent;font-size:16px;cursor:pointer;color:#aaa;padding:0 4px;">×</button>`;l.appendChild(r);}
+  function removeTungOption(i){const l=document.getElementById("settingsTungList");if(l.children[i])l.children[i].remove();Array.from(l.children).forEach((r,idx)=>{const inp=r.querySelector("input"),btn=r.querySelector("button");if(inp)inp.id=`tung_${idx}`;if(btn)btn.setAttribute("onclick",`removeTungOption(${idx})`);});}
+  function saveSettings(){ls.set("customMissions",missionData.map((_,i)=>({name:document.getElementById(`mName_${i}`)?.value.trim()||missionData[i].name,hint:document.getElementById(`mHint_${i}`)?.value.trim()||missionData[i].hint,tier:document.getElementById(`mTier_${i}`)?.value||missionData[i].tier})));ls.set("customTungOptions",Array.from(document.getElementById("settingsTungList").querySelectorAll("input")).map(e=>e.value.trim()).filter(v=>v));closeSettingsModal();alert("Saved! Refresh to apply changes 🙂");}
+  function closeSettingsModal(){document.getElementById("settingsModal").style.display="none";}
+
+  const triviaCategories=["World Geography","Science Formulas","Math Facts","Football (Soccer)","Computer Science","AI Knowledge","Investment Tips","Skincare Tips","Movie Recommendation","World History"];
+
+  function initTriviaCard(){
+    const k=ls.str("mandart_api_key");
+    const hb=document.getElementById("apiKeyHeaderBtn");if(hb)hb.title=k?"API Key: 설정됨 ✅":"API Key 설정";
+    if(!k){document.getElementById("triviaNoKey").style.display="block";document.getElementById("triviaBtn").style.display="none";document.getElementById("triviaCard").style.display="none";return;}
+    document.getElementById("triviaNoKey").style.display="none";
+    if(ls.str("triviaDate")===today&&ls.str("triviaText")){
+      const tc=document.getElementById("triviaContent"),tcat=document.getElementById("triviaCategory");
+      tc.textContent=ls.str("triviaText"); tcat.textContent=`# ${ls.str("triviaCategory")}`;
+      if(window._isDarkTheme){tc.style.color="#bbb";tcat.style.color="#888";}
+      document.getElementById("triviaCard").style.display="block";
+      document.getElementById("triviaBtn").style.display="none"; return;
     }
+    document.getElementById("triviaBtn").style.display="block";
+  }
 
-    // ── Year Goals ────────────────────────────────────────────────
-    const MONTH_NAMES = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
-    const DEFAULT_GOALS = [
-      { plan: "" }, { plan: "" }, { plan: "" },
-      { plan: "플랭크 50초\n독서 15p\n브릴리언트 5개\n말해보카 50개\n달리기 2km or 만보\n퀴즈 서술형 or 객관식 80\n부기스 인스타/블로그+스토어" },
-      { plan: "플랭크 1분 15초\n독서 25p\n브릴리언트 6개\n말해보카 60개\n달리기 3km\n퀴즈 서술형 or 객관식 100\n부기스 주 2회 이상" },
-      { plan: "플랭크 1분 45초\n독서 30p\n브릴리언트 7개\n말해보카 70개\n달리기 4km\n퀴즈 서술형 or 객관식 120\n부기스 블로그 주 3회 고정" },
-      { plan: "플랭크 2분 30초\n독서 35p\n브릴리언트 8개\n말해보카 80개\n달리기 5km\n퀴즈 서술형 or 객관식 140\n부기스 스토어 월매출 목표 설정" },
-      { plan: "플랭크 3분 × 1세트\n독서 45p\n브릴리언트 9개\n말해보카 90개\n달리기 5.5km\n퀴즈 서술형 or 객관식 150\n부기스 콘텐츠 루틴화" },
-      { plan: "🎯 플랭크 3분 × 2세트\n독서 50p\n브릴리언트 10개\n말해보카 100개\n달리기 6km\n퀴즈 서술형 or 객관식 160\n부기스 블로그+인스타 동시 운영" },
-      { plan: "유지 + 새 챌린지 추가" },
-      { plan: "유지 + 새 챌린지 추가" },
-      { plan: "유지 + 새 챌린지 추가" }
-    ];
-    function loadYearGoals() {
-      const raw = ls.get("yearGoals2026");
-      if (raw && Array.isArray(raw) && raw.length === 12) return raw;
-      return DEFAULT_GOALS.map(g => ({ ...g }));
-    }
-    function saveYearGoals(g) { ls.set("yearGoals2026", g); }
-
-    function renderGoalsTimeline() {
-      const goals = loadYearGoals();
-      const tl = document.getElementById("goalsTimeline");
-      if (!tl) return;
-      tl.innerHTML = "";
-      const curMonth = parseInt(today.split("-")[1], 10);
-      const dk = window._isDarkTheme;
-      const titleEl = document.getElementById("goalsSectionTitle");
-      if (titleEl) titleEl.classList.toggle("dark", dk);
-
-      goals.forEach((g, i) => {
-        const mn = i + 1;
-        const state = mn < curMonth ? "past" : mn === curMonth ? "current" : "future";
-        const hasPlan = g.plan && g.plan.trim().length > 0;
-
-        const row = document.createElement("div"); row.className = "goal-row";
-        const dotWrap = document.createElement("div"); dotWrap.className = "goal-dot-wrap";
-        const dot = document.createElement("div");
-        dot.className = `goal-dot ${hasPlan ? state : "empty"}`;
-        dotWrap.appendChild(dot); row.appendChild(dotWrap);
-
-        const body = document.createElement("div"); body.className = "goal-body";
-        const header = document.createElement("div"); header.className = "goal-month-header";
-        const nameLbl = document.createElement("span");
-        nameLbl.className = `goal-month-name ${state}`;
-        nameLbl.textContent = `${MONTH_NAMES[i]} (${mn}월)`;
-        header.appendChild(nameLbl);
-        if (state === "current") {
-          const badge = document.createElement("span");
-          badge.className = "goal-month-badge show"; badge.textContent = "NOW";
-          header.appendChild(badge);
-        }
-        body.appendChild(header);
-
-        const planEl = document.createElement("div");
-        if (hasPlan) {
-          planEl.className = "goal-plan-text" + (dk ? " dark" : "");
-          planEl.textContent = g.plan;
-        } else {
-          planEl.className = "goal-plan-text empty-hint" + (dk ? " dark" : "");
-          planEl.textContent = state === "current" ? "아직 플랜 미작성" : state === "future" ? "계획 없음" : "기록 없음";
-        }
-        body.appendChild(planEl);
-
-        const editBtn = document.createElement("button");
-        editBtn.className = "goal-edit-inline"; editBtn.textContent = "✏️ edit";
-        editBtn.onclick = () => openGoalsEditModalAt(i);
-        body.appendChild(editBtn);
-
-        row.appendChild(body);
-        tl.appendChild(row);
-      });
-    }
-
-    function toggleGoals() {
-      const c = document.getElementById("goalsContainer");
-      const btn = document.getElementById("toggleGoalsButton");
-      if (!c.style.display || c.style.display === "none") {
-        renderGoalsTimeline(); c.style.display = "block"; btn.textContent = "🎯 Close";
-      } else { c.style.display = "none"; btn.textContent = "🎯 Goals"; }
-    }
-    function openGoalsEditModal() { openGoalsEditModalAt(null); }
-    function openGoalsEditModalAt(focusIdx) {
-      const goals = loadYearGoals();
-      const list = document.getElementById("goalsEditList"); list.innerHTML = "";
-      goals.forEach((g, i) => {
-        const div = document.createElement("div"); div.className = "goals-edit-row";
-        const lbl = document.createElement("div"); lbl.className = "goals-edit-month-label";
-        lbl.textContent = `${MONTH_NAMES[i]} (${i+1}월)`;
-        const ta = document.createElement("textarea"); ta.className = "goals-edit-textarea";
-        ta.id = `gPlan_${i}`; ta.value = g.plan || "";
-        ta.placeholder = "이번 달 강도 플랜을 적어보세요";
-        ta.addEventListener("input", () => { ta.style.height = "auto"; ta.style.height = ta.scrollHeight + "px"; });
-        div.appendChild(lbl); div.appendChild(ta); list.appendChild(div);
-        setTimeout(() => { ta.style.height = "auto"; ta.style.height = ta.scrollHeight + "px"; }, 0);
-      });
-      document.getElementById("goalsEditModal").style.display = "flex";
-      if (focusIdx !== null) {
-        setTimeout(() => {
-          const el = document.getElementById(`gPlan_${focusIdx}`);
-          if (el) { el.focus(); el.scrollIntoView({ behavior:"smooth", block:"center" }); }
-        }, 100);
-      }
-    }
-    function closeGoalsEditModal() { document.getElementById("goalsEditModal").style.display = "none"; }
-    function saveGoals() {
-      const goals = loadYearGoals();
-      goals.forEach((_, i) => { const ta = document.getElementById(`gPlan_${i}`); if(ta) goals[i].plan = ta.value.trim(); });
-      saveYearGoals(goals); closeGoalsEditModal(); renderGoalsTimeline();
-    }
-
-    // ── State ─────────────────────────────────────────────────────
-    function loadTungState() {
-      if(ls.str("tungDate")!==today){ls.setStr("tungDate",today);ls.setStr("tungCount","0");ls.setStr("tungFreeUsed","0");ls.rm("tungChoice");return{count:0,freeUsed:false};}
-      return{count:parseInt(ls.str("tungCount")||"0",10),freeUsed:ls.str("tungFreeUsed")==="1"};
-    }
-    let {count:tungCount,freeUsed:tungFreeUsed}=loadTungState();
-    let taskStatus=loadTaskStatus();
-    let coinCount=loadCoins(), dailyEvent=loadDailyEvent();
-    let isPicking=false, hasShownProgress=false, currentTask=null, currentTier=null, skippedTasks={};
-
-    function openApiKeyModal(){const k=ls.str("mandart_api_key")||"";document.getElementById("apiKeyStatus").innerHTML=k?`<span class="api-key-badge set">✅ 저장됨</span>`:`<span class="api-key-badge unset">미설정</span>`;const inp=document.getElementById("apiKeyModalInput");inp.value="";inp.placeholder=k?"새 키를 입력하면 교체돼요":"sk-ant-...";document.getElementById("apiKeyModal").style.display="flex";}
-    function closeApiKeyModal(){document.getElementById("apiKeyModal").style.display="none";}
-    function saveApiKey(){const v=document.getElementById("apiKeyModalInput").value.trim();if(v){ls.setStr("mandart_api_key",v);closeApiKeyModal();initTriviaCard();alert("API Key 저장 완료! 🔑");}else closeApiKeyModal();}
-    function clearApiKey(){if(confirm("API Key를 삭제할까요?")){ls.rm("mandart_api_key");closeApiKeyModal();initTriviaCard();}}
-
-    function getLevel(p){return Math.min(20,Math.max(1,Math.floor(p/5)+1));}
-    function getRewardForTask(name){
-      const tier=taskTier[name]||"B";let r=baseReward[tier];if(tier==="BONUS")return 0;
-      if(dailyEvent.id==="buff_all_plus1"&&r>0)r+=1;
-      if(dailyEvent.id==="buff_s_plus1"&&tier==="S")r+=1;
-      if(dailyEvent.id==="nerf_s_minus1"&&tier==="S")r=Math.max(0,r-1);
-      if(dailyEvent.id==="buff_b_plus2"&&tier==="B")r+=2;
-      if(dailyEvent.id==="nerf_all_minus1"&&r>0)r=Math.max(0,r-1);
-      if(dailyEvent.id==="buff_a_plus2"&&tier==="A")r+=2;
-      if(dailyEvent.id==="nerf_b_zero"&&tier==="B")r=0;
-      return r;
-    }
-    function getCompletedCount(){return Math.min(tasks.length,Object.values(taskStatus).filter(v=>v).length+tungCount);}
-
-    function updateUI(){
-      const comp = getCompletedCount();
-
-      // dailyStats 업데이트
-      const stats = loadDailyStats();
-      stats[today] = comp;
-      saveDailyStats(stats);
-
-      document.getElementById("progressText").textContent=`Today: ${comp} / ${tasks.length}`;
-      const el=document.getElementById("checkboxList");el.innerHTML="";
-      tasks.forEach(t=>{const d=document.createElement("div");d.textContent=(taskStatus[t]?"✔  ":"○  ")+t;if(taskStatus[t])d.classList.add("done");el.appendChild(d);});
-
-      const fullDays = countFullDays();
-      const pct = Math.min(100, (fullDays / YEAR_TOTAL_DAYS) * 100);
-      document.getElementById("streakText").textContent=`${fullDays} / ${YEAR_TOTAL_DAYS} (${pct.toFixed(1)}%)`;
-      document.getElementById("streakFill").style.width=`${pct}%`;
-
-      const TT=YEAR_TOTAL_DAYS*tasks.length,all=loadDailyStats(),done=Object.values(all).reduce((s,v)=>s+v,0),tp=Math.min(100,(done/TT)*100);
-      document.getElementById("taskStreakText").textContent=`${done} / ${TT} (${tp.toFixed(1)}%)`;
-      document.getElementById("taskStreakFill").style.width=`${tp}%`;
-
-      document.getElementById("badgeCoin").textContent=`🪙 ${coinCount}`;
-      document.getElementById("badgeLv").textContent=`⚡ LV ${getLevel(pct)}`;
-
-      const ev=document.getElementById("eventText");ev.className="";
-      const ico=dailyEvent.type==="buff"?"🟢":dailyEvent.type==="debuff"?"🔴":"🟡";
-      ev.innerHTML=`<span>${ico}</span><span>${dailyEvent.label}</span>`;
-      ev.classList.add(dailyEvent.type==="buff"?"event-buff":dailyEvent.type==="debuff"?"event-debuff":"event-special");
-
-      // ── 페이스 마커: 오늘까지 100% 달성 시 위치
-      // Full days 바: (경과일수 / YEAR_TOTAL_DAYS) * 100%
-      // Task 바: (경과일수 * tasks.length / TT) * 100% = 경과일수 / YEAR_TOTAL_DAYS 와 동일
-      const dayOfYear = getDayOfYear();
-      const pacePct = Math.min(100, (dayOfYear / YEAR_TOTAL_DAYS) * 100);
-      const paceEl1 = document.getElementById("paceFull");
-      const paceEl2 = document.getElementById("paceTask");
-      if (paceEl1) paceEl1.style.left = `calc(${pacePct}% - 1px)`;
-      if (paceEl2) paceEl2.style.left = `calc(${pacePct}% - 1px)`;
-
-      updateTungButtonVisibility();
-    }
-
-    function showProgressIfNeeded(){if(!hasShownProgress){document.getElementById("progressContainer").style.display="block";hasShownProgress=true;}}
-    function updateTungButtonVisibility(){const c=document.getElementById("tungContainer");if(!c)return;c.style.display=(!currentTask||getCompletedCount()>=tasks.length)?"none":"inline-block";}
-
-    function applyTheme(){
-      const[y,m,d]=getKSTDate().split("-").map(Number),date=new Date(y,m-1,d);
-      const diff=Math.floor((date-new Date(date.getFullYear(),0,1))/86400000);
-      const themes=[
-        {e:"🌅",b:"#fff5e6",c:"#ffffff",a:"#ff7b54",s:"#ffb199",dk:false},
-        {e:"🌊",b:"#e6f5ff",c:"#ffffff",a:"#3f8cff",s:"#9ac3ff",dk:false},
-        {e:"🌿",b:"#eef8f2",c:"#ffffff",a:"#2ecc71",s:"#8be3aa",dk:false},
-        {e:"🌌",b:"#050816",c:"#111827",a:"#6366f1",s:"#a5b4fc",dk:true},
-        {e:"☕️",b:"#f7f0ea",c:"#ffffff",a:"#b85c38",s:"#d19d85",dk:false},
-        {e:"📚",b:"#f6f4ff",c:"#ffffff",a:"#7c3aed",s:"#c4b5fd",dk:false},
-        {e:"🔥",b:"#fff1f2",c:"#ffffff",a:"#f97373",s:"#fecaca",dk:false},
-        {e:"🌈",b:"linear-gradient(135deg,#fdf2ff,#e0f2fe)",c:"#ffffff",a:"#ec4899",s:"#f9a8d4",dk:false},
-        {e:"🧊",b:"#edf5ff",c:"#ffffff",a:"#0ea5e9",s:"#7dd3fc",dk:false},
-        {e:"🍀",b:"#f1fdf3",c:"#ffffff",a:"#16a34a",s:"#6ee7b7",dk:false},
-        {e:"🌙",b:"#0d0d1a",c:"#13132b",a:"#a78bfa",s:"#c4b5fd",dk:true},
-        {e:"🖤",b:"#0a0a0a",c:"#1a1a1a",a:"#e5e5e5",s:"#aaaaaa",dk:true}
-      ];
-      const t=themes[diff%themes.length];
-      document.getElementById("themeLabel").textContent=t.e;
-      document.documentElement.style.setProperty("--accent",t.a);
-      document.documentElement.style.setProperty("--accent-soft",t.s);
-      document.body.style.background=t.b;
-      const card=document.getElementById("card");if(card)card.style.background=t.c;
-      window._isDarkTheme=t.dk;
-      document.body.classList.toggle("dark-mode", t.dk);
-
-      const tc=document.getElementById("triviaContent");
-      const tcat=document.getElementById("triviaCategory");
-
-      if(t.dk){
-        document.body.style.color="#f5f5f5";if(card)card.style.color="#f5f5f5";
-        document.getElementById("missionCard").style.background="rgba(255,255,255,0.05)";
-        document.querySelectorAll(".badge-coin").forEach(e=>{e.style.background="rgba(241,196,15,0.2)";e.style.color="#f1c40f";});
-        document.querySelectorAll(".badge-lv").forEach(e=>{e.style.background="rgba(163,185,252,0.15)";e.style.color="#a5b4fc";});
-        const pt=document.getElementById("progressText");if(pt)pt.style.color="var(--accent-soft,#a5b4fc)";
-        document.querySelectorAll(".streak-label").forEach(e=>e.style.color="#888");
-        document.querySelectorAll(".streak-label span").forEach(e=>e.style.color="#ccc");
-        document.querySelectorAll("button.main").forEach(e=>e.style.color="#fff");
-        if(tc)tc.style.color="#bbb"; if(tcat)tcat.style.color="#888";
-        const gt=document.getElementById("goalsSectionTitle");if(gt)gt.classList.add("dark");
-        document.querySelectorAll(".goal-plan-text").forEach(e=>e.classList.add("dark"));
-      } else {
-        document.body.style.color="#000";if(card)card.style.color="#000";
-        document.getElementById("missionCard").style.background="";
-        document.querySelectorAll(".badge-coin,.badge-lv").forEach(e=>{e.style.background="";e.style.color="";});
-        const pt=document.getElementById("progressText");if(pt)pt.style.color="";
-        document.querySelectorAll(".streak-label,.streak-label span").forEach(e=>e.style.color="");
-        document.querySelectorAll("button.main").forEach(e=>e.style.color="#fff");
-        if(tc)tc.style.color="#444"; if(tcat)tcat.style.color="#aaa";
-        const gt=document.getElementById("goalsSectionTitle");if(gt)gt.classList.remove("dark");
-        document.querySelectorAll(".goal-plan-text").forEach(e=>e.classList.remove("dark"));
-      }
-    }
-
-    applyTheme(); updateUI(); renderTungOptions(); initTriviaCard();
-
-    function buildLast7DaysData(){const stats=loadDailyStats(),[y,m,d]=today.split("-").map(Number),base=new Date(y,m-1,d),res=[];for(let i=6;i>=0;i--){const dt=new Date(base);dt.setDate(base.getDate()-i);const k=`${dt.getFullYear()}-${String(dt.getMonth()+1).padStart(2,"0")}-${String(dt.getDate()).padStart(2,"0")}`;res.push({key:k,label:k.slice(5).replace("-","/"),count:stats[k]||0});}return res;}
-    function openWeeklyStatsModal(){const body=document.getElementById("weeklyStatsBody");body.innerHTML="";buildLast7DaysData().forEach(item=>{const r=document.createElement("div");r.className="weekly-row";const l=document.createElement("div");l.className="weekly-label";l.textContent=item.label;const b=document.createElement("div");b.className="weekly-bar";b.textContent="●".repeat(item.count)+"○".repeat(tasks.length-item.count)+` (${item.count}/${tasks.length})`;r.appendChild(l);r.appendChild(b);body.appendChild(r);});document.getElementById("weeklyModal").style.display="flex";}
-    function closeWeeklyStats(){document.getElementById("weeklyModal").style.display="none";}
-    function checkAndShowWeeklyStats(){const comp=getCompletedCount();if(comp>=tasks.length){if(ls.str("allDonePopupDate")!==today){ls.setStr("allDonePopupDate",today);setTimeout(()=>showAllDoneModal(),300);return;}}const thr=[2,4,6];if(!thr.includes(comp))return;const s=loadWeeklyPopup(),ts=s[today]||{};if(ts[comp])return;ts[comp]=true;s[today]=ts;saveWeeklyPopup(s);openWeeklyStatsModal();}
-    function showAllDoneModal(){const msgs=["Another full day! Amazing 🌟","All 7 done! What a great day ✨","Perfect day! Keep it up tomorrow 💪","Full clear! Knew you could do it 🔥","Crushed every task today! 👏"];document.getElementById("allDoneSubtext").textContent=msgs[Math.floor(Math.random()*msgs.length)];document.getElementById("allDoneModal").style.display="flex";}
-    function closeAllDoneModal(){document.getElementById("allDoneModal").style.display="none";}
-
-    function renderTungOptions(){const list=document.getElementById("tungOptionsList");if(!list)return;list.innerHTML="";tungOptions.forEach(name=>{const btn=document.createElement("button");btn.className="tung-option-btn";btn.textContent=name;btn.onclick=()=>pickTungOption(name);list.appendChild(btn);});}
-    function openSettingsModal(){
-      const ml=document.getElementById("settingsMissionList");ml.innerHTML="";
-      missionData.forEach((m,i)=>{const r=document.createElement("div");r.style.cssText="border:1px solid #eee;border-radius:10px;padding:8px 10px;";r.innerHTML=`<div style="display:flex;gap:6px;margin-bottom:5px;"><input id="mName_${i}" value="${m.name}" style="flex:1;border:1px solid #ddd;border-radius:6px;padding:4px 8px;font-size:12px;"><select id="mTier_${i}" style="border:1px solid #ddd;border-radius:6px;padding:4px 6px;font-size:12px;"><option value="S" ${m.tier==="S"?"selected":""}>S-Tier</option><option value="A" ${m.tier==="A"?"selected":""}>A-Tier</option><option value="B" ${m.tier==="B"?"selected":""}>B-Tier</option></select></div><input id="mHint_${i}" value="${m.hint}" style="width:100%;box-sizing:border-box;border:1px solid #ddd;border-radius:6px;padding:4px 8px;font-size:11px;color:#555;">`;ml.appendChild(r);});
-      const tl=document.getElementById("settingsTungList");tl.innerHTML="";
-      tungOptions.forEach((opt,i)=>{const r=document.createElement("div");r.style.cssText="display:flex;gap:6px;align-items:center;";r.innerHTML=`<input id="tung_${i}" value="${opt}" style="flex:1;border:1px solid #ddd;border-radius:6px;padding:4px 8px;font-size:12px;"><button onclick="removeTungOption(${i})" style="border:none;background:transparent;font-size:16px;cursor:pointer;color:#aaa;padding:0 4px;">×</button>`;tl.appendChild(r);});
-      document.getElementById("settingsModal").style.display="flex";
-    }
-    function addTungOption(){const l=document.getElementById("settingsTungList"),i=l.children.length,r=document.createElement("div");r.style.cssText="display:flex;gap:6px;align-items:center;";r.innerHTML=`<input id="tung_${i}" value="" style="flex:1;border:1px solid #ddd;border-radius:6px;padding:4px 8px;font-size:12px;"><button onclick="removeTungOption(${i})" style="border:none;background:transparent;font-size:16px;cursor:pointer;color:#aaa;padding:0 4px;">×</button>`;l.appendChild(r);}
-    function removeTungOption(i){const l=document.getElementById("settingsTungList");if(l.children[i])l.children[i].remove();Array.from(l.children).forEach((r,idx)=>{const inp=r.querySelector("input"),btn=r.querySelector("button");if(inp)inp.id=`tung_${idx}`;if(btn)btn.setAttribute("onclick",`removeTungOption(${idx})`);});}
-    function saveSettings(){ls.set("customMissions",missionData.map((_,i)=>({name:document.getElementById(`mName_${i}`)?.value.trim()||missionData[i].name,hint:document.getElementById(`mHint_${i}`)?.value.trim()||missionData[i].hint,tier:document.getElementById(`mTier_${i}`)?.value||missionData[i].tier})));ls.set("customTungOptions",Array.from(document.getElementById("settingsTungList").querySelectorAll("input")).map(e=>e.value.trim()).filter(v=>v));closeSettingsModal();alert("Saved! Refresh to apply changes 🙂");}
-    function closeSettingsModal(){document.getElementById("settingsModal").style.display="none";}
-
-    const triviaCategories = [
-      "World Geography", "Science Formulas", "Math Facts", "Football (Soccer)",
-      "Computer Science", "AI Knowledge", "Investment Tips", "Skincare Tips",
-      "Movie Recommendation", "World History"
-    ];
-
-    function initTriviaCard(){
-      const k=ls.str("mandart_api_key");
-      const hb=document.getElementById("apiKeyHeaderBtn");if(hb)hb.title=k?"API Key: 설정됨 ✅":"API Key 설정";
-      if(!k){document.getElementById("triviaNoKey").style.display="block";document.getElementById("triviaBtn").style.display="none";document.getElementById("triviaCard").style.display="none";return;}
-      document.getElementById("triviaNoKey").style.display="none";
-      if(ls.str("triviaDate")===today&&ls.str("triviaText")){
+  async function loadTodayTrivia(){
+    const k=ls.str("mandart_api_key");
+    document.getElementById("triviaBtn").style.display="none";
+    document.getElementById("triviaLoading").style.display="block";
+    const cat=pickTriviaCategory(), hist=loadTriviaHistory();
+    const recentSummaries=hist.slice(-15).map(h=>`[${h.category}] ${h.summary}`).join("\n");
+    const avoidClause=recentSummaries?`\n\n[절대 금지] 아래 내용과 같거나 비슷한 주제·사실을 다루면 안 돼. 완전히 새로운 사실을 골라야 해:\n${recentSummaries}`:"";
+    const prompt=cat==="Movie Recommendation"
+      ?`오늘 볼 만한 영화 한 편을 추천해줘. 제목(개봉연도), 장르, 추천 이유 1~2문장을 포함해서 구체적으로 말해줘. 너무 유명한 영화(타이타닉, 인셉션 등)보다는 덜 알려진 명작이나 숨은 걸작 위주로 골라줘.${avoidClause}`
+      :`"${cat}"에 대한 흥미롭고 구체적인 상식 한 가지를 2~3문장으로 말해줘. "알고 계셨나요?" 같은 서두 없이 바로 본론으로 시작해. 최대한 구체적인 수치나 사례를 포함해서 생생하게.${avoidClause}`;
+    try{
+      const res=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json","x-api-key":k,"anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:300,messages:[{role:"user",content:prompt}]})});
+      if(!res.ok){const e=await res.json().catch(()=>({}));throw new Error(e?.error?.message||`HTTP ${res.status}`);}
+      const data=await res.json();
+      if(data.content?.[0]?.text){
+        const text=data.content[0].text.trim();
+        ls.setStr("triviaDate",today);ls.setStr("triviaText",text);ls.setStr("triviaCategory",cat);
+        saveTriviaHistory({date:today,category:cat,summary:text.slice(0,60)});
         const tc=document.getElementById("triviaContent"),tcat=document.getElementById("triviaCategory");
-        tc.textContent=ls.str("triviaText"); tcat.textContent=`# ${ls.str("triviaCategory")}`;
+        tc.textContent=text; tcat.textContent=`# ${cat}`;
         if(window._isDarkTheme){tc.style.color="#bbb";tcat.style.color="#888";}
-        document.getElementById("triviaCard").style.display="block";
-        document.getElementById("triviaBtn").style.display="none";
-        return;
-      }
-      document.getElementById("triviaBtn").style.display="block";
-    }
-
-    async function loadTodayTrivia(){
-      const k=ls.str("mandart_api_key");
-      document.getElementById("triviaBtn").style.display="none";
-      document.getElementById("triviaLoading").style.display="block";
-      const cat=pickTriviaCategory();
-      const hist=loadTriviaHistory();
-      const recentSummaries=hist.slice(-15).map(h=>`[${h.category}] ${h.summary}`).join("\n");
-      const avoidClause=recentSummaries?`\n\n[절대 금지] 아래 내용과 같거나 비슷한 주제·사실을 다루면 안 돼. 완전히 새로운 사실을 골라야 해:\n${recentSummaries}`:"";
-      const prompt=cat==="Movie Recommendation"
-        ?`오늘 볼 만한 영화 한 편을 추천해줘. 제목(개봉연도), 장르, 추천 이유 1~2문장을 포함해서 구체적으로 말해줘. 너무 유명한 영화(타이타닉, 인셉션 등)보다는 덜 알려진 명작이나 숨은 걸작 위주로 골라줘.${avoidClause}`
-        :`"${cat}"에 대한 흥미롭고 구체적인 상식 한 가지를 2~3문장으로 말해줘. "알고 계셨나요?" 같은 서두 없이 바로 본론으로 시작해. 최대한 구체적인 수치나 사례를 포함해서 생생하게.${avoidClause}`;
-      try{
-        const res=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json","x-api-key":k,"anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:300,messages:[{role:"user",content:prompt}]})});
-        if(!res.ok){const e=await res.json().catch(()=>({}));throw new Error(e?.error?.message||`HTTP ${res.status}`);}
-        const data=await res.json();
-        if(data.content?.[0]?.text){
-          const text=data.content[0].text.trim();
-          ls.setStr("triviaDate",today);ls.setStr("triviaText",text);ls.setStr("triviaCategory",cat);
-          saveTriviaHistory({date:today,category:cat,summary:text.slice(0,60)});
-          const tc=document.getElementById("triviaContent"),tcat=document.getElementById("triviaCategory");
-          tc.textContent=text; tcat.textContent=`# ${cat}`;
-          if(window._isDarkTheme){tc.style.color="#bbb";tcat.style.color="#888";}
-          document.getElementById("triviaLoading").style.display="none";
-          document.getElementById("triviaCard").style.display="block";
-        } else throw new Error("No content");
-      } catch(e){
         document.getElementById("triviaLoading").style.display="none";
-        const tc=document.getElementById("triviaContent");
-        tc.textContent=`Failed: ${e.message}`;
-        if(window._isDarkTheme)tc.style.color="#bbb";
-        document.getElementById("triviaCategory").textContent="";
         document.getElementById("triviaCard").style.display="block";
-      }
+      } else throw new Error("No content");
+    } catch(e){
+      document.getElementById("triviaLoading").style.display="none";
+      const tc=document.getElementById("triviaContent");
+      tc.textContent=`Failed: ${e.message}`;
+      if(window._isDarkTheme)tc.style.color="#bbb";
+      document.getElementById("triviaCategory").textContent="";
+      document.getElementById("triviaCard").style.display="block";
     }
+  }
 
-    let currentViewYear=parseInt(today.split("-")[0]),currentViewMonth=parseInt(today.split("-")[1]);
-    function buildMonthlyCalendar(year,month){
-      const stats=loadDailyStats(),cont=document.getElementById("calendarTableContainer");cont.innerHTML="";
-      document.getElementById("calendarMonthTitle").textContent=`${year}년 ${month}월`;
-      const perf=Object.values(loadDailyStats()).filter(v=>v>=tasks.length).length;
-      const pe=document.getElementById("perfectDaysCount");if(pe)pe.textContent=`♥ ${perf} ♥`;
-      const fd=new Date(year,month-1,1).getDay(),ld=new Date(year,month,0).getDate();
-      const table=document.createElement("table");table.className="calendar-table";
-      const thead=document.createElement("thead"),hr=document.createElement("tr");
-      ["일","월","화","수","목","금","토"].forEach(w=>{const th=document.createElement("th");th.textContent=w;hr.appendChild(th);});
-      thead.appendChild(hr);table.appendChild(thead);
-      const tbody=document.createElement("tbody");let row=document.createElement("tr"),cc=0;
-      for(let i=0;i<fd;i++){row.appendChild(document.createElement("td"));cc++;}
-      for(let day=1;day<=ld;day++){
-        if(cc===7){tbody.appendChild(row);row=document.createElement("tr");cc=0;}
-        const td=document.createElement("td"),key=`${year}-${String(month).padStart(2,"0")}-${String(day).padStart(2,"0")}`,cnt=stats[key]||0;
-        const num=document.createElement("div");num.className="cal-day-number";num.textContent=day;
-        const info=document.createElement("div");info.className="cal-day-tasks";info.textContent=`${cnt}/${tasks.length}`;
-        td.appendChild(num);td.appendChild(info);
-        if(cnt>=tasks.length)td.style.background="rgba(46,204,113,0.25)";
-        else if(cnt>=Math.ceil(tasks.length/2))td.style.background="rgba(241,196,15,0.2)";
-        if(key===today)td.classList.add("cal-today");
-        row.appendChild(td);cc++;
-      }
-      if(cc>0){for(let i=cc;i<7;i++)row.appendChild(document.createElement("td"));tbody.appendChild(row);}
-      table.appendChild(tbody);cont.appendChild(table);
+  let currentViewYear=parseInt(today.split("-")[0]),currentViewMonth=parseInt(today.split("-")[1]);
+  function buildMonthlyCalendar(year,month){
+    const stats=loadDailyStats(),cont=document.getElementById("calendarTableContainer");cont.innerHTML="";
+    document.getElementById("calendarMonthTitle").textContent=`${year}년 ${month}월`;
+    const perf=Object.values(loadDailyStats()).filter(v=>v>=tasks.length).length;
+    const pe=document.getElementById("perfectDaysCount");if(pe)pe.textContent=`♥ ${perf} ♥`;
+    const fd=new Date(year,month-1,1).getDay(),ld=new Date(year,month,0).getDate();
+    const table=document.createElement("table");table.className="calendar-table";
+    const thead=document.createElement("thead"),hr=document.createElement("tr");
+    ["일","월","화","수","목","금","토"].forEach(w=>{const th=document.createElement("th");th.textContent=w;hr.appendChild(th);});
+    thead.appendChild(hr);table.appendChild(thead);
+    const tbody=document.createElement("tbody");let row=document.createElement("tr"),cc=0;
+    for(let i=0;i<fd;i++){row.appendChild(document.createElement("td"));cc++;}
+    for(let day=1;day<=ld;day++){
+      if(cc===7){tbody.appendChild(row);row=document.createElement("tr");cc=0;}
+      const td=document.createElement("td"),key=`${year}-${String(month).padStart(2,"0")}-${String(day).padStart(2,"0")}`,cnt=stats[key]||0;
+      const num=document.createElement("div");num.className="cal-day-number";num.textContent=day;
+      const info=document.createElement("div");info.className="cal-day-tasks";info.textContent=`${cnt}/${tasks.length}`;
+      td.appendChild(num);td.appendChild(info);
+      if(cnt>=tasks.length)td.style.background="rgba(46,204,113,0.25)";
+      else if(cnt>=Math.ceil(tasks.length/2))td.style.background="rgba(241,196,15,0.2)";
+      if(key===today)td.classList.add("cal-today");
+      row.appendChild(td);cc++;
     }
-    function toggleCalendar(){const c=document.getElementById("calendarContainer"),btn=document.getElementById("toggleCalendarButton");if(!c.style.display||c.style.display==="none"){currentViewYear=parseInt(today.split("-")[0]);currentViewMonth=parseInt(today.split("-")[1]);buildMonthlyCalendar(currentViewYear,currentViewMonth);c.style.display="block";btn.textContent="📅 Close";document.getElementById("perfectDaysWrap").style.display="block";}else{c.style.display="none";btn.textContent="📅 Calendar";document.getElementById("perfectDaysWrap").style.display="none";}}
-    function changeMonth(delta){currentViewMonth+=delta;if(currentViewMonth>12){currentViewMonth=1;currentViewYear++;}else if(currentViewMonth<1){currentViewMonth=12;currentViewYear--;}buildMonthlyCalendar(currentViewYear,currentViewMonth);const rc=document.getElementById("reportContainer");if(rc&&rc.style.display!=="none")buildReport(currentViewYear,currentViewMonth);}
-    function toggleReport(){const rc=document.getElementById("reportContainer"),btn=document.getElementById("toggleReportButton");if(!rc.style.display||rc.style.display==="none"){buildReport(currentViewYear,currentViewMonth);rc.style.display="block";btn.textContent="📊 Close";}else{rc.style.display="none";btn.textContent="📊 Report";}}
-    function buildReport(year,month){const cont=document.getElementById("reportContainer");if(!cont)return;const stats=loadDailyStats(),ml=loadMissionLog(),sl=loadSkipLog();const ld=new Date(year,month,0).getDate(),mdays=[];for(let d=1;d<=ld;d++)mdays.push(`${year}-${String(month).padStart(2,"0")}-${String(d).padStart(2,"0")}`);const td2=new Date(...today.split("-").map((v,i)=>i===1?v-1:+v)),dow=td2.getDay();const ws=new Date(td2);ws.setDate(td2.getDate()-(dow===0?6:dow-1));const wdays=[];for(let i=0;i<7;i++){const dd=new Date(ws);dd.setDate(ws.getDate()+i);wdays.push(`${dd.getFullYear()}-${String(dd.getMonth()+1).padStart(2,"0")}-${String(dd.getDate()).padStart(2,"0")}`);}function makeItems(days,label){const items=[],td=days.filter(d=>d<=today).length;if(td===0)return items;const dd=days.filter(d=>stats[d]>=tasks.length).length,dr=Math.round(dd/td*100);if(dr===100)items.push({i:"🏆",t:`Perfect! All ${td} days fully completed.`});else if(dr>=70)items.push({i:"✅",t:`Great job! ${dr}% full completion rate this ${label}.`});else if(dr>=40)items.push({i:"📈",t:`${dr}% full days this ${label}. Room to grow!`});else items.push({i:"💪",t:`Only ${dr}% full days this ${label}. Let's push harder!`});const st=days.reduce((s,d)=>s+(sl[d]||0),0);if(st>=5)items.push({i:"😅",t:`Skipped ${st} times this ${label}. Maybe a bit too many?`});else if(st>=3)items.push({i:"🙈",t:`${st} skips this ${label}. Try to cut it down!`});else if(st===0&&td>=3)items.push({i:"🔥",t:`Zero skips this ${label}! Amazing discipline.`});const mc={};tasks.forEach(t=>mc[t]=0);days.forEach(d=>{if(ml[d])Object.entries(ml[d]).forEach(([t,c])=>{if(mc[t]!=null)mc[t]+=c;});});const sorted=Object.entries(mc).sort((a,b)=>b[1]-a[1]),mx=sorted[0],mn=sorted[sorted.length-1],act=days.filter(d=>d<=today).length;if(mx&&mx[1]>=Math.round(act*0.7))items.push({i:"⭐",t:`"${mx[0]}" is your strongest mission this ${label}!`});if(mn&&mn[1]===0&&act>=3)items.push({i:"😬",t:`"${mn[0]}" — not done once this ${label}. Don't forget it!`});else if(mn&&mn[1]<=Math.round(act*0.2)&&act>=5)items.push({i:"⚠️",t:`"${mn[0]}" is being neglected this ${label}. Only ${mn[1]} time(s).`});return items;}const dk=window._isDarkTheme?'color:#d0d0d0;background:rgba(255,255,255,0.06)':'';const wi=makeItems(wdays,"week"),mi=makeItems(mdays,"month");let html="";if(wi.length)html+=`<div class="report-section"><div class="report-title">📊 This Week</div>${wi.map(x=>`<div class="report-item" style="${dk}"><span class="ri-icon">${x.i}</span><span>${x.t}</span></div>`).join("")}</div>`;if(mi.length)html+=`<div class="report-section"><div class="report-title">📅 ${year}.${String(month).padStart(2,"0")} Monthly</div>${mi.map(x=>`<div class="report-item" style="${dk}"><span class="ri-icon">${x.i}</span><span>${x.t}</span></div>`).join("")}</div>`;if(!html)html=`<div class="report-item" style="${dk}"><span class="ri-icon">🌱</span><span>Not enough data yet. Keep going!</span></div>`;cont.innerHTML=html;}
+    if(cc>0){for(let i=cc;i<7;i++)row.appendChild(document.createElement("td"));tbody.appendChild(row);}
+    table.appendChild(tbody);cont.appendChild(table);
+  }
+  function toggleCalendar(){const c=document.getElementById("calendarContainer"),btn=document.getElementById("toggleCalendarButton");if(!c.style.display||c.style.display==="none"){currentViewYear=parseInt(today.split("-")[0]);currentViewMonth=parseInt(today.split("-")[1]);buildMonthlyCalendar(currentViewYear,currentViewMonth);c.style.display="block";btn.textContent="📅 Close";document.getElementById("perfectDaysWrap").style.display="block";}else{c.style.display="none";btn.textContent="📅 Calendar";document.getElementById("perfectDaysWrap").style.display="none";}}
+  function changeMonth(delta){currentViewMonth+=delta;if(currentViewMonth>12){currentViewMonth=1;currentViewYear++;}else if(currentViewMonth<1){currentViewMonth=12;currentViewYear--;}buildMonthlyCalendar(currentViewYear,currentViewMonth);const rc=document.getElementById("reportContainer");if(rc&&rc.style.display!=="none")buildReport(currentViewYear,currentViewMonth);}
+  function toggleReport(){const rc=document.getElementById("reportContainer"),btn=document.getElementById("toggleReportButton");if(!rc.style.display||rc.style.display==="none"){buildReport(currentViewYear,currentViewMonth);rc.style.display="block";btn.textContent="📊 Close";}else{rc.style.display="none";btn.textContent="📊 Report";}}
+  function buildReport(year,month){const cont=document.getElementById("reportContainer");if(!cont)return;const stats=loadDailyStats(),ml=loadMissionLog(),sl=loadSkipLog();const ld=new Date(year,month,0).getDate(),mdays=[];for(let d=1;d<=ld;d++)mdays.push(`${year}-${String(month).padStart(2,"0")}-${String(d).padStart(2,"0")}`);const td2=new Date(...today.split("-").map((v,i)=>i===1?v-1:+v)),dow=td2.getDay();const ws=new Date(td2);ws.setDate(td2.getDate()-(dow===0?6:dow-1));const wdays=[];for(let i=0;i<7;i++){const dd=new Date(ws);dd.setDate(ws.getDate()+i);wdays.push(`${dd.getFullYear()}-${String(dd.getMonth()+1).padStart(2,"0")}-${String(dd.getDate()).padStart(2,"0")}`);}function makeItems(days,label){const items=[],td=days.filter(d=>d<=today).length;if(td===0)return items;const dd=days.filter(d=>stats[d]>=tasks.length).length,dr=Math.round(dd/td*100);if(dr===100)items.push({i:"🏆",t:`Perfect! All ${td} days fully completed.`});else if(dr>=70)items.push({i:"✅",t:`Great job! ${dr}% full completion rate this ${label}.`});else if(dr>=40)items.push({i:"📈",t:`${dr}% full days this ${label}. Room to grow!`});else items.push({i:"💪",t:`Only ${dr}% full days this ${label}. Let's push harder!`});const st=days.reduce((s,d)=>s+(sl[d]||0),0);if(st>=5)items.push({i:"😅",t:`Skipped ${st} times this ${label}. Maybe a bit too many?`});else if(st>=3)items.push({i:"🙈",t:`${st} skips this ${label}. Try to cut it down!`});else if(st===0&&td>=3)items.push({i:"🔥",t:`Zero skips this ${label}! Amazing discipline.`});const mc={};tasks.forEach(t=>mc[t]=0);days.forEach(d=>{if(ml[d])Object.entries(ml[d]).forEach(([t,c])=>{if(mc[t]!=null)mc[t]+=c;});});const sorted=Object.entries(mc).sort((a,b)=>b[1]-a[1]),mx=sorted[0],mn=sorted[sorted.length-1],act=days.filter(d=>d<=today).length;if(mx&&mx[1]>=Math.round(act*0.7))items.push({i:"⭐",t:`"${mx[0]}" is your strongest mission this ${label}!`});if(mn&&mn[1]===0&&act>=3)items.push({i:"😬",t:`"${mn[0]}" — not done once this ${label}. Don't forget it!`});else if(mn&&mn[1]<=Math.round(act*0.2)&&act>=5)items.push({i:"⚠️",t:`"${mn[0]}" is being neglected this ${label}. Only ${mn[1]} time(s).`});return items;}const dk=window._isDarkTheme?'color:#d0d0d0;background:rgba(255,255,255,0.06)':'';const wi=makeItems(wdays,"week"),mi=makeItems(mdays,"month");let html="";if(wi.length)html+=`<div class="report-section"><div class="report-title">📊 This Week</div>${wi.map(x=>`<div class="report-item" style="${dk}"><span class="ri-icon">${x.i}</span><span>${x.t}</span></div>`).join("")}</div>`;if(mi.length)html+=`<div class="report-section"><div class="report-title">📅 ${year}.${String(month).padStart(2,"0")} Monthly</div>${mi.map(x=>`<div class="report-item" style="${dk}"><span class="ri-icon">${x.i}</span><span>${x.t}</span></div>`).join("")}</div>`;if(!html)html=`<div class="report-item" style="${dk}"><span class="ri-icon">🌱</span><span>Not enough data yet. Keep going!</span></div>`;cont.innerHTML=html;}
 
-    function pickRandom(){if(isPicking)return;isPicking=true;const pb=document.getElementById("pickButton"),re=document.getElementById("result"),he=document.getElementById("hint");pb.disabled=true;pb.textContent="Picking…";document.getElementById("actionButtons").style.display="none";re.classList.remove("s-glow","has-task");document.getElementById("missionCard").classList.remove("has-task");const avail=tasks.filter(t=>!taskStatus[t]&&!skippedTasks[t]);if(avail.length===0){const rem=tasks.filter(t=>!taskStatus[t]);re.textContent=rem.length===0?"All done today!":"Only skipped missions left. That's it for today!";he.textContent=rem.length===0?"":"Refresh to reset skipped missions.";pb.disabled=false;pb.textContent="Pick one now!";isPicking=false;showProgressIfNeeded();updateTungButtonVisibility();return;}let dots=0;re.textContent="Thinking";he.textContent="Just a sec…";const loading=setInterval(()=>{dots=(dots+1)%4;re.textContent="Thinking"+".".repeat(dots);},400);setTimeout(()=>{clearInterval(loading);const fc=avail[Math.floor(Math.random()*avail.length)],ft=taskTier[fc]||"B";currentTask=fc;currentTier=ft;re.innerHTML=`<span class="tier-label">${tierLabel[ft]||"B-Tier"}</span>${fc.replace(/</g,"&lt;").replace(/>/g,"&gt;")}`;re.classList.add("has-task");document.getElementById("missionCard").classList.add("has-task");if(ft==="S"){re.classList.add("s-glow");he.textContent=`✨ S-tier mission! ✨ ${hints[fc]||""}`;}else he.textContent=hints[fc]||"";document.getElementById("actionButtons").style.display="flex";pb.disabled=false;pb.textContent="Pick one now!";isPicking=false;showProgressIfNeeded();updateTungButtonVisibility();},2000);}
+  function pickRandom(){if(isPicking)return;isPicking=true;const pb=document.getElementById("pickButton"),re=document.getElementById("result"),he=document.getElementById("hint");pb.disabled=true;pb.textContent="Picking…";document.getElementById("actionButtons").style.display="none";re.classList.remove("s-glow","has-task");document.getElementById("missionCard").classList.remove("has-task");const avail=tasks.filter(t=>!taskStatus[t]&&!skippedTasks[t]);if(avail.length===0){const rem=tasks.filter(t=>!taskStatus[t]);re.textContent=rem.length===0?"All done today!":"Only skipped missions left. That's it for today!";he.textContent=rem.length===0?"":"Refresh to reset skipped missions.";pb.disabled=false;pb.textContent="Pick one now!";isPicking=false;showProgressIfNeeded();updateTungButtonVisibility();return;}let dots=0;re.textContent="Thinking";he.textContent="Just a sec…";const loading=setInterval(()=>{dots=(dots+1)%4;re.textContent="Thinking"+".".repeat(dots);},400);setTimeout(()=>{clearInterval(loading);const fc=avail[Math.floor(Math.random()*avail.length)],ft=taskTier[fc]||"B";currentTask=fc;currentTier=ft;re.innerHTML=`<span class="tier-label">${tierLabel[ft]||"B-Tier"}</span>${fc.replace(/</g,"&lt;").replace(/>/g,"&gt;")}`;re.classList.add("has-task");document.getElementById("missionCard").classList.add("has-task");if(ft==="S"){re.classList.add("s-glow");he.textContent=`✨ S-tier mission! ✨ ${hints[fc]||""}`;}else he.textContent=hints[fc]||"";document.getElementById("actionButtons").style.display="flex";pb.disabled=false;pb.textContent="Pick one now!";isPicking=false;showProgressIfNeeded();updateTungButtonVisibility();},2000);}
 
-    function markComplete(){if(!currentTask||!tasks.includes(currentTask))return;if(taskStatus[currentTask]){document.getElementById("hint").textContent="Already done!";hideButtons();return;}taskStatus[currentTask]=true;ls.set("taskStatus",taskStatus);recordMissionDone(currentTask);let r=getRewardForTask(currentTask);const cnt=Object.values(taskStatus).filter(v=>v).length;const h=document.getElementById("hint");if(dailyEvent.id==="lucky_day"&&cnt===1){r+=3;h.textContent=`Done! (+${r} coins, first mission bonus +3!)`;}else if(dailyEvent.id==="double_first"&&cnt===1){r*=2;h.textContent=`Done! (+${r} coins, first mission x2!)`;}else if(dailyEvent.id==="special_5done"&&cnt===5){r+=5;h.textContent=`Done! (+${r} coins, 5 missions bonus +5!)`;}else if(dailyEvent.id==="buff_last_plus3"&&cnt===tasks.length){r+=3;h.textContent=`Done! (+${r} coins, last mission bonus +3!)`;}else if(r>0)h.textContent=`Done! (+${r} coins)`;else h.textContent="Done!";if(r>0){coinCount+=r;ls.setStr("coinCount",String(coinCount));}hideButtons();updateUI();checkAndShowWeeklyStats();}
-    function hideButtons(){document.getElementById("actionButtons").style.display="none";}
-    function markPending(){if(!currentTask||!tasks.includes(currentTask)){hideButtons();return;}skippedTasks[currentTask]=true;document.getElementById("hint").textContent="Skipped!";hideButtons();}
-    function openTungModal(){if(getCompletedCount()>=tasks.length){document.getElementById("hint").textContent="Already cleared ⚡";return;}document.getElementById("tungModal").style.display="flex";}
-    function closeTungModal(){document.getElementById("tungModal").style.display="none";}
-    function pickTungOption(name){const comp=getCompletedCount();if(comp>=tasks.length){document.getElementById("hint").textContent="All done today!";closeTungModal();return;}if(!tungFreeUsed){tungFreeUsed=true;tungCount++;ls.setStr("tungFreeUsed","1");ls.setStr("tungCount",String(tungCount));ls.setStr("tungDate",today);ls.setStr("tungChoice",name);recordSkip();document.getElementById("hint").textContent=`Skipped with '${name}'! (free skip, +1 done)`;}else{if(coinCount<5){document.getElementById("hint").textContent="Not enough coins for extra skip. (need: 5 coins)";closeTungModal();return;}coinCount-=5;tungCount++;ls.setStr("coinCount",String(coinCount));ls.setStr("tungCount",String(tungCount));ls.setStr("tungDate",today);ls.setStr("tungChoice",name);recordSkip();document.getElementById("hint").textContent=`Skipped with '${name}'! (5 coins used, +1 done)`;}closeTungModal();updateUI();checkAndShowWeeklyStats();}
-    function useTungCoins(add,cost){if(coinCount<cost){document.getElementById("hint").textContent=`Not enough coins. (need: ${cost})`;return;}const rem=tasks.length-getCompletedCount();if(rem<=0){document.getElementById("hint").textContent="All tasks already done today!";closeTungModal();return;}const actual=Math.min(add,rem);coinCount-=cost;tungCount+=actual;ls.setStr("coinCount",String(coinCount));ls.setStr("tungCount",String(tungCount));ls.setStr("tungDate",today);for(let i=0;i<actual;i++)recordSkip();document.getElementById("hint").textContent=`Used ${cost} coins to skip ${actual} task(s)!`;closeTungModal();updateUI();checkAndShowWeeklyStats();}
-  </script>
+  function markComplete(){
+    if(!currentTask||!tasks.includes(currentTask))return;
+    if(taskStatus[currentTask]){document.getElementById("hint").textContent="Already done!";hideButtons();return;}
+    taskStatus[currentTask]=true;ls.set("taskStatus",taskStatus);recordMissionDone(currentTask);
+    let r=getRewardForTask(currentTask);
+    const cnt=Object.values(taskStatus).filter(v=>v).length;
+    const h=document.getElementById("hint");
+
+    // ── 크리티컬 히트 (15%) ──
+    const isCritical = r > 0 && Math.random() < 0.15;
+    if(isCritical){ r *= 2; triggerCritical(); }
+
+    if(dailyEvent.id==="lucky_day"&&cnt===1){r+=3;h.textContent=`Done! (+${r} coins, first bonus +3!${isCritical?" ⚡ CRITICAL!":""})` ;}
+    else if(dailyEvent.id==="double_first"&&cnt===1){r*=2;h.textContent=`Done! (+${r} coins, first x2!${isCritical?" ⚡ CRITICAL!":""})`;}
+    else if(dailyEvent.id==="special_5done"&&cnt===5){r+=5;h.textContent=`Done! (+${r} coins, 5 missions bonus!${isCritical?" ⚡ CRITICAL!":""})`;}
+    else if(dailyEvent.id==="buff_last_plus3"&&cnt===tasks.length){r+=3;h.textContent=`Done! (+${r} coins, last bonus!${isCritical?" ⚡ CRITICAL!":""})`;}
+    else if(r>0) h.textContent=`Done! (+${r} coins${isCritical?" ⚡ CRITICAL!":""})`;
+    else h.textContent="Done!";
+
+    if(r>0){coinCount+=r;ls.setStr("coinCount",String(coinCount));}
+    hideButtons();updateUI();checkAndShowWeeklyStats();
+  }
+  function hideButtons(){document.getElementById("actionButtons").style.display="none";}
+  function markPending(){if(!currentTask||!tasks.includes(currentTask)){hideButtons();return;}skippedTasks[currentTask]=true;document.getElementById("hint").textContent="Skipped!";hideButtons();}
+  function openTungModal(){if(getCompletedCount()>=tasks.length){document.getElementById("hint").textContent="Already cleared ⚡";return;}document.getElementById("tungModal").style.display="flex";}
+  function closeTungModal(){document.getElementById("tungModal").style.display="none";}
+  function pickTungOption(name){const comp=getCompletedCount();if(comp>=tasks.length){document.getElementById("hint").textContent="All done today!";closeTungModal();return;}if(!tungFreeUsed){tungFreeUsed=true;tungCount++;ls.setStr("tungFreeUsed","1");ls.setStr("tungCount",String(tungCount));ls.setStr("tungDate",today);ls.setStr("tungChoice",name);recordSkip();document.getElementById("hint").textContent=`Skipped with '${name}'! (free skip, +1 done)`;}else{if(coinCount<5){document.getElementById("hint").textContent="Not enough coins for extra skip. (need: 5 coins)";closeTungModal();return;}coinCount-=5;tungCount++;ls.setStr("coinCount",String(coinCount));ls.setStr("tungCount",String(tungCount));ls.setStr("tungDate",today);ls.setStr("tungChoice",name);recordSkip();document.getElementById("hint").textContent=`Skipped with '${name}'! (5 coins used, +1 done)`;}closeTungModal();updateUI();checkAndShowWeeklyStats();}
+  function useTungCoins(add,cost){if(coinCount<cost){document.getElementById("hint").textContent=`Not enough coins. (need: ${cost})`;return;}const rem=tasks.length-getCompletedCount();if(rem<=0){document.getElementById("hint").textContent="All tasks already done today!";closeTungModal();return;}const actual=Math.min(add,rem);coinCount-=cost;tungCount+=actual;ls.setStr("coinCount",String(coinCount));ls.setStr("tungCount",String(tungCount));ls.setStr("tungDate",today);for(let i=0;i<actual;i++)recordSkip();document.getElementById("hint").textContent=`Used ${cost} coins to skip ${actual} task(s)!`;closeTungModal();updateUI();checkAndShowWeeklyStats();}
+</script>
 </body>
 </html>
