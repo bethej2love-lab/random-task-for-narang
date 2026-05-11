@@ -943,7 +943,7 @@
     const recentSummaries=hist.slice(-15).map(h=>`[${h.category}] ${h.summary}`).join("\n");
     const avoidClause=recentSummaries?`\n\n[절대 금지] 아래 내용과 같거나 비슷한 주제·사실을 다루면 안 돼. 완전히 새로운 사실을 골라야 해:\n${recentSummaries}`:"";
     const prompt=cat==="Movie Recommendation"
-      ?`오늘 볼 만한 영화 한 편을 추천해줘. 제목(개봉연도), 장르, 추천 이유 1~2문장을 포함해서 구체적으로 말해줘. 너무 유명한 영화(타이타닉, 인셉션 등)보다는 덜 알려진 명작이나 숨은 걸작 위주로 골라줘.${avoidClause}`
+      ?`오늘 볼 만한 영화 한 편을 추천해줘. 제목(정확한 한국 개봉 제목 또는 원제, 개봉연도), 장르, 추천 이유 1~2문장을 포함해줘. 반드시 실제로 존재하고 네가 확실히 아는 영화만 추천해야 해 — 제목이나 정보를 조금이라도 지어내거나 혼동하면 절대 안 돼. 확신이 없으면 잘 알려진 작품을 추천해도 좋아.${avoidClause}`
       :`"${cat}"에 대한 흥미롭고 구체적인 상식 한 가지를 2~3문장으로 말해줘. "알고 계셨나요?" 같은 서두 없이 바로 본론으로 시작해. 최대한 구체적인 수치나 사례를 포함해서 생생하게.${avoidClause}`;
     try{
       const res=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"Content-Type":"application/json","x-api-key":k,"anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:300,messages:[{role:"user",content:prompt}]})});
