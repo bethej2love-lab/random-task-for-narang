@@ -307,14 +307,14 @@
     <div class="checkbox-list" id="checkboxList"></div>
 
     <div class="streak-box">
-      <div class="streak-label">Full days this year <span id="streakText">0 / 351 (0.0%)</span></div>
+      <div class="streak-label">Full days (5/12~) <span id="streakText">0 / 234 (0.0%)</span></div>
       <div class="streak-bar">
         <div class="streak-fill" id="streakFill"></div>
         <div class="pace-marker" id="paceFull"></div>
       </div>
     </div>
     <div class="streak-box">
-      <div class="streak-label">Total tasks this year <span id="taskStreakText">0 / 2457 (0.0%)</span></div>
+      <div class="streak-label">Total tasks (5/12~) <span id="taskStreakText">0 / 1638 (0.0%)</span></div>
       <div class="streak-bar">
         <div class="streak-fill" id="taskStreakFill"></div>
         <div class="pace-marker" id="paceTask"></div>
@@ -383,11 +383,11 @@
     </div>
 
     <a href="https://bethej2love-lab.github.io/narang-mandart-chart/mandart" target="_blank"
-      style="display:block; margin-top:14px; padding:10px 0; text-align:center; background:var(--accent,#4b8cff); color:#fff; font-size:13px; font-weight:600; border-radius:999px; text-decoration:none;">
+      style="display:block; margin-top:10px; padding:10px 0; text-align:center; background:transparent; color:var(--accent,#4b8cff); font-size:12px; font-weight:600; border-radius:999px; text-decoration:none; border:1.5px solid var(--accent,#4b8cff); width:100%; box-sizing:border-box; cursor:pointer; font-family:inherit; margin-top:14px;">
       🗺️ Go to Mandart
     </a>
     <a href="https://www.notion.so/dashboard-2f5139841f3c806ab733fa8e408225ee" target="_blank"
-      style="display:block; margin-top:8px; padding:10px 0; text-align:center; background:transparent; color:var(--accent,#4b8cff); font-size:13px; font-weight:600; border-radius:999px; text-decoration:none; border:1.5px solid var(--accent,#4b8cff);">
+      style="display:block; margin-top:10px; padding:10px 0; text-align:center; background:transparent; color:var(--accent,#4b8cff); font-size:12px; font-weight:600; border-radius:999px; text-decoration:none; border:1.5px solid var(--accent,#4b8cff); width:100%; box-sizing:border-box; cursor:pointer; font-family:inherit;">
       📝 Go to Notion
     </a>
 
@@ -397,21 +397,21 @@
       <div id="triviaCategory" style="font-size:10px; color:#aaa; margin-top:5px; text-align:right;"></div>
     </div>
     <div id="triviaLoading" style="margin-top:14px; display:none; font-size:12px; color:#aaa; text-align:center; padding:12px;">✨ Loading today's trivia…</div>
-    <button id="triviaBtn" onclick="loadTodayTrivia()" style="display:none; margin-top:14px; width:100%; padding:10px 0; border-radius:999px; border:1.5px solid var(--accent,#4b8cff); background:transparent; color:var(--accent,#4b8cff); font-size:12px; font-weight:600; cursor:pointer;">💡 Get Today's Trivia</button>
+    <button id="triviaBtn" onclick="loadTodayTrivia()" style="display:none; margin-top:10px; width:100%; padding:10px 0; border-radius:999px; border:1.5px solid var(--accent,#4b8cff); background:transparent; color:var(--accent,#4b8cff); font-size:12px; font-weight:600; cursor:pointer; font-family:inherit;">💡 Get Today's Trivia</button>
     <div id="triviaNoKey" style="margin-top:14px; display:none; font-size:11px; color:#aaa; text-align:center; padding:10px; border-radius:10px; border:1px dashed #ddd;">
       API key not set. Tap 🔑 in the top-right to add it!
     </div>
 
-    <!-- 오늘의 질문 -->
-    <div id="questionSection" style="margin-top:14px;">
-      <button id="questionBtn" onclick="loadQuestion()" style="width:100%; padding:10px 0; border-radius:999px; border:1.5px solid #ddd; background:transparent; color:#aaa; font-size:12px; font-weight:600; cursor:pointer; font-family:inherit; transition:all 0.15s;">🎲 오늘의 질문 뽑기</button>
-      <div id="questionLoading" style="display:none; font-size:12px; color:#aaa; text-align:center; padding:12px;">✦ 질문 생성 중…</div>
+    <!-- Daily Question -->
+    <div id="questionSection" style="margin-top:10px;">
+      <button id="questionBtn" onclick="loadQuestion()" style="width:100%; padding:10px 0; border-radius:999px; border:1.5px solid var(--accent,#4b8cff); background:transparent; color:var(--accent,#4b8cff); font-size:12px; font-weight:600; cursor:pointer; font-family:inherit; transition:all 0.15s;">🎲 Pick a Question</button>
+      <div id="questionLoading" style="display:none; font-size:12px; color:#aaa; text-align:center; padding:12px;">✦ Generating…</div>
       <div id="questionCard" style="display:none; margin-top:10px; border-radius:14px; border:1.5px solid #e5e7eb; padding:16px;">
         <div style="font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; color:#aaa; margin-bottom:8px;" id="questionCategory"></div>
         <div id="questionText" style="font-size:14px; font-weight:600; color:#333; line-height:1.6;"></div>
         <div style="display:flex; gap:8px; margin-top:14px;">
-          <button onclick="sendToMemo()" style="flex:2; padding:8px 0; border-radius:999px; border:none; background:var(--accent,#4b8cff); color:#fff; font-size:12px; font-weight:700; cursor:pointer; font-family:inherit;">📓 메모에 담기</button>
-          <button onclick="closeQuestion()" style="flex:1; padding:8px 0; border-radius:999px; border:1.5px solid #ddd; background:transparent; color:#aaa; font-size:12px; cursor:pointer; font-family:inherit;">닫기</button>
+          <button onclick="sendToMemo()" style="flex:2; padding:8px 0; border-radius:999px; border:none; background:var(--accent,#4b8cff); color:#fff; font-size:12px; font-weight:700; cursor:pointer; font-family:inherit;">📓 Add to Memo</button>
+          <button onclick="closeQuestion()" style="flex:1; padding:8px 0; border-radius:999px; border:1.5px solid #ddd; background:transparent; color:#aaa; font-size:12px; cursor:pointer; font-family:inherit;">Close</button>
         </div>
       </div>
     </div>
@@ -599,7 +599,7 @@
   const taskTier = Object.fromEntries(missionData.map(m => [m.name, m.tier]));
   const tierLabel  = { S:"S-Tier", A:"A-Tier", B:"B-Tier" };
   const baseReward = { S:3, A:2, B:1, BONUS:0 };
-  const YEAR_TOTAL_DAYS = 351;
+  const YEAR_TOTAL_DAYS = 234; // 2026-05-12 ~ 2026-12-31
 
   function getKSTDate() {
     const n = new Date();
@@ -608,8 +608,11 @@
   const today = getKSTDate();
 
   function getDayOfYear() {
+    // 2026-05-12 시작 기준 경과일
     const [y,m,d] = today.split("-").map(Number);
-    return Math.floor((new Date(y,m-1,d) - new Date(y,0,1)) / 86400000) + 1;
+    const start = new Date(2026, 4, 12); // May 12, 2026
+    const cur   = new Date(y, m-1, d);
+    return Math.max(1, Math.floor((cur - start) / 86400000) + 1);
   }
 
   // 날짜 기반 인덱스
@@ -1263,7 +1266,7 @@
     } catch(e) {
       document.getElementById('questionLoading').style.display = 'none';
       document.getElementById('questionBtn').style.display = 'block';
-      document.getElementById('questionBtn').textContent = '🎲 다시 뽑기';
+      document.getElementById('questionBtn').textContent = '🎲 Pick Again';
     }
   }
 
@@ -1271,7 +1274,7 @@
     document.getElementById('questionCard').style.display = 'none';
     const btn = document.getElementById('questionBtn');
     btn.style.display = 'block';
-    btn.textContent = '🎲 다시 뽑기';
+    btn.textContent = '🎲 Pick Again';
   }
 
   function sendToMemo() {
