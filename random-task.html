@@ -334,12 +334,29 @@
       <div class="challenge-result" id="challengeResult" style="display:none;"></div>
     </div>
 
-    <div style="display:flex; gap:6px; margin-top:18px;">
+    <div style="display:flex; gap:6px; margin-top:18px; flex-wrap:wrap;">
       <button class="toggle-btn" id="toggleCalendarButton" onclick="toggleCalendar()" style="flex:1;">📅 Calendar</button>
       <button class="toggle-btn" id="toggleReportButton"   onclick="toggleReport()"   style="flex:1;">📊 Report</button>
       <button class="toggle-btn" id="toggleGoalsButton"    onclick="toggleGoals()"    style="flex:1;">🎯 Goals</button>
+      <button class="toggle-btn" id="toggleMemoButton"     onclick="toggleMemo()"     style="flex:1;">📓 Memo</button>
     </div>
 
+    <div id="memoContainer" style="display:none; margin-top:12px;">
+      <!-- 오늘 메모 -->
+      <div style="font-size:11px; font-weight:600; color:#aaa; margin-bottom:6px; letter-spacing:0.3px; text-transform:uppercase;">Today</div>
+      <textarea id="memoTextarea" placeholder="오늘 하루를 기록해봐요..." style="width:100%; box-sizing:border-box; background:rgba(0,0,0,0.03); border:1px solid #e5e7eb; border-radius:12px; padding:12px 14px; font-size:13px; font-family:inherit; color:#333; line-height:1.6; resize:none; min-height:100px; outline:none; transition:border-color 0.15s;" oninput="saveMemo(this.value)" onfocus="this.style.borderColor='var(--accent,#4b8cff)'" onblur="this.style.borderColor='#e5e7eb'"></textarea>
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-top:6px; margin-bottom:14px;">
+        <div id="memoSavedLabel" style="font-size:10px; color:#aaa;"></div>
+        <button onclick="confirmMemo()" style="padding:6px 16px; border-radius:999px; border:none; background:var(--accent,#4b8cff); color:#fff; font-size:12px; font-weight:600; cursor:pointer; font-family:inherit;">확인</button>
+      </div>
+      <!-- 검색 -->
+      <div style="position:relative; margin-bottom:10px;">
+        <input id="memoSearchInput" type="text" placeholder="메모 검색..." oninput="renderMemoHistory()" style="width:100%; box-sizing:border-box; background:rgba(0,0,0,0.03); border:1px solid #e5e7eb; border-radius:10px; padding:8px 32px 8px 12px; font-size:12px; font-family:inherit; color:#333; outline:none; transition:border-color 0.15s;" onfocus="this.style.borderColor='var(--accent,#4b8cff)'" onblur="this.style.borderColor='#e5e7eb'">
+        <span onclick="document.getElementById('memoSearchInput').value='';renderMemoHistory();" style="position:absolute; right:10px; top:50%; transform:translateY(-50%); font-size:14px; color:#bbb; cursor:pointer; line-height:1;">×</span>
+      </div>
+      <!-- 과거 메모 목록 -->
+      <div id="memoHistoryList"></div>
+    </div>
     <div id="reportContainer" style="display:none; margin-top:12px;"></div>
 
     <div id="calendarContainer" style="display:none;">
@@ -384,6 +401,21 @@
     <div id="triviaNoKey" style="margin-top:14px; display:none; font-size:11px; color:#aaa; text-align:center; padding:10px; border-radius:10px; border:1px dashed #ddd;">
       API key not set. Tap 🔑 in the top-right to add it!
     </div>
+
+    <!-- 오늘의 질문 -->
+    <div id="questionSection" style="margin-top:14px;">
+      <button id="questionBtn" onclick="loadQuestion()" style="width:100%; padding:10px 0; border-radius:999px; border:1.5px solid #ddd; background:transparent; color:#aaa; font-size:12px; font-weight:600; cursor:pointer; font-family:inherit; transition:all 0.15s;">🎲 오늘의 질문 뽑기</button>
+      <div id="questionLoading" style="display:none; font-size:12px; color:#aaa; text-align:center; padding:12px;">✦ 질문 생성 중…</div>
+      <div id="questionCard" style="display:none; margin-top:10px; border-radius:14px; border:1.5px solid #e5e7eb; padding:16px;">
+        <div style="font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; color:#aaa; margin-bottom:8px;" id="questionCategory"></div>
+        <div id="questionText" style="font-size:14px; font-weight:600; color:#333; line-height:1.6;"></div>
+        <div style="display:flex; gap:8px; margin-top:14px;">
+          <button onclick="sendToMemo()" style="flex:2; padding:8px 0; border-radius:999px; border:none; background:var(--accent,#4b8cff); color:#fff; font-size:12px; font-weight:700; cursor:pointer; font-family:inherit;">📓 메모에 담기</button>
+          <button onclick="closeQuestion()" style="flex:1; padding:8px 0; border-radius:999px; border:1.5px solid #ddd; background:transparent; color:#aaa; font-size:12px; cursor:pointer; font-family:inherit;">닫기</button>
+        </div>
+      </div>
+    </div>
+
   </div>
 </div>
 
@@ -725,6 +757,28 @@
     const curMonth = parseInt(today.split("-")[1], 10), dk = window._isDarkTheme;
     const titleEl = document.getElementById("goalsSectionTitle");
     if (titleEl) titleEl.classList.toggle("dark", dk);
+
+    // 과거 달 토글 버튼 — 타임라인 밖(부모)에 삽입해서 세로 선이 관통하지 않도록
+    const pastCount = goals.filter((_, i) => (i+1) < curMonth).length;
+    let pastVisible = false;
+    let pastGroup = null;
+    if (pastCount > 0) {
+      const toggleBtn = document.createElement("button");
+      toggleBtn.style.cssText = "font-size:11px; color:#aaa; background:transparent; border:1px solid #ddd; border-radius:999px; padding:3px 12px; cursor:pointer; font-family:inherit; display:block; margin-bottom:10px;";
+      if (dk) { toggleBtn.style.borderColor = "rgba(255,255,255,0.15)"; toggleBtn.style.color = "#666"; }
+      toggleBtn.textContent = `▸ 지난 달 보기 (${pastCount}개월)`;
+      // pastGroup은 tl(타임라인) 안에 두되, 토글 버튼은 tl 앞에 삽입
+      pastGroup = document.createElement("div");
+      pastGroup.style.display = "none";
+      toggleBtn.onclick = () => {
+        pastVisible = !pastVisible;
+        pastGroup.style.display = pastVisible ? "block" : "none";
+        toggleBtn.textContent = pastVisible ? `▾ 지난 달 숨기기` : `▸ 지난 달 보기 (${pastCount}개월)`;
+      };
+      tl.parentNode.insertBefore(toggleBtn, tl);
+      tl.appendChild(pastGroup);
+    }
+
     goals.forEach((g, i) => {
       const mn = i+1, state = mn < curMonth ? "past" : mn === curMonth ? "current" : "future";
       const hasPlan = g.plan && g.plan.trim().length > 0;
@@ -744,7 +798,10 @@
       body.appendChild(planEl);
       const editBtn = document.createElement("button"); editBtn.className = "goal-edit-inline"; editBtn.textContent = "✏️ edit";
       editBtn.onclick = () => openGoalsEditModalAt(i); body.appendChild(editBtn);
-      row.appendChild(body); tl.appendChild(row);
+      row.appendChild(body);
+      // 과거 달은 pastGroup에, 나머지는 tl에
+      if (state === "past" && pastGroup) pastGroup.appendChild(row);
+      else tl.appendChild(row);
     });
   }
 
@@ -996,10 +1053,248 @@
     if(cc>0){for(let i=cc;i<7;i++)row.appendChild(document.createElement("td"));tbody.appendChild(row);}
     table.appendChild(tbody);cont.appendChild(table);
   }
+
+  // ── Memo ─────────────────────────────────────────────────────
+  function loadMemo() { return ls.str('memo_' + today) || ''; }
+  function saveMemo(text) {
+    ls.setStr('memo_' + today, text);
+    const lbl = document.getElementById('memoSavedLabel');
+    if (lbl) { lbl.textContent = '저장됨 ✓'; setTimeout(() => { lbl.textContent = ''; }, 1200); }
+    renderMemoHistory();
+  }
+  function confirmMemo() {
+    const ta = document.getElementById('memoTextarea');
+    saveMemo(ta.value);
+    ta.blur();
+    // textarea 테두리 잠깐 accent 표시 후 복원
+    ta.style.borderColor = 'var(--accent,#4b8cff)';
+    setTimeout(() => { ta.style.borderColor = window._isDarkTheme ? 'rgba(255,255,255,0.12)' : '#e5e7eb'; }, 800);
+  }
+
+  function getAllMemos() {
+    // localStorage에서 memo_ 로 시작하는 키 전부 수집
+    const memos = [];
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key && key.startsWith('memo_')) {
+        const date = key.slice(5);
+        const text = localStorage.getItem(key) || '';
+        if (text.trim()) memos.push({ date, text });
+      }
+    }
+    return memos.sort((a, b) => b.date.localeCompare(a.date));
+  }
+
+  function renderMemoHistory() {
+    const list = document.getElementById('memoHistoryList');
+    if (!list) return;
+    const q = (document.getElementById('memoSearchInput')?.value || '').trim().toLowerCase();
+    const dk = window._isDarkTheme;
+    const surfaceBg = dk ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.03)';
+    const borderCol = dk ? 'rgba(255,255,255,0.08)' : '#e5e7eb';
+    const textCol   = dk ? '#ccc' : '#333';
+    const dateLabelCol = dk ? '#666' : '#bbb';
+    const btnCol = dk ? '#555' : '#ccc';
+
+    let memos = getAllMemos().filter(m => m.date !== today); // 오늘은 상단 textarea에서 처리
+    if (q) memos = memos.filter(m => m.text.toLowerCase().includes(q) || m.date.includes(q));
+
+    if (!memos.length) {
+      list.innerHTML = q
+        ? '<div style="font-size:12px; color:#aaa; text-align:center; padding:16px 0;">검색 결과 없음</div>'
+        : '<div style="font-size:12px; color:#bbb; text-align:center; padding:16px 0;">과거 메모가 없어요</div>';
+      return;
+    }
+
+    list.innerHTML = '<div style="font-size:11px; font-weight:600; color:#aaa; margin-bottom:8px; letter-spacing:0.3px; text-transform:uppercase;">' + (q ? `검색 결과 ${memos.length}건` : 'Past') + '</div>';
+
+    memos.forEach(({ date, text }) => {
+      const item = document.createElement('div');
+      item.style.cssText = `background:${surfaceBg}; border:1px solid ${borderCol}; border-radius:12px; padding:12px 14px; margin-bottom:8px;`;
+
+      const highlight = (str) => q
+        ? str.replace(new RegExp('(' + q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ')', 'gi'), '<mark style="background:rgba(75,140,255,0.2);color:inherit;border-radius:2px;padding:0 1px">$1</mark>')
+        : str;
+
+      item.innerHTML = `
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+          <span style="font-size:11px; font-family:monospace; color:${dateLabelCol};">${date}</span>
+          <div style="display:flex; gap:4px;">
+            <button onclick="startEditMemo('${date}')" style="font-size:11px; color:${btnCol}; background:transparent; border:none; cursor:pointer; padding:2px 6px; border-radius:4px;">수정</button>
+            <button onclick="deleteMemo('${date}')" style="font-size:11px; color:${btnCol}; background:transparent; border:none; cursor:pointer; padding:2px 6px; border-radius:4px;">삭제</button>
+          </div>
+        </div>
+        <div id="memoView_${date}" style="font-size:13px; color:${textCol}; line-height:1.6; white-space:pre-wrap;">${highlight(text)}</div>
+        <div id="memoEdit_${date}" style="display:none;">
+          <textarea id="memoEditTa_${date}" style="width:100%; box-sizing:border-box; background:transparent; border:none; border-top:1px solid ${borderCol}; padding:8px 0 0; margin-top:6px; font-size:13px; font-family:inherit; color:${textCol}; line-height:1.6; resize:none; min-height:80px; outline:none;">${text}</textarea>
+          <div style="display:flex; justify-content:flex-end; gap:6px; margin-top:6px;">
+            <button onclick="cancelEditMemo('${date}')" style="font-size:11px; color:${btnCol}; background:transparent; border:1px solid ${borderCol}; border-radius:6px; cursor:pointer; padding:4px 10px;">취소</button>
+            <button onclick="saveEditMemo('${date}')" style="font-size:11px; color:#fff; background:var(--accent,#4b8cff); border:none; border-radius:6px; cursor:pointer; padding:4px 10px; font-weight:600;">저장</button>
+          </div>
+        </div>`;
+      list.appendChild(item);
+    });
+  }
+
+  function startEditMemo(date) {
+    document.getElementById('memoView_' + date).style.display = 'none';
+    const editDiv = document.getElementById('memoEdit_' + date);
+    editDiv.style.display = 'block';
+    const ta = document.getElementById('memoEditTa_' + date);
+    ta.style.height = 'auto'; ta.style.height = ta.scrollHeight + 'px';
+    ta.focus();
+  }
+  function cancelEditMemo(date) {
+    document.getElementById('memoView_' + date).style.display = 'block';
+    document.getElementById('memoEdit_' + date).style.display = 'none';
+  }
+  function saveEditMemo(date) {
+    const ta = document.getElementById('memoEditTa_' + date);
+    const newText = ta.value;
+    ls.setStr('memo_' + date, newText);
+    renderMemoHistory();
+  }
+  function deleteMemo(date) {
+    if (!confirm(date + ' 메모를 삭제할까요?')) return;
+    localStorage.removeItem('memo_' + date);
+    renderMemoHistory();
+  }
+
+  function applyMemoTheme() {
+    const dk = window._isDarkTheme;
+    const ta = document.getElementById('memoTextarea');
+    const si = document.getElementById('memoSearchInput');
+    if (ta) { ta.style.background = dk ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.03)'; ta.style.color = dk ? '#e0e0e0' : '#333'; ta.style.borderColor = dk ? 'rgba(255,255,255,0.12)' : '#e5e7eb'; }
+    if (si) { si.style.background = dk ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.03)'; si.style.color = dk ? '#e0e0e0' : '#333'; si.style.borderColor = dk ? 'rgba(255,255,255,0.12)' : '#e5e7eb'; }
+  }
+
+  function toggleMemo() {
+    const c = document.getElementById('memoContainer'), btn = document.getElementById('toggleMemoButton');
+    if (!c.style.display || c.style.display === 'none') {
+      c.style.display = 'block';
+      btn.textContent = '📓 Close';
+      const ta = document.getElementById('memoTextarea');
+      ta.value = loadMemo();
+      applyMemoTheme();
+      renderMemoHistory();
+      setTimeout(() => ta.focus(), 100);
+    } else {
+      c.style.display = 'none';
+      btn.textContent = '📓 Memo';
+    }
+  }
+
   function toggleCalendar(){const c=document.getElementById("calendarContainer"),btn=document.getElementById("toggleCalendarButton");if(!c.style.display||c.style.display==="none"){currentViewYear=parseInt(today.split("-")[0]);currentViewMonth=parseInt(today.split("-")[1]);buildMonthlyCalendar(currentViewYear,currentViewMonth);c.style.display="block";btn.textContent="📅 Close";document.getElementById("perfectDaysWrap").style.display="block";}else{c.style.display="none";btn.textContent="📅 Calendar";document.getElementById("perfectDaysWrap").style.display="none";}}
   function changeMonth(delta){currentViewMonth+=delta;if(currentViewMonth>12){currentViewMonth=1;currentViewYear++;}else if(currentViewMonth<1){currentViewMonth=12;currentViewYear--;}buildMonthlyCalendar(currentViewYear,currentViewMonth);const rc=document.getElementById("reportContainer");if(rc&&rc.style.display!=="none")buildReport(currentViewYear,currentViewMonth);}
   function toggleReport(){const rc=document.getElementById("reportContainer"),btn=document.getElementById("toggleReportButton");if(!rc.style.display||rc.style.display==="none"){buildReport(currentViewYear,currentViewMonth);rc.style.display="block";btn.textContent="📊 Close";}else{rc.style.display="none";btn.textContent="📊 Report";}}
   function buildReport(year,month){const cont=document.getElementById("reportContainer");if(!cont)return;const stats=loadDailyStats(),ml=loadMissionLog(),sl=loadSkipLog();const ld=new Date(year,month,0).getDate(),mdays=[];for(let d=1;d<=ld;d++)mdays.push(`${year}-${String(month).padStart(2,"0")}-${String(d).padStart(2,"0")}`);const td2=new Date(...today.split("-").map((v,i)=>i===1?v-1:+v)),dow=td2.getDay();const ws=new Date(td2);ws.setDate(td2.getDate()-(dow===0?6:dow-1));const wdays=[];for(let i=0;i<7;i++){const dd=new Date(ws);dd.setDate(ws.getDate()+i);wdays.push(`${dd.getFullYear()}-${String(dd.getMonth()+1).padStart(2,"0")}-${String(dd.getDate()).padStart(2,"0")}`);}function makeItems(days,label){const items=[],td=days.filter(d=>d<=today).length;if(td===0)return items;const dd=days.filter(d=>stats[d]>=tasks.length).length,dr=Math.round(dd/td*100);if(dr===100)items.push({i:"🏆",t:`Perfect! All ${td} days fully completed.`});else if(dr>=70)items.push({i:"✅",t:`Great job! ${dr}% full completion rate this ${label}.`});else if(dr>=40)items.push({i:"📈",t:`${dr}% full days this ${label}. Room to grow!`});else items.push({i:"💪",t:`Only ${dr}% full days this ${label}. Let's push harder!`});const st=days.reduce((s,d)=>s+(sl[d]||0),0);if(st>=5)items.push({i:"😅",t:`Skipped ${st} times this ${label}. Maybe a bit too many?`});else if(st>=3)items.push({i:"🙈",t:`${st} skips this ${label}. Try to cut it down!`});else if(st===0&&td>=3)items.push({i:"🔥",t:`Zero skips this ${label}! Amazing discipline.`});const mc={};tasks.forEach(t=>mc[t]=0);days.forEach(d=>{if(ml[d])Object.entries(ml[d]).forEach(([t,c])=>{if(mc[t]!=null)mc[t]+=c;});});const sorted=Object.entries(mc).sort((a,b)=>b[1]-a[1]),mx=sorted[0],mn=sorted[sorted.length-1],act=days.filter(d=>d<=today).length;if(mx&&mx[1]>=Math.round(act*0.7))items.push({i:"⭐",t:`"${mx[0]}" is your strongest mission this ${label}!`});if(mn&&mn[1]===0&&act>=3)items.push({i:"😬",t:`"${mn[0]}" — not done once this ${label}. Don't forget it!`});else if(mn&&mn[1]<=Math.round(act*0.2)&&act>=5)items.push({i:"⚠️",t:`"${mn[0]}" is being neglected this ${label}. Only ${mn[1]} time(s).`});return items;}const dk=window._isDarkTheme?'color:#d0d0d0;background:rgba(255,255,255,0.06)':'';const wi=makeItems(wdays,"week"),mi=makeItems(mdays,"month");let html="";if(wi.length)html+=`<div class="report-section"><div class="report-title">📊 This Week</div>${wi.map(x=>`<div class="report-item" style="${dk}"><span class="ri-icon">${x.i}</span><span>${x.t}</span></div>`).join("")}</div>`;if(mi.length)html+=`<div class="report-section"><div class="report-title">📅 ${year}.${String(month).padStart(2,"0")} Monthly</div>${mi.map(x=>`<div class="report-item" style="${dk}"><span class="ri-icon">${x.i}</span><span>${x.t}</span></div>`).join("")}</div>`;if(!html)html=`<div class="report-item" style="${dk}"><span class="ri-icon">🌱</span><span>Not enough data yet. Keep going!</span></div>`;cont.innerHTML=html;}
+
+
+  // ── 오늘의 질문 ──────────────────────────────────────────────
+  const QUESTION_CATEGORIES = ['체육', '예술', '투자', '커리어', '정보', '생활', '사회', '명상', '철학'];
+
+  function pickQuestionCategory() {
+    // 최근 4개 제외하고 랜덤
+    let recent = [];
+    try { recent = JSON.parse(localStorage.getItem('questionCatHistory') || '[]'); } catch(e) {}
+    const avail = QUESTION_CATEGORIES.filter(c => !recent.includes(c));
+    const pool = avail.length > 0 ? avail : QUESTION_CATEGORIES;
+    const picked = pool[Math.floor(Math.random() * pool.length)];
+    recent.push(picked);
+    if (recent.length > 4) recent.shift();
+    localStorage.setItem('questionCatHistory', JSON.stringify(recent));
+    return picked;
+  }
+
+  let currentQuestion = '';
+  let currentQuestionCat = '';
+
+  async function loadQuestion() {
+    const k = ls.str('mandart_api_key');
+    if (!k) { alert('API Key를 먼저 설정해주세요 (🔑 버튼)'); return; }
+    document.getElementById('questionBtn').style.display = 'none';
+    document.getElementById('questionCard').style.display = 'none';
+    document.getElementById('questionLoading').style.display = 'block';
+
+    const cat = pickQuestionCategory();
+    currentQuestionCat = cat;
+
+    const categoryPrompts = {
+      '체육': '운동, 신체, 건강 관리, 체력에 관한',
+      '예술': '음악, 영화, 미술, 글쓰기, 창작 활동에 관한',
+      '투자': '돈, 자산, 소비 습관, 경제적 판단에 관한',
+      '커리어': '일, 성장, 목표, 자기계발에 관한',
+      '정보': '학습, 독서, 새로운 지식, 호기심에 관한',
+      '생활': '일상 루틴, 환경, 습관, 생활 방식에 관한',
+      '사회': '인간관계, 소통, 공동체, 타인에 관한',
+      '명상': '내면, 감정, 마음 상태, 자기 인식에 관한',
+      '철학': '가치관, 신념, 삶의 방향에 관한',
+    };
+
+    const prompt = `"${cat}" — ${categoryPrompts[cat]} 자기성찰 질문 하나를 만들어줘.
+조건:
+- 오늘 하루를 돌아보거나 스스로를 점검하는 질문
+- 예/아니오로 끝나지 않고 생각을 유도하는 질문
+- 1~2문장, 구체적이고 일상에 밀착된 내용
+- 부드럽고 담백한 한국어, 이모지 없이
+- 질문만 출력 (설명, 머릿말 없이)`;
+
+    try {
+      const res = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'x-api-key': k, 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' },
+        body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 120, messages: [{ role: 'user', content: prompt }] })
+      });
+      const data = await res.json();
+      const text = data.content?.[0]?.text?.trim() || '';
+      if (!text) throw new Error('no content');
+      currentQuestion = text;
+
+      const dk = window._isDarkTheme;
+      const card = document.getElementById('questionCard');
+      document.getElementById('questionCategory').textContent = `# ${cat}`;
+      const textEl = document.getElementById('questionText');
+      textEl.textContent = text;
+      textEl.style.color = dk ? '#e0e0e0' : '#333';
+      card.style.borderColor = dk ? 'rgba(255,255,255,0.12)' : '#e5e7eb';
+      card.style.background = dk ? 'rgba(255,255,255,0.03)' : 'transparent';
+      document.getElementById('questionLoading').style.display = 'none';
+      card.style.display = 'block';
+    } catch(e) {
+      document.getElementById('questionLoading').style.display = 'none';
+      document.getElementById('questionBtn').style.display = 'block';
+      document.getElementById('questionBtn').textContent = '🎲 다시 뽑기';
+    }
+  }
+
+  function closeQuestion() {
+    document.getElementById('questionCard').style.display = 'none';
+    const btn = document.getElementById('questionBtn');
+    btn.style.display = 'block';
+    btn.textContent = '🎲 다시 뽑기';
+  }
+
+  function sendToMemo() {
+    if (!currentQuestion) return;
+    // 메모 컨테이너 열기
+    const memoC = document.getElementById('memoContainer');
+    const memoBtn = document.getElementById('toggleMemoButton');
+    if (memoC.style.display === 'none' || !memoC.style.display) {
+      memoC.style.display = 'block';
+      memoBtn.textContent = '📓 Close';
+      applyMemoTheme();
+      renderMemoHistory();
+    }
+    const ta = document.getElementById('memoTextarea');
+    const existing = ta.value.trim();
+    const prefix = `[${currentQuestionCat}] ${currentQuestion}\n\n`;
+    ta.value = existing ? existing + '\n\n' + prefix : prefix;
+    saveMemo(ta.value);
+    // 스크롤해서 메모 보이게
+    memoC.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    setTimeout(() => { ta.focus(); ta.setSelectionRange(ta.value.length, ta.value.length); }, 400);
+    closeQuestion();
+  }
 
   function pickRandom(){if(isPicking)return;isPicking=true;const pb=document.getElementById("pickButton"),re=document.getElementById("result"),he=document.getElementById("hint");pb.disabled=true;pb.textContent="Picking…";document.getElementById("actionButtons").style.display="none";re.classList.remove("s-glow","has-task");document.getElementById("missionCard").classList.remove("has-task");const avail=tasks.filter(t=>!taskStatus[t]&&!skippedTasks[t]);if(avail.length===0){const rem=tasks.filter(t=>!taskStatus[t]);re.textContent=rem.length===0?"All done today!":"Only skipped missions left. That's it for today!";he.textContent=rem.length===0?"":"Refresh to reset skipped missions.";pb.disabled=false;pb.textContent="Pick one now!";isPicking=false;showProgressIfNeeded();updateTungButtonVisibility();return;}let dots=0;re.textContent="Thinking";he.textContent="Just a sec…";const loading=setInterval(()=>{dots=(dots+1)%4;re.textContent="Thinking"+".".repeat(dots);},400);setTimeout(()=>{clearInterval(loading);const fc=avail[Math.floor(Math.random()*avail.length)],ft=taskTier[fc]||"B";currentTask=fc;currentTier=ft;re.innerHTML=`<span class="tier-label">${tierLabel[ft]||"B-Tier"}</span>${fc.replace(/</g,"&lt;").replace(/>/g,"&gt;")}`;re.classList.add("has-task");document.getElementById("missionCard").classList.add("has-task");if(ft==="S"){re.classList.add("s-glow");he.textContent=`✨ S-tier mission! ✨ ${hints[fc]||""}`;}else he.textContent=hints[fc]||"";document.getElementById("actionButtons").style.display="flex";pb.disabled=false;pb.textContent="Pick one now!";isPicking=false;showProgressIfNeeded();updateTungButtonVisibility();},2000);}
 
